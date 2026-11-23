@@ -1,0 +1,11 @@
+{
+  "manager-work-dispatcher": "core-dispatcher",
+  "manager-skill-architect": "core-architect",
+  "manager-email-inbox": "shared-common-gmail",
+  "manager-bbc-news": "shared-news-bbc-website",
+  "workflow-security": "workflow-security-alert",
+  "workflow-news": "workflow-news-bbc-article",
+  "entry-guardian": "entry-news-guardian-front-page",
+  "manager-guardian-news": "shared-news-guardian-website",
+  "workflow-guardian-news": "workflow-news-guardian-article"
+}

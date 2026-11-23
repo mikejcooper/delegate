@@ -1,0 +1,173 @@
+#!/bin/sh
+# Install the workflow-manager plugin into the current folder.
+#
+# In the Claude app, open a session on the folder you want it in and send:
+#     Run <path to this repo>/install.sh
+# From GitHub, the same from anywhere:
+#     Run curl -fsSL https://raw.githubusercontent.com/mikejcooper/workflow-manager/main/install.sh | sh
+#
+# The steps:
+#   1. Without --yes it installs nothing: it says which folder it would install into, so Claude can ask the user
+#      first ("Install the workflow manager in <folder>?"). On their yes Claude runs it again with --yes. In a
+#      terminal it asks the question itself.
+#   2. It installs the plugin into that folder (project scope).
+#   3. In the Claude app, Claude asks on a card to pin this chat and name it "🔗 Workflow Manager".
+#   4. Then it says to send "open the dashboard", in the same chat.
+#
+# Where the plugin comes from, first that applies: an argument (a folder or owner/repo), $WM_SOURCE, the repo this
+# script sits in, else GITHUB. Safe to run again: what is already installed is kept.
+set -e
+GITHUB="mikejcooper/workflow-manager"   # the public repo
+MARKETPLACE="workflow-manager" # the "name" in .claude-plugin/marketplace.json
+
+YES=""
+NEWFOLDER=""
+WHERE=""                  # --in=<folder>: where --new-folder makes it
+SOURCE=""
+GIVEN=""                  # the source as it was given, to say again in the --yes command
+for a in "$@"; do
+  case "$a" in
+    --yes|-y) YES=1 ;;
+    --new-folder) NEWFOLDER=1 ;;
+    --in=*) WHERE=${a#--in=} ;;
+    *) SOURCE=$a; GIVEN=" \"$a\"" ;;
+  esac
+done
+here=$(cd "$(dirname "$0")" 2>/dev/null && pwd || true)
+SOURCE=${SOURCE:-${WM_SOURCE:-}}
+if [ -z "$SOURCE" ] && [ -f "$here/.claude-plugin/marketplace.json" ]; then SOURCE=$here; fi
+SOURCE=${SOURCE:-$GITHUB}
+if [ -z "$SOURCE" ]; then
+  echo "Where is the plugin? Give a folder or owner/repo: sh install.sh <folder or owner/repo>" >&2
+  exit 1
+fi
+PLUGIN="workflow-manager@$MARKETPLACE"
+FOLDER=$(pwd)
+
+# The install message the user sends, as they'd type it (~ for the home folder)
+if [ -f "$here/install.sh" ]; then MSG="Run $(printf '%s' "$here/install.sh" | sed "s|^$HOME|~|")"
+else MSG="the same install message"; fi
+DOCS="https://code.claude.com/docs/en/desktop#start-a-session"
+
+# --new-folder [--in=<folder>]: the user chose a folder of its own, made inside the folder they picked (their home
+# folder when none is given): "Workflow Manager", or "… 2", "… 3" when that is taken and not empty. Then it says how
+# to start a chat in it. Nothing is installed here.
+if [ -n "$NEWFOLDER" ]; then
+  WHERE=${WHERE:-$HOME}
+  case "$WHERE" in "~") WHERE=$HOME ;; "~/"*) WHERE="$HOME/${WHERE#\~/}" ;; esac
+  if [ ! -d "$WHERE" ]; then
+    echo "There's no folder $WHERE. Ask the user where to make it again (the same card), and run this again with"
+    echo "--in=<that folder>."
+    exit 1
+  fi
+  WHERE=$(cd "$WHERE" && pwd)
+  NEW="$WHERE/Workflow Manager"; n=2
+  while [ -e "$NEW" ] && [ -n "$(ls -A "$NEW" 2>/dev/null | grep -v -x .DS_Store)" ]; do NEW="$WHERE/Workflow Manager $n"; n=$((n + 1)); done
+  mkdir -p "$NEW"
+  NAME=$(basename "$NEW")
+  IN=$(printf '%s' "$WHERE" | sed "s|^$HOME\$|your home folder|; s|^$HOME/|~/|")
+  echo "Made the folder $NEW (empty). Nothing installed. Your whole reply to the user is the block below, word for"
+  echo "word (it is markdown), with nothing before or after it:"
+  echo
+  echo "## Your new folder is ready: **$NAME**"
+  echo
+  echo "Start a chat in it, and install there:"
+  echo
+  echo "1. Press **⌘N** (or click **+ New** at the top of the sidebar)."
+  echo "2. Under the message box, click the **folder** button and choose **$NAME** (in $IN)."
+  echo "3. In that new chat, send:"
+  echo
+  echo '```'
+  echo "$MSG"
+  echo '```'
+  echo
+  echo "[How to pick a folder for a chat]($DOCS)"
+  exit 0
+fi
+
+# 1. The folder, confirmed before anything is installed. It works best in a folder of its own: it keeps its
+#    settings, runs and history there, and a folder with other work in it mixes the two.
+if [ -f "$FOLDER/.workflow-manager-data/system/version.json" ] || grep -qs "workflow-manager@" "$FOLDER/.claude/settings.json"; then
+  INSTALLED=1
+else
+  INSTALLED=""
+fi
+# what else is here: everything but macOS's .DS_Store, and a .claude folder holding only the app's own files
+OTHER=$(cd "$FOLDER" && for f in * .[!.]* ..?*; do
+  [ -e "$f" ] || continue
+  [ "$f" = ".DS_Store" ] && continue
+  if [ "$f" = ".claude" ] && [ -z "$(cd .claude && ls -A | grep -v -x -e launch.json -e settings.local.json -e .DS_Store)" ]; then continue; fi
+  echo "$f"
+done)
+COUNT=$(printf '%s' "$OTHER" | grep -c . || true)
+SOME=$(printf '%s\n' "$OTHER" | head -3 | paste -sd ',' - | sed 's/,/, /g')
+[ "$COUNT" -gt 3 ] && SOME="$SOME, …"
+if [ -f "$here/install.sh" ]; then AGAIN="sh \"$here/install.sh\" --yes$GIVEN"
+else AGAIN="the same command with --yes added (piped from curl: ... | sh -s -- --yes$GIVEN)"; fi
+
+if [ -n "$INSTALLED" ] && [ -z "$YES" ]; then
+  if [ -t 0 ]; then
+    echo "The workflow manager is already installed in $FOLDER. To use it, start Claude here and send: open the dashboard"
+  else
+    echo "Nothing to do: the workflow manager is already installed in $FOLDER."
+    echo "Tell the user in one line: send \"open the dashboard\" to open it."
+  fi
+  exit 0
+fi
+
+if [ -z "$YES" ]; then
+  if [ -t 0 ]; then   # a terminal: ask here
+    if [ "$COUNT" -gt 0 ]; then
+      echo "This folder isn't empty: $COUNT other item(s) ($SOME)."
+      echo "The workflow manager works best in a folder of its own. To use a new one: mkdir ~/\"Workflow Manager\" && cd ~/\"Workflow Manager\", then run this again."
+      printf 'Install it in %s anyway? [y/N] ' "$FOLDER"
+    else
+      printf 'Install the workflow manager in %s (an empty folder, good)? [y/N] ' "$FOLDER"
+    fi
+    read -r answer
+    case "$answer" in y|Y|yes|Yes) ;; *) echo "Nothing installed."; exit 0 ;; esac
+  elif [ "$COUNT" -gt 0 ]; then   # Claude ran it, in a folder with other things in it
+    if [ -f "$here/install.sh" ]; then MAKE="sh \"$here/install.sh\" --new-folder$GIVEN"
+    else MAKE="the same command with --new-folder added"; fi
+    echo "Nothing installed. This folder isn't empty: $COUNT other item(s) ($SOME). The workflow manager works best in"
+    echo "a folder of its own: it keeps its settings, runs and history there."
+    echo
+    PARENT=$(dirname "$FOLDER" | sed "s|^$HOME\$|your home folder|; s|^$HOME/|~/|")
+    echo "Say nothing else; ask with the AskUserQuestion tool (cards the user clicks, never a question in your text)."
+    echo "Card 1: question \"This folder already has other things in it ($SOME). The workflow manager works best in"
+    echo "a folder of its own. Make a new one?\", header \"Folder\", options \"Make a new folder (Recommended)\""
+    echo "(\"Pick where, and it makes an empty Workflow Manager folder there\") and \"Install here anyway\" (\"Puts it"
+    echo "in this folder, alongside what's already here\")."
+    echo "On Install here anyway, run: $AGAIN."
+    echo "On Make a new folder, card 2: question \"Where should the Workflow Manager folder go?\", header \"Where\","
+    echo "options \"Your home folder (Recommended)\" (\"~/Workflow Manager\"), \"Documents\" (\"~/Documents/Workflow"
+    echo "Manager\") and \"Next to this folder\" (\"In $PARENT\"); the card's own Other box takes any other folder."
+    echo "Then run: $MAKE --in=<the folder they picked: $HOME, $HOME/Documents, $(dirname "$FOLDER"), or the one they"
+    echo "typed> and do what it says."
+    exit 0
+  else                            # Claude ran it, in an empty folder
+    echo "Nothing installed yet (this folder is empty, which is right for it)."
+    echo
+    echo "Your whole reply to the user is this one line, word for word, with nothing before or after it:"
+    echo
+    echo "Install the workflow manager in $FOLDER?"
+    echo
+    echo "On their yes, run: $AGAIN. On a no, install nothing."
+    exit 0
+  fi
+fi
+
+# 2. Install
+echo "Installing the workflow manager into $FOLDER"
+claude plugin marketplace add "$SOURCE" --scope project >/dev/null 2>&1 || true
+claude plugin install "$PLUGIN" --scope project >/dev/null 2>&1 || true
+
+# Where Claude Code reads the installed plugin from (a local folder in place; a GitHub one from its plugin cache)
+ROOT=$(claude plugin list 2>/dev/null | sed -n "/$PLUGIN/,/^\$/p" | sed -n 's/^ *Read from: //p' | head -1)
+if [ ! -f "$ROOT/workflow-ui/scripts/welcome.py" ]; then
+  echo "The plugin didn't install. Check: claude plugin marketplace add $SOURCE --scope project" >&2
+  exit 1
+fi
+
+# 3. What to do next: open the dashboard
+CLAUDE_PROJECT_DIR="$FOLDER" python3 -I "$ROOT/workflow-ui/scripts/welcome.py" installed

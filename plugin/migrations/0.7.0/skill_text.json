@@ -1,0 +1,4 @@
+{
+  "## Entry\n| Entry | Triggers | Item key |": "## Trigger\n| Trigger | Phrases | Item key |",
+  "description: Dispatcher entry point for": "description: Dispatcher trigger for"
+}

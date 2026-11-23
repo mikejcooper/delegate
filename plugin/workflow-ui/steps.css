@@ -1,0 +1,538 @@
+/* steps.css: the one look for a workflow's steps, shared by the Workflow Viewer and the Inbox.
+   Both pages draw steps only through steps.js, so a change here shows on both. Classes are prefixed fl-
+   so they never collide with a page's own. Loaded before each page's own <style>: a page may override a token. */
+:root{
+  --fl-fail:#9B2C22;--fl-failb:#FBE7E6;
+  --k-d:#3d3d39;--k-db:#ecece8;--bar-d:#8a8a83;
+  --k-i:#0b5c5c;--k-ib:#dcefed;--bar-i:#0f6e6e;
+  --k-s:#1d3e99;--k-sb:#e2e9fb;--bar-s:#2b55c6;
+  --k-a:#4b3a99;--k-ab:#ece6fb;--bar-a:#6b4fbf;
+  --k-n:#8a4b00;--k-nb:#fbeedd;--bar-n:#c27012;
+  --k-w:#1f6b2e;--k-wb:#e1f2e3;--bar-w:#2f8f45;
+  --k-r:#8a1f5c;--k-rb:#f8e1ee;--bar-r:#b8327f;
+  --k-b:#7a3b8f;--k-bb:#f3e6f8;--bar-b:#9a5bb0;
+  --k-e:#1d3e99;--k-eb:#e2e9fb;--bar-e:#2b55c6}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){
+  --fl-fail:#f7c1c1;--fl-failb:#6b1f1f;
+  --k-d:#e4e2da;--k-db:#3a3a37;--k-i:#8fd6d0;--k-ib:#173f3d;--bar-i:#4fb3ac;--k-s:#b5cdf6;--k-sb:#22355f;--bar-s:#7d9ef0;
+  --k-a:#cbbdf5;--k-ab:#33285a;--bar-a:#a48ee8;--k-n:#f3c38a;--k-nb:#4a3216;--bar-n:#e0a050;--k-w:#a6dcb0;--k-wb:#1e3d24;--bar-w:#64bf78;
+  --k-r:#f0a6cf;--k-rb:#3d2233;--bar-r:#d0609f;--k-b:#d9b3e6;--k-bb:#3a2442;--bar-b:#c08ad6;--k-e:#b5cdf6;--k-eb:#22355f;--bar-e:#7d9ef0}}
+:root[data-theme=dark]{
+  --fl-fail:#f7c1c1;--fl-failb:#6b1f1f;
+  --k-d:#e4e2da;--k-db:#3a3a37;--k-i:#8fd6d0;--k-ib:#173f3d;--bar-i:#4fb3ac;--k-s:#b5cdf6;--k-sb:#22355f;--bar-s:#7d9ef0;
+  --k-a:#cbbdf5;--k-ab:#33285a;--bar-a:#a48ee8;--k-n:#f3c38a;--k-nb:#4a3216;--bar-n:#e0a050;--k-w:#a6dcb0;--k-wb:#1e3d24;--bar-w:#64bf78;
+  --k-r:#f0a6cf;--k-rb:#3d2233;--bar-r:#d0609f;--k-b:#d9b3e6;--k-bb:#3a2442;--bar-b:#c08ad6;--k-e:#b5cdf6;--k-eb:#22355f;--bar-e:#7d9ef0}
+
+.fl-card{background:var(--card);border:1px solid var(--bd);border-radius:16px;min-width:0}
+.fl-ch{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--bd);font-size:14px;color:var(--mut)}
+.fl-tools{display:inline-flex;gap:8px}
+.fl-xall{height:32px;padding:0 12px;border-radius:999px;border:1px solid var(--bd2);background:var(--card);font:inherit;font-size:13px;font-weight:600;cursor:pointer;color:var(--fg)}
+.fl-sw{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 4px 0 12px;border-radius:999px;border:1px solid var(--bd2);background:var(--card);font:inherit;font-size:13px;font-weight:600;cursor:pointer;color:var(--fg)}
+.fl-sw .fl-kn{width:32px;height:20px;border-radius:999px;background:var(--bd2);position:relative}
+.fl-sw .fl-kn::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .15s}
+.fl-sw[aria-checked=true] .fl-kn{background:#1e8a4c}.fl-sw[aria-checked=true] .fl-kn::after{left:14px}
+.fl-flow{padding:6px 0}
+.fl-foot{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:16px 20px;border-top:1px solid var(--bd);background:var(--soft);border-radius:0 0 16px 16px;font-size:15px;line-height:22px}
+
+/* a row: skill rail · number · body */
+.fl-row,.fl-band{display:grid;grid-template-columns:150px 36px minmax(0,1fr);gap:0 14px;padding:0 20px}
+.fl-band{align-items:center;min-height:40px}
+.fl-rail{position:relative;padding:16px 0 16px 14px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.fl-rail .fl-k{font-size:13px;line-height:18px;font-weight:700}
+.fl-rail .fl-ln{font-size:12px;line-height:16px;color:var(--mut)}
+.fl-rail.same .fl-k,.fl-rail.same .fl-ln{visibility:hidden}
+.fl-bar{position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:2px;background:var(--bd2)}
+.fl-rail.nsk .fl-bar{top:12px} /* a gap where the work moves to another skill */
+.fl-ln2{position:relative;display:flex;justify-content:center}
+.fl-ln2::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:2px;margin-left:-1px;background:var(--bd2)}
+.fl-nn{position:relative;margin-top:14px;display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--card);border:1px solid var(--bd2);font-size:13px;font-weight:700}
+.fl-body{padding:14px 0 16px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.fl-w1{font-size:15px;line-height:21px;font-weight:600}
+.fl-tg{display:inline-flex;align-items:center;height:20px;padding:0 7px;margin-right:8px;border-radius:5px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;vertical-align:2px;background:var(--skipb);color:var(--fg)}
+.fl-tg-act{background:var(--okb);color:var(--ok)}.fl-tg-dec{background:var(--selb);color:var(--acc)}.fl-tg-guard,.fl-tg-need{background:var(--needb);color:var(--need)}
+.fl-tg-next{background:var(--k-rb);color:var(--k-r)}.fl-tg-fail{background:var(--fl-failb);color:var(--fl-fail)}
+.fl-ans{display:inline-flex;align-items:center;height:22px;margin-left:8px;padding:0 9px;border-radius:999px;background:var(--selb);color:var(--acc);font-size:12px;font-weight:600;vertical-align:1px}
+.fl-what{font-size:14px;line-height:20px;color:var(--mut)}
+.fl-res{font-size:14px;line-height:20px;overflow-wrap:anywhere}
+.fl-res.inf{color:var(--mut);font-style:italic}
+.fl-res.one{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--mut)}
+.fl-more{display:flex;flex-direction:column;gap:6px;margin-top:4px;padding-top:8px;border-top:1px dashed var(--bd);font-size:13px;line-height:19px}
+.fl-more img{max-width:100%;border-radius:8px;border:1px solid var(--bd)}
+
+/* step status: the number circle says it */
+.fl-row.st-failed .fl-nn{border-color:var(--fl-fail);background:var(--fl-failb);color:var(--fl-fail)}
+.fl-row.st-failed .fl-res{color:var(--fl-fail)}
+.fl-row.st-needs_user .fl-nn{border-color:var(--need);background:var(--needb);color:var(--need)}
+.fl-row.st-uncertain .fl-nn{border-color:var(--need);color:var(--need)}
+.fl-row.st-skipped .fl-nn{border-style:dashed;color:var(--mut)}
+.fl-row.st-live .fl-nn{border-color:var(--acc);color:var(--acc);animation:fl-pulse 1s infinite}
+@keyframes fl-pulse{50%{opacity:.4}}
+/* a step that ran: a small badge on its number (done ✓, failed ✕, waiting !, not sure ?, left alone –), and a faint
+   line joining the steps that finished. Only rows with a status get one: a path's "what should happen" has none. */
+.fl-row:is(.st-done,.st-failed,.st-needs_user,.st-uncertain,.st-skipped) .fl-nn::after{position:absolute;right:-6px;bottom:-5px;width:15px;height:15px;border-radius:50%;border:2px solid var(--card);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;line-height:1;color:var(--card)}
+.fl-row.st-done .fl-nn{border-color:var(--ok)}
+.fl-row.st-done .fl-nn::after{content:"✓";background:var(--ok)}
+.fl-row.st-failed .fl-nn::after{content:"✕";background:var(--fl-fail)}
+.fl-row.st-needs_user .fl-nn::after{content:"!";background:var(--need)}
+.fl-row.st-uncertain .fl-nn::after{content:"?";background:var(--need)}
+.fl-row.st-skipped .fl-nn::after{content:"–";background:var(--mut)}
+.fl-row.st-done .fl-ln2::before{background:var(--ok);opacity:.35}
+.fl-stg.st-done .fl-nn{background:var(--okb);border-color:var(--okb);color:var(--ok)}
+
+/* stages: a header row per stage; its steps open under it */
+.fl-stg{cursor:pointer;background:none;border:0;width:100%;text-align:left;font:inherit;color:inherit}
+.fl-stg:hover .fl-stt{color:var(--acc)}
+.fl-stg .fl-nn{border-radius:8px;background:var(--selb);border-color:var(--selb);color:var(--acc)}
+.fl-stg.st-failed .fl-nn{background:var(--fl-failb);border-color:var(--fl-failb);color:var(--fl-fail)}
+.fl-stg.st-needs_user .fl-nn{background:var(--needb);border-color:var(--needb);color:var(--need)}
+.fl-stt{font-size:16px;line-height:22px;font-weight:700}
+.fl-chev{display:inline-block;width:16px;color:var(--mut);font-weight:400}
+.fl-stm{font-size:13px;line-height:19px;color:var(--mut);display:flex;flex-wrap:wrap;gap:4px 10px;padding-left:16px}
+.fl-stm .fl-sn{color:var(--need)}
+.fl-stm .fl-ans{margin-left:0}
+.fl-flag{display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.fl-flag.failed{background:var(--fl-failb);color:var(--fl-fail)}.fl-flag.needs_user{background:var(--needb);color:var(--need)}
+.fl-stg .fl-res{padding-left:16px}
+.fl-row.inst .fl-body,.fl-row.inst .fl-rail{padding-top:10px;padding-bottom:10px}
+.fl-row.inst .fl-w1{font-size:14px;font-weight:500}
+.fl-row.inst .fl-nn{width:30px;height:24px;border-radius:12px;font-size:11px;margin-top:8px}
+
+/* hand-off band (Details on): where the work moves to another skill */
+.fl-bd{display:inline-flex;flex-wrap:wrap;align-items:center;gap:8px;justify-self:start;padding:4px 12px;border-radius:999px;font-size:12px;line-height:18px;font-weight:600}
+.fl-bd .fl-h{font-weight:500;opacity:.85}
+
+/* skill colours: rail label, bar, band */
+.fl-k-a{color:var(--k-a)}.fl-k-b{color:var(--k-b)}.fl-k-d{color:var(--k-d)}.fl-k-e{color:var(--k-e)}.fl-k-i{color:var(--k-i)}.fl-k-n{color:var(--k-n)}.fl-k-r{color:var(--k-r)}.fl-k-s{color:var(--k-s)}.fl-k-w{color:var(--k-w)}
+.fl-bar-a{background:var(--bar-a)}.fl-bar-b{background:var(--bar-b)}.fl-bar-d{background:var(--bar-d)}.fl-bar-e{background:var(--bar-e)}.fl-bar-i{background:var(--bar-i)}.fl-bar-n{background:var(--bar-n)}.fl-bar-r{background:var(--bar-r)}.fl-bar-s{background:var(--bar-s)}.fl-bar-w{background:var(--bar-w)}
+.fl-bd-a{background:var(--k-ab);color:var(--k-a)}.fl-bd-b{background:var(--k-bb);color:var(--k-b)}.fl-bd-d{background:var(--k-db);color:var(--k-d)}.fl-bd-e{background:var(--k-eb);color:var(--k-e)}.fl-bd-i{background:var(--k-ib);color:var(--k-i)}.fl-bd-n{background:var(--k-nb);color:var(--k-n)}.fl-bd-r{background:var(--k-rb);color:var(--k-r)}.fl-bd-s{background:var(--k-sb);color:var(--k-s)}.fl-bd-w{background:var(--k-wb);color:var(--k-w)}
+
+@media (max-width:720px){
+  .fl-row,.fl-band{grid-template-columns:36px minmax(0,1fr);padding:0 14px}
+  .fl-row .fl-rail{grid-column:1/-1;padding:12px 0 0 14px}.fl-row .fl-rail.same{display:none}
+  .fl-band>span:first-child{display:none}.fl-ch{padding:12px 14px}}
+
+/* the Workflow outcome box (Steps.outcome), the same on the Builder and the Inbox */
+.pb{display:flex;flex-direction:column;gap:10px;padding:16px 20px 18px;border:1px solid var(--bd);border-radius:16px;background:var(--soft);min-width:0}
+.pbh{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;min-height:30px;font-size:13px;color:var(--mut)}
+.ptx{gap:8px}.ptx>p{margin:0;font-size:14.5px;line-height:22px;color:var(--fg)}
+.ptx .ocr{display:flex;flex-direction:column;gap:2px;margin-top:4px;padding-top:10px;border-top:1px solid var(--bd)}.ptx .ocr-k{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ok);margin-bottom:2px}
+.ptx .ocr-i{display:flex;align-items:center;gap:12px;padding:6px 0}.ptx .ocr-t{flex:1;display:flex;flex-direction:column;min-width:0}.ptx .ocr-t b{font-size:14.5px;font-weight:600}.ptx .ocr-t small{font-size:12.5px;color:var(--mut)}
+.ptx .ocr-b{flex:none;display:inline-flex;align-items:center;height:28px;padding:0 11px;border:1px solid var(--bd2);border-radius:999px;background:var(--card);font-size:12.5px;font-weight:600;color:var(--fg);text-decoration:none}.ptx .ocr-b:hover{border-color:var(--acc)}
+.opill{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:600;background:var(--okb);color:var(--ok)}
+.opill.ask,.opill.check{background:var(--needb);color:var(--need)}.opill.stop{background:var(--fl-failb,#fdecea);color:var(--fl-fail,#b42318)}.opill.info{background:var(--skipb);color:var(--mut)}.opill.next{background:var(--selb);color:var(--acc)}
+.pbh>b{font-size:14px;color:var(--fg)}
+/* the outcome box's buttons (Steps.outcome actsHtml): each copies a line for the Claude chat; the same on both pages */
+/* in the box, what's inside sits on a white panel, like the decisions and steps below it */
+.obody{display:flex;flex-direction:column;gap:8px;padding:14px 16px;border:1px solid var(--bd);border-radius:12px;background:var(--card);min-width:0}
+.obody>p{margin:0;font-size:14.5px;line-height:22px;color:var(--fg)}
+/* the outcome as a headline and a list (Steps.outcome): the label in bold, the value, its reason in grey */
+.ptx .ohl{margin:0;font-size:15px;line-height:22px;font-weight:500;color:var(--fg)}
+.ofl{margin:0;padding:0 0 0 18px;display:flex;flex-direction:column;gap:5px;font-size:14px;line-height:21px;color:var(--fg)}
+.ofl li::marker{color:var(--mut)}.ofl b{font-weight:600}
+.ofl .ofw{color:var(--mut)}.ofl .ofs{display:block;font-size:13px;color:var(--mut);margin-top:1px}
+.ofl li.o-ask::marker,.ofl li.o-ask>b:first-child{color:var(--need)}
+.ofl li.o-bad::marker,.ofl li.o-bad>b:first-child{color:var(--fl-fail,#b42318)}
+.ofl li.o-warn::marker{color:var(--need)}
+.ofl li.o-note{font-size:13px;color:var(--mut)}.ofl li.o-mut{color:var(--mut)}.ofl li.o-mut b{font-weight:500}
+.obare{display:flex;flex-direction:column;gap:8px;min-width:0}
+.ptx .oquote{font-size:13.5px;color:var(--mut);border-left:2px solid var(--bd);padding-left:10px}
+.oacts{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:2px}
+.ocb{height:30px;padding:0 12px;border:1px solid var(--bd2);border-radius:8px;background:var(--card);font:inherit;font-size:13px;color:var(--fg);cursor:pointer}
+.ocb:hover{border-color:var(--fg)}.ocb.pri{border-color:var(--fg);background:var(--fg);color:var(--card);font-weight:600}
+.ocb.done{border-color:var(--ok);background:var(--okb);color:var(--ok)}
+.ocl{margin-left:4px;font-size:13px;color:var(--acc);text-decoration:none}.ocl:hover{text-decoration:underline}
+.ohint{font-size:12px;color:var(--mut)}
+.pbh .otook{margin-left:auto;font-size:12.5px;color:var(--mut)}
+@media (max-width:720px){.pb{padding:14px}}
+
+/* ---------- 0.12 step list: compact two-line rows, quieter stages, a step inspector (README: "Why the step list
+   looks like this"). Later rules on purpose: they override the older look above. ---------- */
+.fl-rail{padding:9px 0 6px 14px}
+.fl-rail .fl-k{font-size:12px;font-weight:600}
+.fl-rail .fl-ln{display:none}
+.fl-bar{width:3px;opacity:.45}
+.fl-nn,.fl-row.inst .fl-nn{margin-top:7px}
+.fl-body,.fl-row.inst .fl-body{padding:6px 0 7px 4px;gap:1px}
+.fl-row.inst .fl-rail{padding-top:9px;padding-bottom:6px}
+.fl-w1,.fl-row.inst .fl-w1{font-size:14.5px;line-height:21px;font-weight:500}
+.fl-kd{display:inline-block;width:64px;font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);vertical-align:1px}
+.fl-kd.fail{color:var(--fl-fail)}
+.fl-sub{padding-left:64px;font-size:13.5px;line-height:19px;color:var(--mut);overflow-wrap:anywhere}
+.fl-row.st-failed .fl-sub{color:var(--fl-fail)}
+.fl-row.fl-tap{cursor:pointer}
+.fl-row.fl-tap:hover .fl-w1{color:var(--acc)}
+.fl-row[aria-expanded=true] .fl-w1{color:var(--acc)}
+.fl-body .sublnk{align-self:flex-start;margin-left:64px}
+/* stages are buckets: a muted title and a count, so the steps inside lead */
+.fl-stg .fl-body{padding:14px 0 4px}
+.fl-stg .fl-nn{width:24px;height:24px;margin-top:12px;border-radius:7px;font-size:12px;background:var(--soft);border-color:var(--bd);color:var(--mut)}
+.fl-stg.st-done .fl-nn{background:var(--okb);border-color:var(--okb);color:var(--ok)}
+.fl-stt{display:flex;align-items:center;gap:6px;font-size:14.5px;line-height:22px;font-weight:600;color:var(--mut)}
+.fl-stc{margin-left:4px;font-size:12.5px;font-weight:400;color:var(--mut)}
+.fl-stt .fl-flag{margin-left:6px}
+.fl-chev{width:12px;font-size:10px}
+/* the inspector: full width under its row */
+.fl-insp-w{grid-column:1/-1;position:relative;z-index:1;padding:2px 0 10px}
+.fl-insp{border:1px solid var(--bd2);border-radius:12px;background:var(--card);overflow:hidden;box-shadow:0 1px 3px rgba(20,20,19,.06);cursor:auto}
+.fl-ih{display:flex;align-items:center;gap:2px;padding:0 6px 0 10px;border-bottom:1px solid var(--bd);background:var(--soft)}
+.fl-tabs{display:flex}
+.fl-tab{height:38px;padding:0 10px;border:0;border-bottom:2px solid transparent;background:none;font:inherit;font-size:13px;font-weight:600;color:var(--mut);cursor:pointer}
+.fl-tab.on{color:var(--fg);border-bottom-color:var(--fg)}
+.fl-tabl{display:flex;align-items:center;height:38px;padding:0 10px;box-sizing:border-box;border-bottom:2px solid var(--fg);font-size:13px;font-weight:600}
+.fl-imeta{margin-left:auto;font-size:12px;color:var(--mut)}
+.fl-ix{width:30px;height:30px;margin-left:6px;border:0;border-radius:8px;background:none;color:var(--mut);font-size:17px;cursor:pointer}
+.fl-ix:hover{background:var(--bd)}
+.fl-sm,.fl-lg{display:flex;flex-direction:column;padding:2px 16px}
+.fl-smr,.fl-lgr{display:grid;grid-template-columns:120px minmax(0,1fr);gap:14px;padding:12px 0;border-top:1px solid var(--bd)}
+.fl-smr:first-child,.fl-lgr:first-child{border-top:0}
+.fl-smk,.fl-lgk{font-size:12.5px;font-weight:600;line-height:21px;color:var(--mut)}
+.fl-smt,.fl-lgt{font-size:14.5px;line-height:22px;color:var(--fg);overflow-wrap:anywhere}
+.fl-how{font-size:13.5px;color:var(--mut)}
+.fl-chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 6px}
+.fl-chip{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:999px;background:var(--skipb);font-size:12.5px;font-weight:500;color:var(--fg)}
+.fl-warnb{display:block;margin-top:8px;padding:8px 11px;border-radius:9px;background:var(--needb);color:var(--need);font-size:13.5px;line-height:20px}
+.fl-iempty{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:14px 16px;font-size:14px;line-height:21px}
+.fl-lbtn{display:block;margin-top:6px;padding:0;border:0;background:none;font:inherit;font-size:13px;font-weight:600;color:var(--acc);cursor:pointer}
+.fl-rule{margin:8px 0 0;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--soft);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;line-height:18px;white-space:pre-wrap;overflow-wrap:anywhere}
+.fl-opts{display:flex;flex-direction:column;border:1px solid var(--bd);border-radius:8px;overflow:hidden}
+.fl-opt{display:grid;grid-template-columns:minmax(0,170px) minmax(0,1fr) auto;gap:12px;padding:7px 11px;border-top:1px solid var(--bd);font-size:13.5px;line-height:20px}
+.fl-opt:first-child{border-top:0}
+.fl-opt .fl-ow{color:var(--mut)}
+.fl-opt.on{background:var(--selb)}.fl-opt.on .fl-ow{color:var(--acc);font-weight:600}
+.fl-this{font-size:10.5px;font-weight:700;letter-spacing:.04em;color:var(--acc)}
+.fl-io{display:flex;flex-direction:column;padding:10px 14px 12px}
+.fl-inote{margin:0 0 8px;font-size:12.5px;line-height:18px;color:var(--mut)}
+.fl-colh{display:flex;align-items:center;gap:8px;margin:0 0 5px;font-size:13px;font-weight:600}
+.fl-cnt{font-size:12px;font-weight:400;color:var(--mut)}
+.fl-vseg{margin-left:auto;display:inline-flex;border:1px solid var(--bd2);border-radius:7px;overflow:hidden}
+.fl-vseg button{height:22px;padding:0 8px;border:0;background:var(--card);font:inherit;font-size:11px;font-weight:600;color:var(--mut);cursor:pointer}
+.fl-vseg button.on{background:var(--fg);color:var(--card)}
+.fl-kv{border:1px solid var(--bd);border-radius:8px;overflow:hidden}
+.fl-kvr{display:grid;grid-template-columns:minmax(0,140px) minmax(0,1fr);gap:12px;padding:5px 10px;border-top:1px solid var(--bd);font-size:13.5px;line-height:20px}
+.fl-kvr:first-child{border-top:0}
+.fl-kvr.warn{background:var(--needb)}
+.fl-kk{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;color:var(--mut)}
+.fl-kvv{overflow-wrap:anywhere}
+.fl-flagt{margin-left:8px;font-size:12px;font-weight:600;color:var(--need)}
+.fl-json{margin:0;padding:8px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--soft);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;line-height:18px;white-space:pre-wrap;overflow-wrap:anywhere}
+.fl-arr{padding:3px 0 3px 10px;color:var(--mut);font-size:14px}
+@media (max-width:720px){
+  .fl-kd{width:auto;margin-right:8px}.fl-sub{padding-left:0}.fl-body .sublnk{margin-left:0}
+  .fl-smr,.fl-lgr{grid-template-columns:1fr;gap:2px}.fl-kvr{grid-template-columns:1fr;gap:0}}
+
+/* a draft's change marks (README: "Editing"): NEW, CHANGED, REMOVED against the last version; GUESS and OPEN while
+   a new workflow is being drafted. The row is tinted, the number ringed, a small label follows the title. */
+.fl-mk{display:inline-flex;align-items:center;height:18px;margin-left:8px;padding:0 6px;border-radius:5px;font-size:9.5px;font-weight:700;letter-spacing:.05em;vertical-align:1px}
+.fl-m-new,.fl-m-guess{background:color-mix(in srgb,var(--ok) 7%,transparent)}
+.fl-m-new .fl-nn,.fl-m-guess .fl-nn{border-color:var(--ok);color:var(--ok)}
+.fl-mk-new{background:var(--okb);color:var(--ok)}
+.fl-m-chg{background:color-mix(in srgb,var(--acc) 7%,transparent)}
+.fl-m-chg .fl-nn{border-color:var(--acc);color:var(--acc)}
+.fl-mk-chg{background:var(--selb);color:var(--acc)}
+.fl-m-del .fl-w1,.fl-m-del .fl-sub{text-decoration:line-through;color:var(--mut)}
+.fl-m-del .fl-nn{border-style:dashed;color:var(--mut)}
+.fl-mk-del{background:var(--fl-failb);color:var(--fl-fail);text-decoration:none}
+.fl-m-guess .fl-nn{border-style:dashed}
+.fl-m-guess .fl-w1{font-style:italic}
+.fl-mk-guess{border:1px dashed var(--bd2);color:var(--mut)}
+/* MOVED: a condition the user put in "when", moved from the trigger into the workflow (rule 30), with why */
+.fl-m-moved{background:color-mix(in srgb,var(--acc) 6%,transparent)}
+.fl-m-moved .fl-nn{border-color:var(--acc);color:var(--acc)}
+.fl-mk-moved{background:var(--selb);color:var(--acc)}
+.fl-mvy{display:block;margin-top:1px;font-size:12px;font-weight:400;font-style:italic;color:var(--mut)}
+.fl-m-ask{background:color-mix(in srgb,var(--need) 8%,transparent)}
+.fl-m-ask .fl-nn{border-color:var(--need);background:var(--needb);color:var(--need)}
+.fl-m-ask .fl-w1,.fl-m-ask .fl-sub{color:var(--need)}
+.fl-mk-ask{background:var(--needb);color:var(--need)}
+/* the last change to a draft (JUST ADDED / CHANGED / REMOVED), and in a run what changed since the last run on the item */
+.fl-m-just-new,.fl-m-just-chg{background:color-mix(in srgb,#8f7ae0 11%,transparent)}
+.fl-m-just-new .fl-nn,.fl-m-just-chg .fl-nn{border-color:#8f7ae0;color:#8f7ae0}
+.fl-mk-just-new,.fl-mk-just-chg,.fl-mk-just-del{background:color-mix(in srgb,#8f7ae0 22%,var(--card));color:var(--fg)}
+.fl-m-just-del .fl-w1,.fl-m-just-del .fl-sub{text-decoration:line-through;color:var(--mut)}
+.fl-m-just-del .fl-nn{border-style:dashed;color:var(--mut)}
+.fl-m-since{background:color-mix(in srgb,var(--acc) 8%,transparent)}
+.fl-mk-since{background:var(--selb);color:var(--acc)}
+.fl-was{padding-left:64px;font-size:12.5px;line-height:18px;color:var(--fl-fail);text-decoration:line-through}
+@media (max-width:720px){.fl-was{padding-left:0}}
+
+/* a workflow's trigger, drawn as its first block (rule 17): tinted, tagged, T-numbered; then a divider into each run */
+/* the trigger and the workflow as a matching pair: each stage a subtle tint of its own colour (amber trigger, blue
+   workflow, the same as the Trigger and Workflow chips above it), its steps a fainter one */
+.fl-grp{min-width:0}  /* rows paint no background of their own, so the block's tint runs behind all of them */
+.fl-grp.fl-g-trg{background:color-mix(in srgb,var(--need) 6%,transparent)}.fl-g-trg>.fl-stg{background:color-mix(in srgb,var(--need) 7%,transparent)}
+.fl-grp.fl-g-wf{background:color-mix(in srgb,var(--acc) 6%,transparent)}.fl-g-wf>.fl-stg{background:color-mix(in srgb,var(--acc) 7%,transparent)}
+.fl-row.fl-trg .fl-nn{font-weight:700}
+.fl-trgtag,.fl-wftag{display:inline-flex;align-items:center;height:20px;padding:0 7px;margin-right:8px;border-radius:5px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.fl-trgtag{background:var(--needb);color:var(--need)}.fl-wftag{background:var(--selb);color:var(--acc)}
+.fl-fan{display:flex;align-items:center;gap:10px;padding:10px 16px;color:var(--mut);font-size:13px}
+.fl-fan:before,.fl-fan:after{content:"";flex:1;height:1px;background:var(--bd2)}
+.fl-fan b{color:var(--fg);font-weight:600}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--trgb:#14262a}}:root[data-theme=dark]{--trgb:#14262a}
+
+/* a step inside another step (a part written as code): indented under it */
+.fl-row.fl-nest .fl-body{padding-left:18px;border-left:2px solid var(--bd);margin-left:6px}
+.fl-row.fl-nest .fl-nn{font-size:12px;color:var(--mut)}
+.fl-codeh{display:block;margin-top:4px;font-size:12.5px;color:var(--mut)}
+
+/* a trigger's four slots (rule 30, workflow-viewer trigger stage): what it finds; every decision is the workflow's */
+.fl-slots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:6px 0 10px 56px}
+.fl-slots>div{display:flex;flex-direction:column;gap:2px;min-width:0;padding:8px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--card)}
+.fl-slots span{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--mut)}
+.fl-slots b{font-size:12.5px;font-weight:500;line-height:17px;color:var(--fg);overflow-wrap:anywhere}
+@media (max-width:700px){.fl-slots{grid-template-columns:repeat(2,minmax(0,1fr));margin-left:0}}
+
+
+/* ---------- the calm layout (Steps.calm, the Workflow Viewer) ---------- */
+.c-sg{border-top:1px solid var(--bd)}.c-sg:first-child{border-top:0}
+.c-sh{display:grid;grid-template-columns:22px minmax(0,auto) minmax(0,1fr) 12px;gap:10px;align-items:center;width:100%;padding:11px 16px;background:none;border:0;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.c-sh:hover{background:var(--soft)}
+.c-n{width:20px;height:20px;border-radius:50%;font-size:11px;display:grid;place-items:center;color:var(--mut);border:1px solid var(--bd2)}
+.c-n.ok{background:var(--okb);color:var(--ok);border-color:transparent}
+.c-n.need{background:var(--needb);color:var(--need);border-color:transparent;font-weight:700}
+.c-n.fail{background:var(--fl-failb);color:var(--fl-fail);border-color:transparent;font-weight:700}
+.c-stt{font-weight:600;white-space:nowrap;display:inline-flex;align-items:center;min-width:0}
+.c-tg{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);border:1px solid var(--bd2);border-radius:4px;padding:0 5px;margin-right:8px}
+.c-so{color:var(--mut);font-size:13px;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.c-so.need{color:var(--need);font-weight:600}.c-so.fail{color:var(--fl-fail);font-weight:600}
+.c-cv{color:var(--mut);opacity:.6;font-size:12px;transition:transform .15s}.c-sg.open>.c-sh .c-cv{transform:rotate(90deg)}
+.c-sg.skip .c-stt,.c-sg.skip .c-so{color:var(--mut);opacity:.6;font-weight:400}
+.c-sb{padding:0 16px 10px 48px}
+.c-flat{padding:4px 16px 8px}
+.c-ln{display:grid;grid-template-columns:16px minmax(0,1fr) auto;gap:10px;align-items:center;min-height:28px;padding:2px 6px;margin:0 -6px;border-radius:6px;width:calc(100% + 12px);background:none;border:0;color:inherit;font:inherit;text-align:left}
+.c-tap,.c-fl{cursor:pointer}.c-tap:hover,.c-fl:hover{background:var(--soft)}
+.c-st.open>.c-ln{background:var(--soft)}
+.c-ic{width:16px;text-align:center;color:var(--mut);opacity:.65;font-size:12px}
+.c-ic-dec{color:var(--acc);opacity:1;font-size:11px}.c-ic-fail{color:var(--fl-fail);opacity:1}.c-ic-code{font-size:10px}
+.c-ic-live{color:var(--acc);opacity:1;animation:cpulse 1.2s ease-in-out infinite}
+@keyframes cpulse{50%{opacity:.3}}
+.c-tx{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;min-width:0}
+.c-fl .c-tx{color:var(--mut)}
+.c-rt{display:flex;justify-content:flex-end;min-width:0}
+.c-r{font-size:13px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:280px}
+.c-r.need{color:var(--need);font-weight:600}
+.c-a{font-size:12.5px;font-weight:600;color:var(--acc);background:var(--selb);border-radius:6px;padding:1px 8px;white-space:nowrap;max-width:260px;overflow:hidden;text-overflow:ellipsis}
+.c-a.need{color:var(--need);background:var(--needb)}.c-a.fail{color:var(--fl-fail);background:var(--fl-failb)}
+.c-none{color:var(--mut);opacity:.7;font-size:12.5px;white-space:nowrap}
+.c-mk{font-size:10.5px;font-weight:600;color:var(--acc);border:1px solid currentColor;border-radius:4px;padding:0 4px;margin-left:8px;white-space:nowrap;opacity:.85}
+.c-mk-del,.c-mk-just-del{color:var(--fl-fail)}.c-mk-guess,.c-mk-ask,.c-mk-moved{color:var(--need)}
+.c-del .c-tx{text-decoration:line-through;opacity:.6}
+.c-kb{margin-left:8px;font-size:12px;color:var(--mut);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline dotted;white-space:nowrap}
+.c-kids{margin:0 0 4px 26px;padding-left:10px;border-left:1.5px solid var(--bd)}
+.c-kl{min-height:24px;font-size:13px}
+.c-fb{padding-left:26px}
+.c-br{margin-left:7px;padding-left:18px;border-left:1.5px solid var(--bd2)}
+.c-bw{font-size:12px;color:var(--mut);opacity:.75;padding-top:2px}
+.c-fan{font-size:12.5px;color:var(--mut);padding:6px 0 2px}
+.c-slots{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12.5px;color:var(--fg);padding:4px 0 6px}
+.c-slots i{font-style:normal;color:var(--mut)}
+.c-was{margin:0 0 4px 26px;font-size:12px;color:var(--need)}
+.c-ex{margin:0 0 6px 26px;font-size:12.5px}
+.c-insp{margin:2px 0 8px}
+.c-det{display:grid;grid-template-columns:62px minmax(0,1fr);gap:3px 12px;margin:0 0 8px 26px;padding:8px 12px;border-radius:8px;background:var(--soft);font-size:12.5px;line-height:17px}
+.c-dk{color:var(--mut);opacity:.75;font-size:11px;text-transform:uppercase;letter-spacing:.04em;padding-top:1px}
+.c-dv{color:var(--mut);min-width:0;overflow-wrap:anywhere}
+.c-mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;color:var(--fg)}
+.c-an{display:block}.c-an b{font-weight:500;color:var(--fg)}.c-an.on b{color:var(--acc);font-weight:600}.c-an.off{opacity:.55}
+.c-ii{display:inline-grid;place-items:center;flex:none;width:14px;height:14px;margin-left:7px;border:1px solid var(--bd2);border-radius:50%;font:italic 600 9px/1 Georgia,serif;color:var(--mut);opacity:.45;cursor:help}
+.c-ln:hover .c-ii,.c-sh:hover .c-ii,.c-dl:hover .c-ii{opacity:.8}.c-ii:hover,.c-ii:focus{opacity:1;color:var(--fg);border-color:var(--mut);outline:none}
+.c-tip{position:fixed;z-index:50;max-width:260px;padding:6px 9px;border-radius:7px;background:var(--fg);color:var(--bg);font-size:12px;line-height:16px;pointer-events:none;opacity:0;transition:opacity .12s;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.c-tip.on{opacity:1}
+/* the Simple / Detail switch */
+.c-seg{display:inline-flex;border:1px solid var(--bd);border-radius:8px;padding:2px;gap:2px}
+.c-seg button{font:inherit;font-size:12.5px;padding:3px 10px;border-radius:6px;border:0;background:none;color:var(--mut);cursor:pointer}
+.c-seg button[aria-pressed=true]{background:var(--selb);color:var(--fg);font-weight:600}
+.c-off{cursor:default}.c-off:hover{background:none}
+/* the outcome as a timeline (Steps.flowBox), the same on both pages: a summary, the steps that mattered, a tally.
+   The status shows three ways: a dot by the title, a dot before the summary, and the box's left edge
+   (green: ran clean; amber: needs you or worth a look; red: failed or stopped) */
+.oflow{--rc:var(--ok)}.oflow .odot{width:9px;height:9px;border-radius:50%;background:var(--rc);box-shadow:0 0 0 4px color-mix(in srgb,var(--rc) 18%,transparent);margin-right:2px;flex:none}
+.oflow .ores{gap:0;padding:0;overflow:hidden}
+.oflow:has(.ores.need),.ores.need{--rc:var(--need)}.oflow:has(.ores.fail),.ores.fail{--rc:var(--fl-fail,#b42318)}.oflow:has(.ores.run),.ores.run{--rc:var(--acc)}
+.oflow .osum{margin:0;padding:14px 18px 10px;font-size:15px;line-height:22px;color:var(--fg)}
+.oflow .ofacts{margin:0 18px 6px 18px;font-size:13.5px;line-height:20px;color:var(--mut)}.oflow .ofacts b{color:var(--fg)}
+.oflow .ef{position:relative;padding:4px 18px 14px}
+.oflow .ef::before{content:"";position:absolute;left:27.5px;top:18px;bottom:28px;width:1px;background:var(--bd2)}
+.oflow .efn{position:relative;display:grid;grid-template-columns:20px minmax(0,1fr) auto;gap:12px;align-items:start;padding:7px 0}
+.oflow .ef.sm .efn{padding:8px 0}.oflow .ef.sm .efn.quiet{padding:5px 0}
+.oflow .efn>div{display:flex;flex-direction:column;gap:2px;font-size:13.5px;line-height:19px;min-width:0}.oflow .efn small{color:var(--mut);font-size:12.5px;line-height:17px}
+.oflow .efn b{font-weight:600;color:var(--fg)}
+.oflow .efd{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;border:1px solid var(--bd2);background:var(--card);color:var(--mut);z-index:1}
+.oflow .efk{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--faint,var(--mut));font-weight:600}
+.oflow .efn.ask .efd,.oflow .efn.issue .efd,.oflow .efn.stop .efd{background:var(--needb);color:var(--need);border-color:var(--need)}.oflow .efn.ask b,.oflow .efn.issue b,.oflow .efn.stop b{color:var(--need)}
+.oflow .efn.error .efd{background:var(--fl-failb,#fdecea);color:var(--fl-fail,#b42318);border-color:var(--fl-fail,#b42318)}.oflow .efn.error b{color:var(--fl-fail,#b42318)}
+.oflow .efn.made .efd,.oflow .efn.changed .efd{color:var(--fg)}.oflow .efn.next .efd{color:var(--acc);border-color:var(--acc)}
+.oflow .efn.quiet .efd{border-style:dashed;color:var(--ok);font-size:10px}.oflow .efn.quiet small{color:var(--faint,var(--mut))}
+.oflow .efn.end .efd{background:var(--soft);font-size:8px}.oflow .tally{font-size:13.5px;color:var(--fg)}.oflow .t-need{color:var(--need)}.oflow .t-fail{color:var(--fl-fail,#b42318)}
+.oflow .efa{margin-top:6px}.oflow .efa .ohint{display:block;margin-top:4px}
+.oflow .olk{align-self:center;font-size:12.5px;color:var(--acc);text-decoration:none;border:1px solid var(--bd);border-radius:999px;padding:3px 10px;white-space:nowrap}.oflow .olk:hover{border-color:var(--acc)}
+.oflow .ores>.oacts,.oflow .ores>.ohint{margin:0 18px 14px}
+.oflow .efn.haspv{align-items:center}.oflow .efn>.efm{display:flex;flex-direction:row;align-items:center;gap:14px;min-width:0}.oflow .efm>div{display:flex;flex-direction:column;gap:2px;font-size:13.5px;line-height:19px;min-width:0}
+.oflow .opv{flex:none;width:96px;height:64px;border-radius:6px;border:1px solid var(--bd);background:var(--card);overflow:hidden;display:block}
+.oflow .opv img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+.oflow .opvt{box-sizing:border-box;padding:6px 8px;display:flex;flex-direction:column;gap:2px;font-size:9px;line-height:1.25;color:var(--mut)}
+.oflow .opvt span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.oflow .opvt .opvh{color:var(--fg);font-weight:600}
+.obare.oflow .ores{border:0;background:none;border-radius:0}
+
+/* the run page design: a status band at the top of the outcome (no edge, no dot), section icons, item kinds, step times */
+.oflow .oband{display:flex;align-items:center;gap:8px;padding:8px 18px;font-size:12.5px;font-weight:600;color:var(--rc);background:color-mix(in srgb,var(--rc) 8%,var(--card));border-bottom:1px solid color-mix(in srgb,var(--rc) 18%,transparent)}
+.obare.oflow .oband{border-radius:8px;border-bottom:0;margin:0 0 4px}
+.secic{flex:none;color:var(--fg);margin-right:-2px}
+.kic{flex:none;color:var(--faint,var(--mut))}
+.c-ln .c-tk,.c-trow .c-tk{font-size:12px;color:var(--faint,var(--mut));text-align:right;min-width:44px;margin-left:12px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.c-rt{align-items:baseline}
+/* the box under every outcome on the Inbox: the way to the full run, a component of its own */
+.ocard{display:flex;flex-direction:column;min-width:0}
+.obld{display:flex;flex-wrap:wrap;gap:8px}
+.obld .obtn{gap:7px;display:inline-flex;align-items:center;height:32px;padding:0 14px;border:1px solid var(--bd2);border-radius:999px;background:var(--card);font-size:13px;font-weight:600;color:var(--fg);text-decoration:none}
+.obld .obtn:hover{border-color:var(--acc);color:var(--acc)}
+
+/* a line's explainer: under a stage once it is open, under every line in Detail, never by default */
+.c-stt .c-stl{display:flex;align-items:center;min-width:0}
+.c-sh .c-stt:has(.c-sub){display:flex;flex-direction:column;align-items:flex-start;gap:1px}
+.c-sub{display:block;font-size:12.5px;line-height:17px;font-weight:400;color:var(--faint,var(--mut));white-space:normal}
+.c-lsub{margin:-2px 0 4px 26px;font-size:12.5px;line-height:17px;color:var(--faint,var(--mut))}
+.c-fl .c-fn{color:var(--faint,var(--mut));font-weight:400;margin-left:4px}
+/* a short workflow drawn like stage lines (flatNum) */
+.c-flatn .c-sh.c-nl{cursor:default}.c-flatn .c-sh.c-nl.c-tap{cursor:pointer}
+.c-flatn .c-n.c-nd{color:var(--acc);font-size:10px}
+.c-flatn .c-gate{border-top:0}.c-flatn .c-gate+.c-sg{border-top:0}
+.c-flatn .c-sh.c-gl{margin:0 0 0 30px;width:calc(100% - 30px);padding:5px 16px 5px 12px;border-left:2px solid var(--acc);grid-template-columns:14px minmax(0,auto) minmax(0,1fr) 12px;cursor:default}.c-flatn .c-sh.c-gl.c-tap{cursor:pointer}
+.c-flatn .c-gk{color:var(--acc);font-size:10px;text-align:center}
+.c-flatn .c-gl .c-stt{display:flex;flex-direction:column;align-items:flex-start;gap:1px;min-width:0;text-align:left}.c-flatn .c-gl .c-stl{font-weight:500;font-size:13px;justify-content:flex-start}
+.c-flatn .c-nb .c-nbl{padding-left:44px;padding-right:30px;width:calc(100% - 12px)}.c-flatn .c-nbl .c-rt{min-width:0}.c-flatn .c-nbl .c-none{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.c-flatn .c-nbk{color:var(--faint,var(--mut));width:16px;text-align:center}
+.c-flatn .c-nls{margin-left:52px}
+.c-mdot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;flex:none;background:var(--acc)}
+.c-mdot.c-mk-new,.c-mdot.c-mk-just-new{background:#1F9D55}.c-mdot.c-mk-guess,.c-mdot.c-mk-ask{background:var(--need)}.c-mdot.c-mk-del,.c-mdot.c-mk-just-del{background:var(--fl-fail,#b42318)}
+.c-so .c-tk{margin-left:12px;font-size:12px;color:var(--faint,var(--mut));font-variant-numeric:tabular-nums}
+/* the step panel (the step details design) */
+.fi2 .fl-ih.solo{justify-content:flex-end;min-height:30px;border-bottom:0}
+.fi2 .fi-b{display:flex;flex-direction:column;gap:8px;padding:12px 14px 14px}
+.fi2 .fi-p{margin:0;font-size:14px;line-height:21px;color:var(--fg)}.fi2 .fi-p.mut{color:var(--mut)}.fi2 .fi-p.sm{font-size:12.5px;line-height:18px}
+.fi2 .fi-note{margin:0;padding:7px 10px;border-radius:8px;background:var(--needb);color:var(--need);font-size:13px;line-height:19px}.fi2 .fi-note b{font-weight:600}
+.fi2 .fi-note.failed{background:var(--fl-failb,#fdecea);color:var(--fl-fail,#b42318)}
+.fi2 .fi-chips{display:flex;flex-wrap:wrap;gap:4px}.fi2 .fi-chips span{padding:1px 8px;border-radius:999px;background:var(--soft);border:1px solid var(--bd);font-size:12px}
+.fi2 .fi-io{display:grid;grid-template-columns:34px minmax(0,1fr);gap:4px 12px;font-size:13px;line-height:19px}
+.fi2 .fi-sd{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--faint,var(--mut));padding-top:1px}
+.fi2 .fi-kv{min-width:0;overflow-wrap:anywhere}.fi2 .fi-kv i{font-style:normal;color:var(--faint,var(--mut))}.fi2 .fi-kv.warn{color:var(--need)}.fi2 .fi-kv em{display:block;font-style:normal;font-size:12px;color:var(--need)}
+.fi2 .fi-opts{display:flex;flex-direction:column;gap:2px;font-size:13.5px}.fi2 .fi-opts span{padding:3px 8px;margin:0 -8px;border-radius:6px}
+.fi2 .fi-opts b{font-weight:600}.fi2 .fi-opts i{font-style:normal;color:var(--mut)}.fi2 .fi-opts .on{background:var(--selb)}.fi2 .fi-opts .on b{color:var(--acc)}
+.fi2 .fi-opts small{margin-left:6px;font-size:11px;font-weight:600;color:var(--acc)}
+.fi2 .fi-lk{align-self:flex-start;border:0;background:none;padding:0;font:inherit;font-size:12.5px;font-weight:600;color:var(--acc);cursor:pointer}
+.fi2 .fi-rule{margin:0;padding:8px 12px;border-left:3px solid var(--bd2);background:var(--soft);border-radius:0 8px 8px 0;font-size:13px;line-height:20px;color:var(--mut);white-space:pre-wrap}
+/* frame A: a soft card under its step, no lines inside, the tabs a small switch */
+.fl-insp.fi2{border:0;box-shadow:none;border-radius:10px;background:var(--soft);margin:6px 0 8px}
+.fi2 .fi-h{display:flex;align-items:center;gap:10px;padding:10px 10px 0 12px}
+.fi2 .fi-tabs{display:inline-flex;gap:2px;padding:2px;border:1px solid var(--bd);border-radius:8px;background:var(--card)}
+.fi2 .fi-tabs button{border:0;padding:2px 10px;border-radius:6px;background:none;font:inherit;font-size:12.5px;font-weight:500;color:var(--mut);cursor:pointer}
+.fi2 .fi-tabs button.on{background:var(--selb);color:var(--fg);font-weight:600}
+.fi2 .fi-meta{margin-left:auto;font-size:11.5px;color:var(--faint,var(--mut))}
+.fi2 .fi-x{border:0;background:none;font-size:15px;color:var(--faint,var(--mut));cursor:pointer;padding:0 4px}.fi2 .fi-x:hover{color:var(--fg)}
+.fi2 .fi-b{padding:10px 12px 14px}
+.fi2 .fi-lab{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--faint,var(--mut));margin-top:2px}
+.fi2 .fi-rows{display:flex;flex-direction:column;border:1px solid var(--bd);border-radius:8px;background:var(--card)}
+.fi2 .fi-rows>div{display:grid;grid-template-columns:120px minmax(0,1fr);gap:10px;padding:7px 10px;font-size:13px;line-height:19px}.fi2 .fi-rows>div+div{border-top:1px solid var(--soft)}
+.fi2 .fi-rows>div>span:first-child{color:var(--faint,var(--mut));overflow-wrap:anywhere}.fi2 .fi-rows>div>span:last-child{overflow-wrap:anywhere}
+.fi2 .fi-rows .warn>span:last-child{color:var(--need)}.fi2 .fi-rows em{display:block;font-style:normal;font-size:12px;color:var(--need)}
+.fi2 .fi-lks{display:flex;gap:14px}
+.fi2 .fi-q{font-weight:600}
+.fi2 .fi-this{display:flex;flex-direction:column;gap:2px;padding:8px 10px;border-radius:8px;background:var(--selb);font-size:13.5px}
+.fi2 .fi-this>span{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--acc)}.fi2 .fi-this b{font-weight:600}.fi2 .fi-this i{font-style:normal;color:var(--mut)}
+.fi2 .fi-oth{color:var(--faint,var(--mut))}
+.fi2 .fi-optl{display:flex;flex-direction:column;gap:3px;font-size:13.5px}.fi2 .fi-optl b{font-weight:600}.fi2 .fi-optl i{font-style:normal;color:var(--mut)}
+/* the trigger's tile, where a stage has its number (the same stage line otherwise) */
+.fl-card .c-sg .c-n.c-ntile,.c-sg .c-n.c-ntile{border:0;border-radius:7px;background:var(--needb,#fbf0dc);color:var(--need,#9a5b00)}
+.c-sg .c-n.c-ntile .kic{width:13px;height:13px;color:inherit}
+.c-sb .c-tnote{padding:0 16px 6px 48px;font-size:12.5px;color:var(--faint,var(--mut))}
+/* a panel with one tab and no status: no header row, the × sits in the corner beside the text */
+.fi2.fi-bare{position:relative}.fi2.fi-bare .fi-h{position:absolute;top:8px;right:8px;padding:0}.fi2.fi-bare .fi-b{padding:12px 36px 14px 12px}
+/* a short workflow's step panel sits under its title (past the number), above the line that joins the steps */
+.c-flatn .c-insp{margin:2px 16px 10px 48px;position:relative;z-index:3}
+
+/* a run waiting on you: what it would do, above its Yes / No */
+.oask{flex-basis:100%;display:flex;flex-direction:column;gap:2px;font-size:12px;margin-bottom:6px}.oask-r{overflow-wrap:anywhere}.oask-k{opacity:.65}
+
+/* the outcome box's Warnings tab (steps.js warnBody): the run reviewer's path warnings for this run */
+/* [✓ Done] [⚠ 1 warning] in the status band */
+.oflow .owband{gap:6px;padding:6px 12px}
+.owband .obst,.owband .obw{display:inline-flex;align-items:center;gap:7px;height:28px;padding:0 10px;border:1px solid transparent;border-radius:999px;background:none;font:inherit;font-weight:600;color:inherit;cursor:pointer;text-decoration:none}
+.owband span.obst{cursor:default}
+.owband .obst[aria-pressed=true]{background:var(--card);border-color:color-mix(in srgb,var(--rc) 30%,transparent)}
+.owband .obw{color:#8A4B00;background:#FFF3DC;border-color:#F1D6A6}
+.owband .obw[aria-pressed=true]{background:#FCE4B5;border-color:#E3B66A}
+.owband .obw:hover{border-color:#D9A24A}
+.owti{display:inline-flex}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .owband .obw{color:#f6c77d;background:#3a2c17;border-color:#5c4422}:root:not([data-theme=light]) .owband .obw[aria-pressed=true]{background:#4a3417;border-color:#7a5a2c}}
+:root[data-theme=dark] .owband .obw{color:#f6c77d;background:#3a2c17;border-color:#5c4422}:root[data-theme=dark] .owband .obw[aria-pressed=true]{background:#4a3417;border-color:#7a5a2c}
+/* info: light blue (i) instead of the amber triangle */
+.owband .obw.owinfo{color:#1F5F8F;background:#E6F3FC;border-color:#B9DCF3}.owband .obw.owinfo[aria-pressed=true]{background:#D2EAFA;border-color:#8CC4EA}.owband .obw.owinfo:hover{border-color:#6FB2E2}
+.owarn.owinfo>.owi{color:#2B7BB9}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .owband .obw.owinfo{color:#9fd2f5;background:#15293a;border-color:#24435c}:root:not([data-theme=light]) .owband .obw.owinfo[aria-pressed=true]{background:#1b344a;border-color:#335c7d}:root:not([data-theme=light]) .owarn.owinfo>.owi{color:#7cc0ef}}
+:root[data-theme=dark] .owband .obw.owinfo{color:#9fd2f5;background:#15293a;border-color:#24435c}:root[data-theme=dark] .owband .obw.owinfo[aria-pressed=true]{background:#1b344a;border-color:#335c7d}:root[data-theme=dark] .owarn.owinfo>.owi{color:#7cc0ef}
+.owbody{display:flex;flex-direction:column;gap:10px;padding:14px 18px}
+.owarn{display:flex;gap:10px;padding:12px 14px;border:1px solid var(--bd);border-radius:10px;background:var(--card)}
+.owarn .owi,.owarn>.owi{flex:none;margin-top:2px}.owarn b{font-size:14px}.owarn p{margin:4px 0 0;font-size:13.5px}
+.owarn .owfix{color:var(--mut);font-size:13px}.owarn .owfix b{font-size:13px;color:var(--fg)}
+.owacts{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.owall{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}.owall>span{color:var(--mut);font-size:13px;font-weight:600}.owall .owacts{margin-top:0}
+.owall .obtn:disabled{opacity:.45;cursor:default;border-color:var(--bd2);color:var(--fg)}
+.owarn .owtx{flex:1;min-width:0}.owseg{flex:none;align-self:flex-start}
+@media (max-width:560px){.owarn{flex-wrap:wrap}.owseg{margin-left:25px}}.owempty{margin:0;color:var(--mut);font-size:13.5px}
+.owarn>.owi{color:#9A5B00}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .owti,:root:not([data-theme=light]) .owarn>.owi{color:#f0b35a}:root:not([data-theme=light]) .owc.on{background:#4a3417;color:#f6c77d}}
+:root[data-theme=dark] .owti,:root[data-theme=dark] .owarn>.owi{color:#f0b35a}:root[data-theme=dark] .owc.on{background:#4a3417;color:#f6c77d}
+.owacts .obtn{display:inline-flex;align-items:center;height:30px;padding:0 12px;border:1px solid var(--bd2);border-radius:999px;background:var(--card);color:var(--fg);font:inherit;font-size:12.5px;font-weight:600;cursor:pointer}
+.owacts .obtn:hover{border-color:var(--acc);color:var(--acc)}
+.owband .obw.owinfo .owti{color:inherit}
+
+/* a list in the Data tab (io.out.seen): one item per line, its details quiet, kept / stopped as a mark */
+.fi2 .fi-list{margin:0;padding:0;list-style:none;display:flex;flex-direction:column}
+.fi2 .fi-list li{padding:5px 0;line-height:18px}.fi2 .fi-list li+li{border-top:1px solid var(--soft)}
+.fi2 .fi-list b{font-weight:600}.fi2 .fi-list .fi-lm{display:block;font-size:12px;color:var(--faint,var(--mut));overflow-wrap:anywhere}
+.fi2 .fi-list .fi-lt{display:inline-block;margin-top:3px;font-size:11.5px;padding:0 7px;border-radius:999px;color:var(--mut);box-shadow:inset 0 0 0 1px var(--bd2)}
+.fi2 .fi-list .fi-lt.on{color:var(--ok,var(--green));background:var(--okb,transparent);box-shadow:none}
+.fi2 .fi-lc{font-size:12px;color:var(--mut);margin:0 0 4px}
+.fi2 .fi-list.long{max-height:360px;overflow-y:auto;overscroll-behavior:contain;padding-right:6px;scrollbar-gutter:stable}
+/* a step that didn't run (a check that ran no item): quiet, its number dashed */
+.c-sh.st-skipped .c-stl,.c-ln.st-skipped .c-tx{color:var(--mut)}
+.c-sh.st-skipped .c-n,.c-ln.st-skipped .c-n{border-style:dashed;color:var(--mut)}
+.c-sh.st-skipped .c-gk{opacity:.5}
+
+/* ---------- loops (core-architect rule 33): one light line opens a loop, in Simple and Detail alike, with its picker on a
+   run; the lines that repeat carry a grey ↻ (a loop inside a loop indented). Detail adds a grey sentence and fact chips
+   under each line; a step that didn't run stays faded. ---------- */
+.c-lp{display:inline-block;margin-right:6px;color:var(--mut);font-weight:500;font-size:13px}
+.c-in1>.c-sh{padding-left:40px}.c-in2>.c-sh{padding-left:64px}
+.c-lbar{position:relative;display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 16px;padding:9px 0 6px;border-top:1px solid var(--bd);font-size:13px;color:var(--mut)}
+.c-lbar.inner{margin-left:40px}
+.c-lbar+.c-sg{border-top:0}
+.c-li{font-size:14px;line-height:1;color:var(--mut);font-weight:600}
+.c-lt{color:var(--fg);font-weight:500}
+.c-lc{margin-left:auto;color:var(--mut);font-size:12.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.c-lpick{display:inline-flex;align-items:center;gap:6px;max-width:360px;padding:2px 8px;border:1px solid var(--bd);border-radius:8px;background:var(--card);font:inherit;font-size:12.5px;color:var(--fg);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.c-lpick.on{border-color:var(--acc);box-shadow:inset 0 0 0 1px var(--acc)}
+.c-lnav{display:inline-flex;gap:2px}
+.c-lnav button{width:24px;height:24px;border:1px solid var(--bd);border-radius:6px;background:var(--card);color:var(--mut);font:inherit;font-size:13px;line-height:1;cursor:pointer}
+.c-lnav button:disabled{opacity:.4;cursor:default}
+.c-lmenu{position:absolute;z-index:5;top:36px;left:100px;width:min(400px,calc(100% - 110px));max-height:320px;overflow:auto;padding:4px;border:1px solid var(--bd);border-radius:10px;background:var(--card);box-shadow:0 8px 24px rgba(0,0,0,.10);font-size:13px}
+.c-lmenu button{display:flex;align-items:center;gap:8px;width:100%;padding:6px 8px;border:0;border-radius:6px;background:none;color:var(--fg);font:inherit;text-align:left;cursor:pointer}
+.c-lmenu button:hover{background:var(--soft)}
+.c-lmenu button.on{background:var(--selb,var(--soft))}
+.c-lmenu button span.nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.c-lmenu button small{margin-left:auto;color:var(--mut);white-space:nowrap;padding-left:8px}
+.c-lmenu hr{border:0;border-top:1px solid var(--bd);margin:4px 0}
+.c-lsd{flex:none;width:8px;height:8px;border-radius:50%;background:var(--ok)}
+.c-lsd.x{background:var(--need)}.c-lsd.f{background:var(--fl-fail)}.c-lsd.r{background:var(--acc)}.c-lsd.all{background:none;box-shadow:inset 0 0 0 1.5px var(--mut)}
+.c-dl.c-dnest{padding-left:36px}
+.c-nbsub>.c-sh{padding-left:40px}
+.c-off2>.c-sh .c-stt,.c-off2>.c-sh .c-n{color:var(--mut);opacity:.6;font-weight:400}
+.c-enr{margin:-6px 16px 10px 48px}
+.c-in1 .c-enr{margin-left:72px}.c-in2 .c-enr{margin-left:96px}.c-nbsub .c-enr{margin-left:72px}.c-in1.c-nbsub .c-enr{margin-left:96px}
+.c-in1.c-nbsub>.c-sh{padding-left:64px}.c-in2.c-nbsub>.c-sh{padding-left:88px}
+.c-enr p{margin:0 0 6px;font-size:12.5px;line-height:17px;color:var(--mut)}
+.c-fx{display:flex;flex-wrap:wrap;gap:6px}
+.c-fx span{padding:1px 8px;border-radius:6px;background:var(--soft);border:1px solid var(--bd);font-size:11.5px;color:var(--fg);white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.c-fx span i{font-style:normal;color:var(--mut);margin-right:4px}
+.c-fx span.g{background:var(--okb);border-color:transparent;color:var(--ok)}
+.c-fx span.a{background:var(--needb);border-color:transparent;color:var(--need)}
+.c-fx span.m{background:none;border-style:dashed;color:var(--mut)}
+.c-flatn .c-in1>.c-insp,.c-flatn .c-nbsub>.c-insp{margin-left:72px}.c-flatn .c-in2>.c-insp,.c-flatn .c-in1.c-nbsub>.c-insp{margin-left:96px}

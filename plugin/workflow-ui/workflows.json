@@ -1,0 +1,1295 @@
+{
+  "_about": "Workflow definitions for the Workflow Viewer (workflow-viewer.html): sections, category folders, trigger tags and workflows. Field reference, branch rules and what the build checks: README.md in this folder. After editing, run scripts/build_workflows.py: it must exit with no ERROR lines.",
+  "skills": {
+    "core-dispatcher": {
+      "short": "Workflow manager",
+      "code": "d"
+    },
+    "core-architect": {
+      "short": "Architect",
+      "code": "a"
+    },
+    "manager-work-dispatcher": {
+      "short": "Workflow manager",
+      "code": "d",
+      "alias_of": "core-dispatcher"
+    },
+    "manager-skill-architect": {
+      "short": "Architect",
+      "code": "a",
+      "alias_of": "core-architect"
+    },
+    "workflow-news-nyt-briefing": {
+      "short": "NY Times morning briefing",
+      "code": "y"
+    }
+  },
+  "categories": {
+    "common": {
+      "name": "Common",
+      "tone": "teal",
+      "section": "shared"
+    },
+    "architect": {
+      "name": "Architect",
+      "tone": "purple",
+      "section": "core",
+      "skill": "core-architect"
+    },
+    "news": {
+      "name": "News",
+      "tone": "amber",
+      "section": "workflows"
+    }
+  },
+  "sections": [
+    {
+      "key": "workflows",
+      "name": "Workflows",
+      "desc": "Started by a trigger, one item at a time"
+    },
+    {
+      "key": "shared",
+      "name": "Shared",
+      "desc": "Processes used by several skills: workflows hand work to them"
+    },
+    {
+      "key": "core",
+      "name": "Core",
+      "desc": "The engine: the workflow manager and the architect"
+    }
+  ],
+  "entries": {
+    "nyt": {
+      "name": "NYT Top Stories feed",
+      "icon": "N",
+      "category": "News",
+      "desc": "Reads the New York Times Top Stories feed on the public web and keeps its 5 newest stories.",
+      "when": "Mentions the New York Times, the NYT or a morning news briefing",
+      "noun": "story",
+      "feeds": [
+        "nyt-briefing"
+      ],
+      "steps": [
+        {
+          "key": "r1",
+          "type": "read",
+          "tag": "Read",
+          "title": "NYT top stories",
+          "what": "Each story with its link, headline and summary",
+          "sk": "web",
+          "tip": "Read the list of stories in the New York Times' top stories feed.",
+          "alts": [
+            {
+              "when": "Found some",
+              "then": "Carries on",
+              "k": "next"
+            },
+            {
+              "when": "Feed won't load",
+              "then": "Says so and stops",
+              "k": "stop",
+              "ends": true
+            }
+          ],
+          "why": {
+            "file": "workflow-news-nyt-briefing",
+            "label": "NYT Top Stories feed trigger · Step 1: NYT top stories",
+            "parts": [
+              {
+                "section": "Trigger",
+                "pick": []
+              }
+            ],
+            "sum": "Each story with its link, headline and summary"
+          },
+          "from": {
+            "type_any": [
+              "Feed Read",
+              "Online Search/Check"
+            ],
+            "step_any": [
+              "nyt get"
+            ]
+          }
+        },
+        {
+          "key": "r2",
+          "type": "check",
+          "tag": "Keep",
+          "title": "The 5 newest",
+          "what": "The first 5 stories in the feed; the rest stop here",
+          "sk": "core-dispatcher",
+          "tip": "Keep only the five most recent stories.",
+          "why": {
+            "file": "workflow-news-nyt-briefing",
+            "label": "NYT Top Stories feed trigger · Step 2: The 5 newest",
+            "parts": [
+              {
+                "section": "Trigger",
+                "pick": []
+              }
+            ],
+            "sum": "The first 5 stories in the feed; the rest stop here"
+          },
+          "from": {
+            "type_any": [
+              "Sorted"
+            ],
+            "step_any": [
+              "nyt keep"
+            ]
+          }
+        }
+      ],
+      "simulated": [
+        {
+          "label": "If: new stories",
+          "res": {
+            "r1": "Each story with its link, headline and summary",
+            "r2": "The 5 newest carry on"
+          },
+          "taken": {
+            "r1": [
+              0
+            ]
+          },
+          "out": [
+            "next",
+            "Sends the stories on to the briefing, as one run"
+          ]
+        },
+        {
+          "label": "If: the feed won't load",
+          "res": {
+            "r1": "Couldn't read the feed"
+          },
+          "taken": {
+            "r1": [
+              1
+            ]
+          },
+          "out": [
+            "stop",
+            "Says so and stops"
+          ]
+        }
+      ]
+    }
+  },
+  "summaries": {
+    "_about": "One plain line per page for the Workflow Viewer header: what it does. Kept apart from each workflow so editing a line does not make the workflow a draft. A skill's Definition block `summary:` wins over this.",
+    "workflow:draft": "Writes an email draft for you or another skill. It never sends.",
+    "workflow:skill": "Changes a skill for you and keeps this board in step, as a draft.",
+    "workflow:publish": "Makes a draft the live version, after checking it against past runs.",
+    "workflow:ask": "Tells you how to change the setup, then builds it once you say yes.",
+    "workflow:debug": "Finds why a skill isn't triggering or the wrong one is chosen, and the smallest fix.",
+    "workflow:news-headline-check": "Judges whether a headline is clickbait, and suggests a calmer one.",
+    "workflow:nyt-briefing": "A morning briefing: one plain sentence on each of the New York Times' 5 newest top stories, all on one page.",
+    "trigger:nyt": "Keeps the 5 newest stories from the New York Times Top Stories feed."
+  },
+  "examples": {
+    "workflow:nyt-briefing": [
+      {
+        "title": "This morning's top stories",
+        "path": "If: a story",
+        "gets": "The 5 newest New York Times top stories",
+        "does": [
+          "One sentence each",
+          "Put together",
+          "Made into one page"
+        ],
+        "ok": "A one-page briefing of the 5 stories, opened for you; nothing sent."
+      }
+    ],
+    "trigger:nyt": [
+      {
+        "title": "New stories",
+        "path": "If: new stories",
+        "gets": "The NYT Top Stories feed",
+        "does": [
+          "Reads the newest stories",
+          "Keeps the 5 newest"
+        ],
+        "ok": "The 5 go into one run of the briefing."
+      },
+      {
+        "title": "Feed won't load",
+        "path": "If: the feed won't load",
+        "gets": "The NYT Top Stories feed",
+        "does": [
+          "Can't read the feed"
+        ],
+        "ok": "Nothing to brief; it says so."
+      }
+    ]
+  },
+  "results": {
+    "workflow:nyt-briefing": {
+      "If: a story": [
+        {
+          "k": "file",
+          "t": "Today's briefing page with every story, opened"
+        },
+        {
+          "k": "untouched",
+          "t": "Nothing is sent anywhere"
+        }
+      ]
+    },
+    "trigger:nyt": {
+      "If: new stories": [
+        {
+          "k": "inbox",
+          "t": "Each story gets a workflow ID, so it is never summarised twice"
+        },
+        {
+          "k": "next",
+          "t": "All 5 → NY Times morning briefing, as one run"
+        },
+        {
+          "k": "untouched",
+          "t": "The feed: nothing is changed"
+        }
+      ],
+      "If: the feed won't load": [
+        {
+          "k": "stop",
+          "t": "Says the feed couldn't be read and stops"
+        }
+      ]
+    }
+  },
+  "dispatcher": {
+    "name": "Workflow manager",
+    "desc": "Every request starts here. The workflow manager picks a trigger, gathers its items, gives each a repeatable workflow ID, and sends new ones on to the workflow that fits. It never does the checking itself.",
+    "steps": [
+      {
+        "key": "d1",
+        "sk": "core-dispatcher",
+        "lane": "Choosing the trigger",
+        "type": "route",
+        "what": "Picks the trigger for the request",
+        "from": "entry",
+        "why": {
+          "file": "core-dispatcher",
+          "label": "What to run",
+          "sum": "Works out what to run: your triggers (tick boxes, a named list, or all), one trigger, one workflow on one item, a test, a rerun, several items in turn, or changing items by hand (skip, mark, delete, the Run each item once switch). Any trigger run can be “pull in only”. Nothing matches: says so and lists what can run.",
+          "parts": [
+            {
+              "section": "What to run"
+            }
+          ]
+        },
+        "alts": [
+          {
+            "when": "Names a wf- ID",
+            "then": "Reruns that run as a new attempt",
+            "k": "next",
+            "id": "rerun",
+            "entry": "rerun"
+          },
+          {
+            "when": "Says run workflow manager, or names triggers",
+            "then": "Tick boxes, or the named triggers; each runs as above",
+            "k": "ask",
+            "ends": true,
+            "id": "manager"
+          },
+          {
+            "when": "Lists several run / rerun lines",
+            "then": "Runs each item in turn",
+            "k": "next",
+            "ends": true,
+            "id": "lines"
+          },
+          {
+            "when": "Says skip, mark or delete wf-…, or turns Run each item once on or off",
+            "then": "Changes them by hand in the done list, or the switch; runs nothing",
+            "k": "done",
+            "ends": true,
+            "id": "hand"
+          },
+          {
+            "when": "Nothing matches",
+            "then": "Lists the triggers, stops",
+            "k": "stop",
+            "ends": true,
+            "id": "none"
+          }
+        ],
+        "title": "Pick the trigger"
+      },
+      {
+        "key": "rr",
+        "sk": "core-dispatcher",
+        "lane": "Rerun a workflow",
+        "type": "act",
+        "tag": "Rerun",
+        "title": "Run that item again",
+        "what": "Looks up the workflow ID and sends the same item to its workflow as the next attempt",
+        "on": {
+          "step": "d1",
+          "alt_id": "rerun"
+        },
+        "why": {
+          "file": "core-dispatcher",
+          "label": "Rerun a workflow",
+          "sum": "A rerun is a new attempt of the same run, never a new workflow.",
+          "parts": [
+            {
+              "section": "Rerun a workflow"
+            }
+          ]
+        }
+      }
+    ],
+    "simulated": [
+      {
+        "label": "If: you ask to rerun a run",
+        "res": {
+          "d1": "Names a workflow ID, so it's a rerun",
+          "rr": "Same item, next attempt"
+        },
+        "taken": {
+          "d1": [
+            "rerun"
+          ]
+        },
+        "out": [
+          "next",
+          "Starts the next attempt of that run"
+        ]
+      }
+    ]
+  },
+  "workflows": [
+    {
+      "id": "skill",
+      "category": "architect",
+      "short": "Change a skill",
+      "name": "Change a skill",
+      "from": "project instructions (CLAUDE.md)",
+      "desc": "Creating, editing, renaming or deleting a skill, or doing what an Ask-mode answer offered. Each edit is a draft: the architect keeps the Workflow Viewer in step with it, shows it beside the chat and stops, so you can try it and change more. The checks, the impact review and the save wait for Publish.",
+      "match": {
+        "none": true
+      },
+      "steps": [
+        {
+          "key": "a1",
+          "makes": "the skill's role",
+          "sk": "core-architect",
+          "lane": "Change mode",
+          "type": "read",
+          "what": "Reads the rules and names the skill's role",
+          "why": {
+            "file": "core-architect",
+            "label": "Change mode · step 1",
+            "sum": "The project says to consult the architect before touching .claude/skills/.",
+            "parts": [
+              {
+                "section": "Change mode",
+                "pick": [
+                  "1. Read"
+                ]
+              }
+            ]
+          },
+          "title": "Read the rules",
+          "tip": "Read the design rules and decide what job this skill does."
+        },
+        {
+          "key": "a2",
+          "makes": "the changed skill",
+          "sk": "core-architect",
+          "lane": "Change mode",
+          "type": "act",
+          "what": "Makes the change and redraws its picture",
+          "why": {
+            "file": "core-architect",
+            "label": "Change mode · steps 2 and 3",
+            "sum": "Rewrites any step the change makes wrong. Never patches with “skip this”.",
+            "parts": [
+              {
+                "section": "Change mode",
+                "pick": [
+                  "2. Re-read",
+                  "3. Make"
+                ]
+              }
+            ]
+          },
+          "title": "Make the change",
+          "tag": "Edit",
+          "tip": "Make the requested change to the skill and redraw its diagram."
+        },
+        {
+          "key": "a4",
+          "makes": "a matching board",
+          "sk": "core-architect",
+          "lane": "Change mode",
+          "type": "act",
+          "what": "Updates the Workflow Viewer's definition to match the skill",
+          "why": {
+            "file": "core-architect",
+            "label": "Change mode · step 4",
+            "sum": "If the skill is shown on the Workflow Viewer, its steps, branches, quotes and tests there are changed to match.",
+            "parts": [
+              {
+                "section": "Change mode",
+                "pick": [
+                  "4. Update the board"
+                ]
+              }
+            ]
+          },
+          "title": "Match the Workflow Viewer",
+          "tag": "Update",
+          "tip": "Update the board's picture of the workflow to match the change."
+        },
+        {
+          "key": "a8",
+          "makes": "the draft on the board",
+          "sk": "core-architect",
+          "lane": "Change mode",
+          "type": "act",
+          "tag": "Build",
+          "title": "Quick build of the board",
+          "what": "Rebuilds the board so it shows the draft; any errors are listed to fix before publishing, never a stop",
+          "why": {
+            "file": "core-architect",
+            "label": "Change mode · step 5",
+            "sum": "A draft is shown straight away; the heavy checks wait for Publish (rule 27).",
+            "parts": [
+              {
+                "section": "Change mode",
+                "pick": [
+                  "5. **Quick build:**"
+                ]
+              }
+            ]
+          },
+          "tip": "Rebuild the board so it shows the draft, listing any problems."
+        },
+        {
+          "key": "a9",
+          "makes": "the page beside the chat",
+          "sk": "core-architect",
+          "lane": "Change mode",
+          "type": "act",
+          "tag": "Show",
+          "title": "Show the board beside the chat",
+          "what": "Opens the workflow's page in the browser pane on the first edit, and reloads it after each later one",
+          "why": {
+            "file": "core-architect",
+            "label": "Change mode · step 6",
+            "sum": "You see the draft on the board while you work on it.",
+            "parts": [
+              {
+                "section": "Change mode",
+                "pick": [
+                  "6. **Show the board on the right.**"
+                ]
+              }
+            ]
+          },
+          "tip": "Open the workflow's page beside the chat, or refresh it."
+        },
+        {
+          "key": "a10",
+          "makes": "a short report",
+          "sk": "core-architect",
+          "lane": "Change mode",
+          "type": "read",
+          "tag": "Report",
+          "title": "Say it's a draft",
+          "what": "Says what changed and that it's a draft: try it, change more, or say publish",
+          "why": {
+            "file": "core-architect",
+            "label": "Change mode · step 7",
+            "sum": "No checks, no review and no save on a draft: those run once, when you publish.",
+            "parts": [
+              {
+                "section": "Change mode",
+                "pick": [
+                  "7. Report"
+                ]
+              }
+            ]
+          },
+          "tip": "Tell you what changed and that it's only a draft so far."
+        }
+      ],
+      "simulated": [
+        {
+          "label": "If: “change the Mac draft's address”",
+          "res": {
+            "a1": "Role: analyst",
+            "a2": "Address changed in the skill",
+            "a4": "Board's draft step reworded",
+            "a8": "Built: no errors",
+            "a9": "Board open beside the chat",
+            "a10": "Draft: try it, or say publish"
+          },
+          "out": [
+            "done",
+            "A draft, waiting for publish"
+          ]
+        },
+        {
+          "label": "If: “rename the inbox skill”",
+          "res": {
+            "a1": "Role: shared",
+            "a2": "Renamed; picture and README redrawn",
+            "a4": "Every board definition that names it updated",
+            "a8": "Built: 1 error listed to fix before publishing",
+            "a9": "Board reloaded",
+            "a10": "Draft, with the error to fix"
+          },
+          "out": [
+            "done",
+            "A draft, waiting for publish"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "publish",
+      "category": "architect",
+      "short": "Publish a draft",
+      "name": "Publish a draft",
+      "from": "project instructions (CLAUDE.md)",
+      "desc": "Making a draft the current version, when you say “publish workflow …”, “save a version” or press Publish on the board. The heavy part runs once: the checks, the draft checked against earlier runs and shown on the board, your approval of anything that will no longer happen, then one version with a note in plain words.",
+      "match": {
+        "none": true
+      },
+      "steps": [
+        {
+          "key": "p1",
+          "makes": "the draft and its runs",
+          "sk": "core-architect",
+          "lane": "Publish mode",
+          "type": "read",
+          "tag": "Prepare",
+          "title": "Gather the draft and its runs",
+          "what": "One call: the board build's problems, the draft's changes in plain words, the diff and the earlier runs to check it against",
+          "why": {
+            "file": "core-architect",
+            "label": "Publish mode · step 1",
+            "sum": "Everything the heavy part needs, gathered once.",
+            "parts": [
+              {
+                "section": "Publish mode",
+                "pick": [
+                  "1. **Prepare:**"
+                ]
+              }
+            ]
+          },
+          "tip": "Collect the draft's changes and the earlier runs to compare against."
+        },
+        {
+          "key": "p2",
+          "sk": "core-architect",
+          "lane": "Publish mode",
+          "type": "dec",
+          "title": "Run the checks",
+          "what": "Runs the checks on the draft and any skill it could affect",
+          "why": {
+            "file": "core-architect",
+            "label": "Publish mode · step 2",
+            "sum": "Doesn't publish while a check fails.",
+            "parts": [
+              {
+                "section": "Publish mode",
+                "pick": [
+                  "2. **Checks:**"
+                ]
+              }
+            ]
+          },
+          "alts": [
+            {
+              "when": "All pass",
+              "then": "Checks it against earlier runs",
+              "k": "next"
+            },
+            {
+              "when": "One fails",
+              "then": "Fixes the draft, then gathers it again",
+              "k": "check"
+            }
+          ],
+          "tip": "Does the draft pass every check, for itself and related skills?"
+        },
+        {
+          "key": "p3",
+          "makes": "a review of earlier runs",
+          "sk": "core-architect",
+          "lane": "Publish mode",
+          "type": "read",
+          "tag": "Review",
+          "title": "Check it against earlier runs",
+          "what": "Judges each earlier run: same, might change or will change, with a reason; shows the review under History › Draft on the board",
+          "why": {
+            "file": "core-architect",
+            "label": "Publish mode · step 3",
+            "sum": "You can open each run that may change on the flow before anything is saved (rule 27).",
+            "parts": [
+              {
+                "section": "Publish mode",
+                "pick": [
+                  "3. **Impact review**"
+                ]
+              }
+            ]
+          },
+          "on": {
+            "step": "p2",
+            "alt": 0
+          },
+          "tip": "Work out which earlier runs would turn out differently with this draft."
+        },
+        {
+          "key": "p4",
+          "sk": "core-architect",
+          "lane": "Publish mode",
+          "type": "dec",
+          "title": "Your approval",
+          "what": "Goes on by itself when nothing stops happening; otherwise the bar lists what will no longer happen and you approve it in the chat",
+          "why": {
+            "file": "core-architect",
+            "label": "Publish mode · step 4",
+            "sum": "Anything the draft will no longer do is saved only once you have approved it.",
+            "parts": [
+              {
+                "section": "Publish mode",
+                "pick": [
+                  "4. **Your approval:**"
+                ]
+              }
+            ]
+          },
+          "alts": [
+            {
+              "when": "Nothing stops happening",
+              "then": "Saves it",
+              "k": "next"
+            },
+            {
+              "when": "Something stops, you approve",
+              "then": "Saves it with your approval",
+              "k": "ask"
+            },
+            {
+              "when": "Something stops, keep editing",
+              "then": "Stops; the draft and its review stay on the board",
+              "k": "stop",
+              "ends": true
+            }
+          ],
+          "on": {
+            "step": "p2",
+            "alt": 0
+          },
+          "tip": "Do you accept what the workflow will no longer do?"
+        },
+        {
+          "key": "p5",
+          "makes": "a new version",
+          "sk": "core-architect",
+          "lane": "Publish mode",
+          "type": "act",
+          "tag": "Save",
+          "title": "Save it as one version",
+          "what": "Saves the draft to the workflow's history with a note in plain words and its review, so it shows under History and can be put back later",
+          "why": {
+            "file": "core-architect",
+            "label": "Publish mode · step 5",
+            "sum": "One publish is one version, saved with what the workflow now does differently and its review (rule 27).",
+            "parts": [
+              {
+                "section": "Publish mode",
+                "pick": [
+                  "5. **Save the version:**"
+                ]
+              }
+            ]
+          },
+          "on": {
+            "step": "p4",
+            "alt": [
+              0,
+              1
+            ]
+          },
+          "tip": "Save the draft as a new version you can go back to."
+        }
+      ],
+      "simulated": [
+        {
+          "label": "If: only what you asked changes",
+          "res": {
+            "p1": "1 change, 3 earlier runs",
+            "p2": "All checks pass",
+            "p3": "2 same, 1 will change: the draft goes to the new address you gave",
+            "p4": "Only what you asked: no extra yes",
+            "p5": "Saved as v3 with the review"
+          },
+          "taken": {
+            "p2": [
+              0
+            ],
+            "p4": [
+              0
+            ]
+          },
+          "out": [
+            "done",
+            "Published"
+          ]
+        },
+        {
+          "label": "If: the change may break a run",
+          "res": {
+            "p1": "Draft and 12 runs gathered",
+            "p2": "All checks pass",
+            "p3": "1 run might change: shown on the board",
+            "p4": "You looked, then said publish",
+            "p5": "Saved with the review"
+          },
+          "taken": {
+            "p2": [
+              0
+            ],
+            "p4": [
+              1
+            ]
+          },
+          "out": [
+            "ask",
+            "Saved once you confirm"
+          ]
+        },
+        {
+          "label": "If: keep editing",
+          "res": {
+            "p1": "Draft and 5 runs gathered",
+            "p2": "All checks pass",
+            "p3": "2 runs will change: shown on the board",
+            "p4": "You chose keep editing"
+          },
+          "taken": {
+            "p2": [
+              0
+            ],
+            "p4": [
+              2
+            ]
+          },
+          "out": [
+            "stop",
+            "Still a draft"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ask",
+      "category": "architect",
+      "short": "Ask how to change",
+      "name": "Ask how to change the setup",
+      "from": "project instructions (CLAUDE.md)",
+      "desc": "You ask how to add or change something, e.g. a new trigger. The architect says the one or two things it needs, draws you the planned design, and builds it only after you say yes.",
+      "match": {
+        "none": true
+      },
+      "steps": [
+        {
+          "key": "q1",
+          "makes": "the matching request",
+          "sk": "core-architect",
+          "lane": "Ask mode",
+          "type": "route",
+          "title": "Find the common request",
+          "what": "Looks the request up in the Common requests table",
+          "why": {
+            "file": "core-architect",
+            "label": "Ask mode · steps 1 and 2",
+            "sum": "Known requests have a ready short answer; new ones get a row.",
+            "parts": [
+              {
+                "section": "Ask mode",
+                "pick": [
+                  "1. Find",
+                  "2. Not in"
+                ]
+              }
+            ]
+          },
+          "tip": "Match your question to a kind of request already known."
+        },
+        {
+          "key": "q2",
+          "sk": "core-architect",
+          "lane": "Ask mode",
+          "type": "dec",
+          "title": "Details already given?",
+          "what": "Checks you've said what the request needs (e.g. source, triggers, what to do)",
+          "why": {
+            "file": "core-architect",
+            "label": "Ask mode · step 1 + Common requests",
+            "sum": "Missing details: says only what's needed and waits. The wiring is never shown to you.",
+            "parts": [
+              {
+                "section": "Ask mode",
+                "pick": [
+                  "1. Find"
+                ]
+              },
+              {
+                "section": "Common requests",
+                "pick": [
+                  "| Request",
+                  "|---",
+                  "| Add an entry point"
+                ]
+              }
+            ]
+          },
+          "alts": [
+            {
+              "when": "Given",
+              "then": "Draws the plan",
+              "k": "next"
+            },
+            {
+              "when": "Missing",
+              "then": "Says what's needed, waits",
+              "k": "ask",
+              "ends": true
+            }
+          ],
+          "tip": "Have you given everything needed to plan this, or is something missing?"
+        },
+        {
+          "key": "qp",
+          "makes": "a plan to approve",
+          "sk": "core-architect",
+          "lane": "Ask mode",
+          "type": "act",
+          "tag": "Plan",
+          "title": "Show the planned design",
+          "what": "Draws the skills involved, new or existing, how work flows between them, and the design choices",
+          "why": {
+            "file": "core-architect",
+            "label": "Ask mode · step 3",
+            "sum": "You see the design before anything is created.",
+            "parts": [
+              {
+                "section": "Ask mode",
+                "pick": [
+                  "3. **Show the plan**"
+                ]
+              }
+            ]
+          },
+          "tip": "Draw you a picture of the planned design before building anything."
+        },
+        {
+          "key": "q3",
+          "sk": "core-architect",
+          "lane": "Ask mode",
+          "type": "dec",
+          "title": "Build this?",
+          "what": "Waits for your answer to the plan",
+          "why": {
+            "file": "core-architect",
+            "label": "Ask mode · step 4",
+            "sum": "Nothing is built until you say yes. Changes mean a new plan.",
+            "parts": [
+              {
+                "section": "Ask mode",
+                "pick": [
+                  "4. The answer",
+                  "**Yes:**",
+                  "**Changes:**",
+                  "**No:**"
+                ]
+              }
+            ]
+          },
+          "alts": [
+            {
+              "when": "Yes",
+              "then": "Change mode builds it",
+              "k": "next"
+            },
+            {
+              "when": "Changes",
+              "then": "Redraws the plan, asks again",
+              "k": "ask",
+              "ends": true
+            },
+            {
+              "when": "No",
+              "then": "Nothing changed",
+              "k": "stop",
+              "ends": true
+            }
+          ],
+          "tip": "Do you want this design built as shown?"
+        },
+        {
+          "key": "q4",
+          "makes": "the wired draft",
+          "sk": "core-architect",
+          "lane": "Change mode",
+          "type": "act",
+          "tag": "Edit",
+          "title": "Wire it and check",
+          "what": "Makes the skills and connects them everywhere, as a draft on the board",
+          "on": {
+            "step": "q3",
+            "alt": 0
+          },
+          "why": {
+            "file": "core-architect",
+            "label": "Change mode",
+            "sum": "Same steps as any skill change: a draft you can try, published when you say so.",
+            "parts": [
+              {
+                "section": "Change mode",
+                "pick": [
+                  "3. Make",
+                  "5. **Quick build:**"
+                ]
+              }
+            ]
+          },
+          "tip": "Build the skills and connect them, as a draft to try."
+        }
+      ],
+      "simulated": [
+        {
+          "label": "If: you give the details and approve the plan",
+          "res": {
+            "q1": "Add a trigger",
+            "q2": "Source, triggers and what to do given",
+            "qp": "Picture: new trigger → workflow manager → new workflow",
+            "q4": "Skills made, board added, checks pass"
+          },
+          "taken": {
+            "q2": [
+              0
+            ],
+            "q3": [
+              0
+            ]
+          },
+          "out": [
+            "done",
+            "Ready"
+          ]
+        },
+        {
+          "label": "If: you want changes to the plan",
+          "res": {
+            "q1": "Add a trigger",
+            "q2": "Details given",
+            "qp": "Picture: one workflow with a category table",
+            "q3": "You ask for one workflow per category"
+          },
+          "taken": {
+            "q2": [
+              0
+            ],
+            "q3": [
+              1
+            ]
+          },
+          "out": [
+            "ask",
+            "New plan drawn, waits again"
+          ]
+        },
+        {
+          "label": "If: you only wanted to know",
+          "res": {
+            "q1": "Add a workflow",
+            "q2": "Tell me the item kind and what to decide"
+          },
+          "taken": {
+            "q2": [
+              1
+            ]
+          },
+          "out": [
+            "info",
+            "Answered, nothing changed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "debug",
+      "category": "architect",
+      "short": "Debug a skill",
+      "name": "Debug a skill",
+      "from": "project instructions (CLAUDE.md)",
+      "desc": "A skill doesn't trigger, or the wrong one is chosen. The architect checks the likely causes in order and stops at the first one it finds.",
+      "match": {
+        "none": true
+      },
+      "steps": [
+        {
+          "key": "b1",
+          "makes": "a loaded skill",
+          "sk": "core-architect",
+          "lane": "Debug mode",
+          "type": "read",
+          "what": "Checks the skill is loaded and its header is right",
+          "why": {
+            "file": "core-architect",
+            "label": "Debug mode · causes 1 and 2",
+            "sum": "Stops at the first cause found: wrong place or folder, or a broken name/description header.",
+            "parts": [
+              {
+                "section": "Debug mode",
+                "pick": [
+                  "Stop at the first cause",
+                  "1. **Not loaded",
+                  "2. **Bad frontmatter"
+                ]
+              }
+            ]
+          },
+          "title": "Loaded, header OK?",
+          "tip": "Is the skill installed in the right place and set up properly?"
+        },
+        {
+          "key": "b2",
+          "makes": "a clear description",
+          "sk": "core-architect",
+          "lane": "Debug mode",
+          "type": "check",
+          "what": "Checks its description is clear and not shared with another skill",
+          "why": {
+            "file": "core-architect",
+            "label": "Debug mode · causes 3 and 4",
+            "sum": "A vague description, or one that covers another skill's job, makes the wrong skill get picked.",
+            "parts": [
+              {
+                "section": "Debug mode",
+                "pick": [
+                  "3. **Weak description",
+                  "4. **Overlap"
+                ]
+              }
+            ]
+          },
+          "title": "Description clear?",
+          "tip": "Does the skill's description clearly say its job, without overlapping another?"
+        },
+        {
+          "key": "b3",
+          "makes": "any broken rules",
+          "sk": "core-architect",
+          "lane": "Debug mode",
+          "type": "check",
+          "what": "Checks for old skill names and broken rules",
+          "why": {
+            "file": "core-architect",
+            "label": "Debug mode · causes 5 and 6",
+            "sum": "Looks for a renamed or deleted skill still named somewhere, then runs the checks.",
+            "parts": [
+              {
+                "section": "Debug mode",
+                "pick": [
+                  "5. **Coupling",
+                  "6. **Rule breach"
+                ]
+              }
+            ]
+          },
+          "title": "Old names or broken rules?",
+          "tip": "Are outdated skill names or broken design rules causing the problem?"
+        },
+        {
+          "key": "b4",
+          "makes": "the cause and a fix",
+          "sk": "core-architect",
+          "lane": "Debug mode",
+          "type": "act",
+          "what": "Reports the cause and the smallest fix",
+          "why": {
+            "file": "core-architect",
+            "label": "Debug mode · report",
+            "sum": "Says what was wrong and the smallest change that fixes it.",
+            "parts": [
+              {
+                "section": "Debug mode",
+                "pick": [
+                  "Report the cause"
+                ]
+              }
+            ]
+          },
+          "title": "Cause and smallest fix",
+          "tag": "Report",
+          "tip": "Explain what went wrong and the smallest change that fixes it."
+        }
+      ],
+      "simulated": [
+        {
+          "label": "If: “the inbox skill isn't triggering”",
+          "res": {
+            "b1": "Loaded, header fine",
+            "b2": "Description had no trigger phrases",
+            "b3": "Not reached: stopped at the first cause",
+            "b4": "Cause: weak description. Fix: add “check my emails” style phrases"
+          },
+          "out": [
+            "done",
+            "Cause found"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nyt-briefing",
+      "category": "news",
+      "short": "NY Times morning briefing",
+      "name": "NY Times morning briefing",
+      "from": "News · NYT Top Stories feed",
+      "desc": "The demo workflow: a one-page morning briefing of the New York Times' 5 newest top stories, one plain sentence each from the free headline and summary. Needs no accounts; sends nothing.",
+      "match": {
+        "skill": "workflow-news-nyt-briefing",
+        "default": true
+      },
+      "entries": [
+        "nyt"
+      ],
+      "steps": [
+        {
+          "key": "summarise",
+          "type": "act",
+          "tag": "Write",
+          "title": "Summarise the story",
+          "what": "One plain sentence on what happened, from the free headline and summary",
+          "tip": "Say in one sentence what the story is about.",
+          "sk": "workflow-news-nyt-briefing",
+          "lane": "Step 1",
+          "why": {
+            "file": "workflow-news-nyt-briefing",
+            "label": "Step 1: Summarise the story",
+            "parts": [
+              {
+                "section": "Steps",
+                "pick": [
+                  "Step 1: Summarise the story"
+                ]
+              }
+            ],
+            "sum": "One plain sentence on what happened, from the free headline and summary"
+          },
+          "from": {
+            "key": "summarise"
+          },
+          "makes": "one sentence"
+        },
+        {
+          "key": "combine",
+          "type": "act",
+          "tag": "Combine",
+          "title": "Put the summaries together",
+          "what": "Every story's sentence in one list, in the feed's order",
+          "tip": "Gather each story's sentence into one list.",
+          "combines": "story",
+          "sk": "workflow-news-nyt-briefing",
+          "lane": "Step 2",
+          "why": {
+            "file": "workflow-news-nyt-briefing",
+            "label": "Step 2: Put the summaries together",
+            "parts": [
+              {
+                "section": "Steps",
+                "pick": [
+                  "Step 2: Put the summaries together"
+                ]
+              }
+            ],
+            "sum": "Every story's sentence in one list, in the feed's order"
+          },
+          "from": {
+            "key": "combine"
+          },
+          "makes": "one list"
+        },
+        {
+          "key": "page",
+          "type": "act",
+          "tag": "Save",
+          "title": "Make today's briefing page",
+          "what": "One page of every story, opened for you",
+          "tip": "Put the stories on one page and show it to you.",
+          "sk": "workflow-news-nyt-briefing",
+          "lane": "Step 3",
+          "why": {
+            "file": "workflow-news-nyt-briefing",
+            "label": "Step 3: Make today's briefing page",
+            "parts": [
+              {
+                "section": "Steps",
+                "pick": [
+                  "Step 3: Make today's briefing page"
+                ]
+              }
+            ],
+            "sum": "One page of every story, opened for you"
+          },
+          "from": {
+            "key": "page"
+          },
+          "makes": "today's briefing page"
+        }
+      ],
+      "loops": [
+        {
+          "key": "story",
+          "each": "story",
+          "title": "For each story",
+          "over": "trigger",
+          "steps": [
+            "summarise"
+          ]
+        }
+      ],
+      "simulated": [
+        {
+          "label": "If: a story",
+          "res": {
+            "summarise": "One sentence on the story",
+            "combine": "5 → 1: 5 stories",
+            "page": "Today's page, with every story"
+          },
+          "taken": {},
+          "out": [
+            "done",
+            "Story on today's briefing page"
+          ]
+        }
+      ]
+    }
+  ],
+  "demo": {
+    "skill": "workflow-news-nyt-briefing",
+    "phrase": "check the new york times",
+    "name": "NY Times morning briefing",
+    "what": "Sums up the New York Times' 5 newest top stories in one sentence each, then makes you one page of them.",
+    "needs": "No accounts needed, nothing is sent.",
+    "page": "nyt-briefing.html",
+    "pitch": "See one in action: this example sums up the New York Times' five newest top stories and makes you a one-page morning briefing.",
+    "facts": "About a minute · no accounts needed · nothing is sent"
+  }
+}

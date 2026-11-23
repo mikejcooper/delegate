@@ -1,0 +1,1172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inbox</title>
+<link rel="stylesheet" href="steps.css">
+<style>
+:root{--bg:#F6F5F2;--card:#FFFFFF;--line:#E4E2DC;--soft:#F1EFEA;--side:#F5F4F0;--pill:#EAE8E3;--ink:#1C1C1A;--ink2:#3A3935;--mut:#65635D;--faint:#B9B6AD;
+  --blue:#1D4ED8;--bluebg:#F5F8FF;--blueline:#C9D6F8;--green:#1F6B3A;--amber:#8A4B00;--amberdot:#C98A1F;--red:#9B2C22;--grey:#8F8C84}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+button{font:inherit}
+.btn{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:0 12px;border:1px solid var(--btnbd);border-radius:8px;background:var(--card);color:var(--ink);cursor:pointer;text-decoration:none;font-size:13px;white-space:nowrap}
+.btn:hover{border-color:var(--faint)}
+.btn.sb{min-height:30px;padding:0 10px;font-size:12px}
+.pri{background:var(--pri);border-color:var(--pri);color:#FFFFFF;font-weight:600}
+.pri:hover{border-color:var(--pri);filter:brightness(1.08)}
+.pulse{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--blue);animation:pl 1.4s infinite}
+@keyframes pl{50%{opacity:.35}}
+.wrap{display:flex;flex-wrap:wrap;align-items:stretch;min-height:calc(100vh - 61px)}
+.side{flex:0 0 220px;max-width:240px;border-right:1px solid var(--line);background:var(--side);padding:14px 10px}
+.side .lbl{display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:600;color:var(--mut);margin:0 2px 8px 8px}
+.side.fold{flex-basis:52px;padding:10px 0;display:flex;flex-direction:column;align-items:center;gap:5px}
+.sfold{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border:0;border-radius:8px;background:transparent;color:var(--mut);cursor:pointer}
+.sfold:hover{background:var(--pill);color:var(--ink)}
+.vmini{min-width:34px;height:28px;padding:0 6px;border:0;border-radius:8px;background:transparent;color:var(--mut);font:600 11px/1 Inter,system-ui,sans-serif;cursor:pointer}
+.vmini:hover{background:var(--pill);color:var(--ink)}.vmini.on{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.v{display:flex;align-items:center;gap:8px;width:100%;min-height:36px;padding:0 8px;border:1px solid transparent;border-radius:8px;background:transparent;color:var(--ink);text-decoration:none;font-size:13px;text-align:left;cursor:pointer}
+.v:hover{background:rgba(0,0,0,.04)}
+.v.on{background:var(--card);border-color:transparent;font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.v .n{margin-left:auto;padding:1px 7px;border-radius:999px;background:var(--pill);font-size:11px;color:var(--mut);font-weight:600}
+.qnew{display:block;margin:10px 0 0;padding:6px 8px;border:0;background:transparent;font-size:13px;color:var(--blue);cursor:pointer;text-align:left}
+.qnew span{color:var(--mut)}
+.main{flex:999 1 600px;min-width:0;padding:18px 24px 120px;display:flex;flex-direction:column;gap:10px;max-width:1200px}
+.vh{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.gh.up{background:transparent;border-bottom:1px dashed var(--line)}.gh.up b{font-weight:500;color:var(--mut)}.up-l{color:var(--mut);text-decoration:none}.up-l:hover{color:var(--fg)}.nxs{margin-left:auto;font-size:13px;color:var(--mut,#5c5c56);text-decoration:none}.nxs:hover{color:var(--fg)}.nxm{color:var(--blue)}
+.vh h2{font-size:17px;margin:0;font-weight:600}
+.srch{width:220px;max-width:100%;min-height:34px;border:1px solid var(--btnbd);border-radius:8px;padding:0 10px;font:inherit;font-size:13px;background:var(--card)}
+.quiet{display:flex;align-items:center;flex-wrap:wrap;gap:6px;font-size:12px;color:var(--mut)}
+.quiet .sep{color:var(--faint)}
+.cat{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--ink2);white-space:nowrap}
+.cat .ell{overflow:hidden;text-overflow:ellipsis;min-width:0}
+.cat{max-width:100%;overflow:hidden}
+.cdot{width:8px;height:8px;border-radius:2px;flex:none;background:var(--grey)}
+.tone-blue{background:#3B6FD8}.tone-amber{background:#D38A1C}.tone-teal{background:#1E9C8A}.tone-purple{background:#6B4FBF}
+.vsum{display:flex;align-items:center;flex-wrap:wrap;gap:6px 16px;padding:2px 0 4px}
+.vs{display:inline-flex;align-items:center;gap:6px;font-size:12px}
+.vl{color:var(--mut)}
+.vv{display:inline-flex;align-items:center;min-height:22px;padding:0 8px;border-radius:6px;background:var(--chip);color:var(--ink);font-weight:500}
+.vsum .qlink{margin-left:auto}
+.qlink{border:0;padding:0;background:transparent;font-size:12px;color:var(--blue);cursor:pointer;text-decoration:underline;text-decoration-color:var(--blueline);text-underline-offset:3px}
+.mut{color:var(--mut)}.sm{font-size:12px}
+.tbl{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.scroll{overflow-x:auto}
+.row{display:grid;gap:12px;align-items:center;padding:0 14px 0 8px;min-height:48px;border-top:1px solid var(--soft);min-width:640px}
+.row.hd{min-height:34px;background:var(--side);border-top:0;font-size:12px;font-weight:600;color:var(--mut)}
+.row input,.gh input{width:16px;height:16px;margin:0}
+.nmw{display:flex;align-items:center;min-width:0}
+.nmw .new{flex:none}
+.row .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .nm b{font-weight:600}
+.tg{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border:0;border-radius:6px;background:transparent;cursor:pointer}
+.tg:hover{background:var(--soft)}
+.cv{width:7px;height:7px;border-right:2px solid var(--mut);border-bottom:2px solid var(--mut);transform:rotate(-45deg)}
+.cv.o{transform:rotate(45deg);margin-top:-3px}
+.row.open,.xp{background:var(--open)}
+.gh{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 16px;border-top:1px solid var(--line);background:var(--gh);font-size:13px}
+.gh:first-of-type{border-top:0}
+.st{display:inline-flex;align-items:center;gap:7px;font-size:13px;white-space:nowrap}
+.d{width:10px;height:10px;border-radius:50%;flex:none;display:inline-block}
+.d-notrun{border:2px solid var(--grey)}.d-scheduled{border:2px dashed var(--blue)}.d-paused{border:2px dashed var(--grey)}.d-queued{border:2px solid var(--blue)}.d-running{background:var(--blue)}.d-needs{background:var(--amberdot)}.d-check{background:#B07AD9}.d-failed{background:var(--red)}
+.d-stopped{background:var(--red)}.d-done{background:var(--green)}
+.tres{font-weight:600}.st.tres{display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:middle}
+.miss{border:1px solid var(--bd2);border-left:4px solid var(--amberdot);border-radius:8px;padding:10px 14px;margin:10px 0}
+.miss ul{margin:6px 0 0;padding-left:18px}.miss li{font-size:13px;margin:2px 0}.tres.pass{color:var(--green)}.tres.fail{color:var(--amberdot)}.d-skipped,.d-nothing{background:#C9C6BE}
+.st-needs{color:var(--amber);font-weight:600}
+.when{font-size:12px;color:var(--mut);white-space:nowrap}
+.when2{display:flex;flex-direction:column;font-size:12px;color:var(--ink2);white-space:nowrap;line-height:1.3}
+.when2 .w2{font-size:11px;color:var(--mut)}
+.new{display:inline-block;margin-left:8px;padding:0 6px;border-radius:6px;background:var(--newbg);color:var(--blue);font-size:11px;font-weight:600;vertical-align:1px}
+.tag2{font-size:12px;color:var(--mut);font-weight:400}
+.swarn{display:inline-flex;align-items:center;margin-left:6px;padding:0;border:0;background:none;cursor:pointer;color:#b26a00;text-decoration:none;flex:none}.swarn:hover{color:#8a4f00}.swarn svg{display:block}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .swarn{color:#f0b35a}}:root[data-theme=dark] .swarn{color:#f0b35a}
+.swarn.sinfo{color:#2B7BB9}.swarn.sinfo:hover{color:#1d5f92}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .swarn.sinfo{color:#7cc0ef}}:root[data-theme=dark] .swarn.sinfo{color:#7cc0ef}
+.act{position:relative;display:flex;align-items:center;justify-content:flex-end;gap:4px}
+.more3{width:28px;height:28px;border:0;border-radius:6px;background:transparent;color:var(--mut);font-size:16px;line-height:1;cursor:pointer}
+.more3:hover,.more3[aria-expanded="true"]{background:var(--chip);color:var(--ink)}
+.menu3{position:absolute;right:0;top:34px;z-index:6;width:220px;padding:6px;background:var(--card);border:1px solid var(--btnbd);border-radius:10px;box-shadow:0 12px 30px rgba(0,0,0,.18);text-align:left;cursor:default}
+.menu3 .mh{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--mut);padding:6px 8px 4px}
+.mi3{display:flex;align-items:center;gap:8px;width:100%;padding:7px 8px;border:0;border-radius:6px;background:transparent;color:var(--ink);font-size:13px;text-align:left;cursor:pointer}
+.mi3:hover{background:var(--chip)}.mi3.on{font-weight:600}
+.mi3 .ck{width:12px;font-size:12px;color:var(--blue)}
+.mi3.pri3{color:var(--blue);font-weight:600}
+a.mi3{text-decoration:none}
+.btn.sb.sdel{color:var(--red)}
+.mi3.del{color:var(--red)}
+.msep{height:1px;background:var(--line);margin:5px 4px}
+.xp{padding:6px 18px 18px 64px;border-top:0}
+.xp.not{border-left:3px solid var(--grey)}.xp.ran{border-left:3px solid var(--green)}.xp.need{border-left:3px solid var(--amberdot)}.xp.run{border-left:3px solid var(--blue)}
+.kind{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 8px;border-radius:6px;margin-bottom:10px;background:var(--soft);color:var(--ink2)}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.k{font-size:12px;font-weight:600;color:var(--mut);margin-bottom:4px}
+.kv{display:grid;grid-template-columns:96px minmax(0,1fr);gap:2px 10px;font-size:13px}
+.kv span:nth-child(odd){color:var(--mut)}
+.kv span{overflow-wrap:anywhere}
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 10px}
+.fs{display:inline-flex;align-items:center;min-height:24px;padding:0 9px;border:1px solid var(--line);border-radius:999px;background:var(--card);font-size:12px}
+.step{display:grid;grid-template-columns:62px minmax(0,1fr);gap:10px;align-items:start;padding:3px 0;font-size:13px}
+.tag{display:inline-flex;justify-content:center;font-size:11px;font-weight:600;padding:2px 6px;border-radius:6px;background:var(--soft)}
+.tag.do{background:var(--badb);color:var(--red)}
+
+.acts{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.more{padding:9px 16px;border-top:1px solid var(--soft)}
+.lnk{color:var(--blue);background:transparent;border:0;padding:0;cursor:pointer;font-size:12px;text-decoration:none}
+.empty{padding:28px 16px;text-align:center;color:var(--mut)}
+.selbar{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:8;display:flex;align-items:center;gap:12px;flex-wrap:nowrap;white-space:nowrap;max-width:calc(100vw - 32px);padding:10px 14px;background:var(--card);border:1px solid var(--btnbd);border-radius:12px;box-shadow:0 10px 30px rgba(28,28,26,.14)}
+.tk{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#1F6B3A;font-size:11px;flex:none;margin-top:1px}
+.panel{position:fixed;top:74px;right:16px;bottom:16px;z-index:7;width:400px;max-width:calc(100vw - 32px);background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 48px rgba(28,28,26,.18);display:flex;flex-direction:column;overflow:hidden}
+.ph{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--soft)}
+.ph h2{font-size:16px;margin:0;font-weight:600}
+.pb{flex:1;overflow:auto;padding:6px 18px 14px}
+.pf{display:flex;align-items:center;gap:10px;padding:12px 18px;border-top:1px solid var(--soft);margin-top:auto;flex:none;background:var(--card)}
+.panel .rp-sl,.panel .rp-pl{flex:1 1 auto;min-height:0}.panel .rp-pad,.panel .rp-ctx,.panel .rp-ctxl,.panel .ptabs,.panel .ph{flex:none}
+.ptabs{display:flex;gap:4px;padding:8px 18px 0;border-bottom:1px solid var(--soft)}
+.ptab{border:0;background:transparent;padding:8px 10px;margin-bottom:-1px;border-bottom:2px solid transparent;font-size:13px;color:var(--mut);cursor:pointer}
+.rp-ctx{display:flex;flex-direction:column;gap:4px;padding:10px 18px 0}
+.rp-ctxl{padding:8px 18px 2px}.rp-ctxl .lnk{font-size:13px;font-weight:600;text-decoration:none}
+.rp-segs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:4px;margin-bottom:10px;border-radius:10px;background:var(--soft)}
+.rp-seg{height:32px;border:0;border-radius:7px;background:transparent;font:inherit;font-size:13px;font-weight:500;color:var(--mut);cursor:pointer}
+.rp-seg.on{background:var(--card);color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(20,20,20,.12)}
+.rp-seg:disabled{opacity:.45;cursor:default}
+.rp-gearb{display:inline-flex;align-items:center;justify-content:center}.rp-gearb.on{background:var(--soft);color:var(--ink)}
+.rp-gear{position:absolute;top:56px;right:50px;z-index:3;width:280px;padding:12px;display:flex;flex-direction:column;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 28px rgba(28,28,26,.16)}
+.rp-gh{font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);padding:2px 4px 6px}
+.rp-gsw{display:flex;align-items:center;gap:10px;width:100%;padding:8px 4px;border:0;border-radius:8px;background:none;font:inherit;text-align:left;color:var(--ink);cursor:pointer}.rp-gsw:hover{background:var(--hover)}
+.rp-gsw .tx{flex:1;display:flex;flex-direction:column;gap:2px}.rp-gsw b{font-size:13px;font-weight:600}.rp-gsw .tx span{font-size:12px;color:var(--mut)}
+.rp-gsw .rp-sw{pointer-events:none}
+.rp-ctx label{font-size:12px;font-weight:600;color:var(--ink)}
+.rp-ctx textarea{font:inherit;font-size:13px;resize:vertical;min-height:40px;padding:6px 8px;border:1px solid var(--btnbd);border-radius:8px;background:var(--card);color:var(--ink)}
+.rp-sws{display:flex;flex-wrap:wrap;gap:6px 16px;padding:10px 14px 0}
+.rp-sw{display:inline-flex;align-items:center;gap:8px;border:0;background:transparent;padding:2px 0;font-size:12px;color:var(--ink);cursor:pointer}
+.rp-sw .tr{position:relative;width:26px;height:15px;border-radius:8px;background:var(--btnbd);transition:background .15s}
+.rp-sw .tr span{position:absolute;top:2px;left:2px;width:11px;height:11px;border-radius:50%;background:#fff;transition:left .15s}
+.rp-sw.on .tr{background:var(--ok,#1a7f37)}.rp-sw.on .tr span{left:13px}
+.ptab.on{color:var(--ink);font-weight:600;border-bottom-color:var(--ink)}
+.past{padding:12px 0;border-bottom:1px solid var(--soft)}
+.past .p1{display:flex;align-items:center;gap:8px;font-size:13px}
+.past .p2{font-size:13px;color:var(--ink2);margin-top:4px}
+.past .p3{display:flex;justify-content:space-between;gap:10px;font-size:12px;margin-top:4px}
+.past .p4{display:flex;gap:14px;margin-top:8px}
+.area{font-size:12px;color:var(--mut);margin:12px 0 2px}
+.tr{display:flex;align-items:center;gap:10px;padding:7px 0;cursor:pointer}
+.tr input{width:16px;height:16px;flex:none;margin:0}
+.tr .nm2{flex:1;min-width:0}
+
+/* the Run panel: a type-to-run box with tags (New run), and a filtered list of runs (Past runs) */
+.rp-pad{padding:14px 18px 6px;position:relative}
+.rp-box{display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-height:42px;padding:6px 8px;border:1px solid var(--line);border-radius:10px;background:var(--card);cursor:text}
+.rp-box:focus-within{border-color:var(--blue);box-shadow:0 0 0 3px color-mix(in srgb,var(--blue) 18%,transparent)}
+.rp-in{flex:1;min-width:120px;border:0;outline:0;background:transparent;font:inherit;font-size:13.5px;color:var(--ink);padding:3px 2px}
+.rp-tok{display:inline-flex;align-items:center;gap:5px;padding:3px 4px 3px 7px;border-radius:6px;background:var(--soft);font-size:12.5px;font-weight:500;cursor:default}
+.rp-tok[data-rpop]{cursor:pointer}.rp-tok em{font-style:normal;color:var(--mut);font-weight:600;margin-left:1px}
+.rp-tok button{border:0;background:none;color:var(--faint);font:inherit;font-size:14px;line-height:1;padding:0 3px;cursor:pointer}.rp-tok button:hover{color:var(--ink)}
+.rp-tok.sel{background:var(--bluebg);box-shadow:inset 0 0 0 1.5px var(--blue)}
+.rp-hint{font-size:12px;color:var(--faint);padding:6px 2px 0}.rp-hint .lnk{font-size:12px;margin-left:4px}
+.rp-sl{padding:2px 10px 10px;overflow:auto}.rp-sh{font-size:11.5px;font-weight:600;color:var(--faint);padding:10px 8px 3px}
+.rp-sr{display:flex;align-items:center;gap:10px;width:100%;padding:7px 8px;border:0;border-radius:8px;background:none;font:inherit;font-size:13.5px;color:var(--ink);text-align:left;cursor:pointer}
+.rp-sr:hover{background:var(--hover)}.rp-sr.hi{background:var(--bluebg)}.rp-sr.dim{opacity:.45;cursor:default}
+.rp-sr .st{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rp-sr .st b{font-weight:600}.rp-sr .st span{color:var(--faint)}
+.rp-sr kbd{font:11px ui-monospace,Menlo,monospace;color:var(--faint)}
+.rp-pop{margin-top:8px;border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 20px rgba(28,25,23,.10);padding:6px;background:var(--card)}
+.rp-poph{display:flex;align-items:center;gap:8px;padding:6px 8px;font-size:13px}.rp-poph b{flex:1}.rp-poph span{font-size:12px;color:var(--mut)}
+.rp-popr{display:flex;align-items:center;gap:10px;width:100%;padding:6px 8px;margin-top:2px;border:0;border-radius:7px;background:var(--bluebg);font:inherit;font-size:13.5px;color:var(--ink);text-align:left;cursor:pointer}
+.rp-popr.off{background:none;color:var(--faint)}.rp-popr .ck{width:14px;color:var(--blue);font-weight:700}.rp-popr span:nth-child(2){flex:1}.rp-popr .r{font-size:12px;color:var(--faint)}
+.rp-pophint{font-size:11.5px;color:var(--faint);padding:6px 8px 2px}
+.rp-empty{display:flex;flex-direction:column;gap:4px;padding:16px 20px}.rp-empty span,.rp-empty small{font-size:12.5px;color:var(--mut)}.rp-empty small{font-size:11.5px;color:var(--faint)}.rp-empty .lnk{align-self:flex-start;margin-top:8px;font-weight:600}
+.rp-pl{padding:2px 14px 10px;overflow:auto}.rp-dh{display:flex;justify-content:space-between;font-size:11.5px;font-weight:600;color:var(--faint);padding:12px 4px 4px}.rp-dh span+span{font-weight:500}
+.rp-pr{display:grid;grid-template-columns:14px minmax(0,1fr) auto auto 34px;gap:8px;align-items:center;padding:6px 4px;border-top:1px solid var(--soft);border-radius:6px;cursor:pointer;position:relative}
+.rp-pr:hover{background:var(--hover)}.rp-pr.live{background:var(--bluebg)}
+.rp-pr .sl1{font-size:13.5px}.rp-pr .sl2{padding-left:0}.rp-pr .spill{margin-top:-1px}
+.rp-acts{display:none;gap:6px}.rp-pr:hover .rp-acts{display:flex}.rp-pr:hover .rp-st{display:none}.rp-acts .btn{padding:2px 8px;font-size:12px}
+.rp-pr.sub{cursor:default;background:var(--open,#fcfcfa);border-top:0;padding:6px 4px}.rp-pr.sub:hover{background:var(--open,#fcfcfa)}.rp-pr.sub .stree{left:10px}.rp-pr.sub .stree::after{display:none}
+.rp-emp{display:flex;flex-direction:column;align-items:center;gap:4px;padding:28px 20px;text-align:center}.rp-emp span{font-size:12.5px;color:var(--mut);max-width:280px}.rp-emp .lnk{margin-top:8px;font-weight:600}
+
+.rp-n{font-size:12px;color:var(--mut);white-space:nowrap}.rp-pr .sl1{height:22px}.rp-pr.sub .rp-n{font-size:11.5px}
+.rp-cat{display:flex;align-items:center;gap:4px;padding:1px 0}.rp-cat .schev{height:30px}
+.rp-catb{flex:1;display:flex;align-items:center;gap:8px;padding:6px 8px;border:0;border-radius:8px;background:none;font:inherit;font-size:13.5px;color:var(--ink);text-align:left;cursor:pointer}.rp-catb:hover,.rp-wf:hover{background:var(--hover)}
+.rp-catb b{font-weight:600;flex:1}.rp-cnt{font-size:12px;color:var(--mut)}
+.rp-wf{display:flex;align-items:center;gap:8px;width:calc(100% - 18px);margin-left:18px;padding:5px 8px;border:0;border-radius:8px;background:none;font:inherit;font-size:13.5px;color:var(--faint);text-align:left;cursor:pointer}
+.rp-wf.on{color:var(--ink)}.rp-wf .st{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rp-wf .r{font-size:12px;color:var(--faint)}
+.rp-ck{flex:none;width:16px;text-align:center;font-size:13px;font-weight:700;color:var(--blue)}  /* a tick, not a box */
+/* the Run panel, grouped like the Builder's sidebar (older) */
+.pkc{display:flex;align-items:center;gap:8px;margin-top:10px;padding:4px 0;font-size:12.5px;font-weight:600;color:var(--ink2,#57534e)}
+.pkc input{width:15px;height:15px;margin:0}.pkcn{flex:1}.pkcc{font-weight:500;color:var(--mut);font-size:12px}
+.pkf{display:flex;align-items:center;justify-content:center;width:14px;height:18px;padding:0;border:0;background:none;color:var(--faint);cursor:pointer}
+.pkf svg{transition:transform .15s}.pkf[aria-expanded=true] svg{transform:rotate(90deg)}
+.pastr{display:grid;grid-template-columns:minmax(0,1fr) auto 34px;gap:10px;align-items:start;width:100%;padding:8px 2px;border:0;border-top:1px solid var(--soft);background:none;font:inherit;color:var(--ink);text-align:left;cursor:pointer}.pastr:hover{background:var(--hover)}.pastr .sl1{font-size:13.5px}.pastr .sl2{padding-left:0}
+.pkr{padding:5px 0 5px 22px;font-size:13.5px}.pkr input{width:15px;height:15px}.pkr .nm2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.last{font-size:12px;color:var(--mut);white-space:nowrap}
+.mode label{display:flex;align-items:flex-start;gap:10px;padding:5px 0;font-size:13px;cursor:pointer}
+.mode input{margin-top:3px}
+.prog{height:4px;border-radius:999px;background:var(--soft);overflow:hidden;margin-top:10px}
+.prog span{display:block;height:4px;background:var(--blue)}
+.ptr{display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--soft);font-size:13px}
+.ptr:first-child{border-top:0}
+.ic{width:14px;height:14px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700}
+.ic.ok{background:#1F6B3A;color:#FFFFFF}.ic.go{border:2px solid var(--blue);border-right-color:var(--blueline)}
+.res{font-size:12px;color:var(--mut);text-align:right}
+.tab{position:fixed;top:90px;right:0;z-index:7;display:flex;align-items:center;gap:10px;padding:10px 12px 10px 14px;border:1px solid var(--line);border-right:0;border-radius:12px 0 0 12px;background:var(--card);box-shadow:0 10px 30px rgba(28,28,26,.14);color:var(--ink);cursor:pointer;text-align:left}
+.tab .t2{display:flex;flex-direction:column;line-height:1.3;font-size:13px}
+.x{border:0;background:transparent;font-size:18px;color:var(--mut);cursor:pointer;width:30px;height:30px;border-radius:6px}
+.x:hover,.col:hover{background:var(--soft)}
+.col{border:0;background:transparent;font-size:12px;color:var(--mut);cursor:pointer;padding:6px 8px;border-radius:6px}
+/* steps: rail, skill bars, tags, Details switch */
+:root{--soft:#FAFAF8;--fg:#1a1a18;--bd:#e3e3de;--bd2:#d2d2cb;--acc:#2b55c6;--selb:#eef2fc;--run:#1d3e99;--runb:#e2e9fb;--need:#8a4100;--needb:#fcebd7;--ok:#1e6b3e;--okb:#dff1e6;--skipb:#ecece8;
+  --k-d:#3d3d39;--k-i:#0b5c5c;--k-s:#1d3e99;--k-a:#4b3a99;--k-n:#8a4b00;--k-w:#1f6b2e;--k-b:#7a3b8f;--k-e:#1d3e99;
+  --bar-d:#8a8a83;--bar-s:#2b55c6;--bar-i:#0f6e6e;--bar-n:#c27012;--bar-w:#2f8f45;--bar-a:#6b4fbf;--bar-b:#9a5bb0;--bar-e:#2b55c6}
+.xa{padding:6px 18px 18px 64px;background:var(--open);border-top:0}
+.xa .runout{background:var(--card)}.xa .acts{margin-top:12px}
+.xa .out .k .ktook{text-transform:none;letter-spacing:0;font-weight:500}
+.xa .out{margin:0 0 12px;padding:12px 14px;border-radius:10px;background:var(--card);border:1px solid var(--bd)}
+.xa .out .k,.xa .wait .k,.stepsh .k{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--mut)}
+.xa .out .v{font-weight:600;margin-top:2px}
+.xa .wait{margin:0 0 12px;padding:12px 14px;border-radius:10px;background:var(--needb);color:var(--need)}
+.xa .wait .k{color:var(--need)}.xa .wait .q{font-size:15px;font-weight:600;margin-top:2px}
+.xa .wait.info{background:var(--soft);color:var(--ink)}.xa .wait.info .k{color:var(--mut)}.xa .wait.info .q{font-weight:400;font-size:14px}
+.idl{font-size:12px;color:var(--mut);margin-top:12px}.idl code{font-family:ui-monospace,Menlo,monospace;font-size:11px}
+.row:not(.hd){cursor:pointer}.row:not(.hd):hover{background:var(--hover)}.row.open:hover{background:var(--open)}
+.row.flash{box-shadow:inset 3px 0 0 var(--blue);background:var(--bluebg)}
+
+:root{--btnbd:#D6D3CB;--chip:#EFEDE8;--open:#FAFAF7;--gh:#F3F1EC;--newbg:#E8EEFD;--badb:#FBE7E6;--askbg:#FFF8EC;--hover:#FBFAF7;--pri:#1D4ED8;color-scheme:light dark}
+/* dark: same switch as the other board pages (system setting, or data-theme) */
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#1c1c1a;--card:#262624;--line:#3d3d3a;--soft:#2c2c29;--side:#21211f;--pill:#33332f;--ink:#f1efe8;--ink2:#dcdad2;--mut:#b4b2a9;--faint:#6f6d66;--blue:#9db8f5;--bluebg:#22304f;--blueline:#3a4f7d;--green:#a8d8b6;--amber:#fac775;--amberdot:#e0a050;--red:#f7c1c1;--grey:#8a8a83;--btnbd:#55554f;--chip:#33332f;--open:#2a2a27;--gh:#2f2f2c;--newbg:#22355f;--badb:#6b1f1f;--askbg:#5a3405;--hover:#2b2b28;--pri:#2b55c6;--fg:#f1efe8;--bd:#3d3d3a;--bd2:#55554f;--acc:#9db8f5;--selb:#22304f;--run:#b5cdf6;--runb:#22355f;--need:#fac775;--needb:#5a3405;--ok:#a8d8b6;--okb:#1f4a2f;--skipb:#3a3a37;--k-d:#e4e2da;--k-i:#8fd6d0;--k-s:#b5cdf6;--k-a:#cbbdf5;--k-n:#f3c38a;--k-w:#a6dcb0;--k-b:#d9b3e6;--k-e:#b5cdf6;--bar-d:#8a8a83;--bar-s:#7d9ef0;--bar-i:#4fb3ac;--bar-n:#e0a050;--bar-w:#64bf78;--bar-a:#a48ee8;--bar-b:#c08ad6;--bar-e:#7d9ef0}}
+:root[data-theme=dark]{--bg:#1c1c1a;--card:#262624;--line:#3d3d3a;--soft:#2c2c29;--side:#21211f;--pill:#33332f;--ink:#f1efe8;--ink2:#dcdad2;--mut:#b4b2a9;--faint:#6f6d66;--blue:#9db8f5;--bluebg:#22304f;--blueline:#3a4f7d;--green:#a8d8b6;--amber:#fac775;--amberdot:#e0a050;--red:#f7c1c1;--grey:#8a8a83;--btnbd:#55554f;--chip:#33332f;--open:#2a2a27;--gh:#2f2f2c;--newbg:#22355f;--badb:#6b1f1f;--askbg:#5a3405;--hover:#2b2b28;--pri:#2b55c6;--fg:#f1efe8;--bd:#3d3d3a;--bd2:#55554f;--acc:#9db8f5;--selb:#22304f;--run:#b5cdf6;--runb:#22355f;--need:#fac775;--needb:#5a3405;--ok:#a8d8b6;--okb:#1f4a2f;--skipb:#3a3a37;--k-d:#e4e2da;--k-i:#8fd6d0;--k-s:#b5cdf6;--k-a:#cbbdf5;--k-n:#f3c38a;--k-w:#a6dcb0;--k-b:#d9b3e6;--k-e:#b5cdf6;--bar-d:#8a8a83;--bar-s:#7d9ef0;--bar-i:#4fb3ac;--bar-n:#e0a050;--bar-w:#64bf78;--bar-a:#a48ee8;--bar-b:#c08ad6;--bar-e:#7d9ef0}
+.pw{margin-top:6px;font-size:13px;line-height:19px}
+.pw b{font-size:13px}.pwl span:first-child{font-weight:600}.pwl .st{margin-left:4px;vertical-align:-1px}
+.pwlib{font-weight:600}
+:root{--tree:color-mix(in srgb,var(--mut) 45%,transparent)}
+/* the simple list (simpleHtml): one grid for every row; the run's chevron, its category dot and its items' chevrons line up */
+.slist{display:flex;flex-direction:column;min-width:0}
+.srow{display:grid;grid-template-columns:16px 14px minmax(0,1fr) 116px 76px 30px;gap:12px;align-items:start;padding:10px 8px;border-top:1px solid var(--soft);position:relative}
+.srow.shd{padding:0 8px 6px;border-top:0;border-bottom:1px solid var(--line);font-size:11.5px;font-weight:600;color:var(--faint)}
+.srun{cursor:pointer}.srun:hover,.sitem:hover{background:var(--hover)}.srun.open{background:var(--open)}
+.sday{padding:16px 8px 6px;font-size:12px;font-weight:600;color:var(--faint)}
+.schev{display:flex;align-items:center;justify-content:center;width:14px;height:20px;padding:0;border:0;background:none;color:var(--faint);cursor:pointer}
+.schev svg{transition:transform .15s}.schev[aria-expanded=true]{color:var(--ink)}.schev[aria-expanded=true] svg{transform:rotate(90deg)}
+.sname{display:flex;flex-direction:column;gap:2px;min-width:0}
+.sl1{display:flex;align-items:center;gap:7px;height:20px;font-size:14px;white-space:nowrap;overflow:hidden;min-width:0}
+.sl1 b{font-weight:600;overflow:hidden;text-overflow:ellipsis}.scat{color:var(--ink2,#57534e)}.ssep{color:var(--faint)}
+.sl2{padding-left:17px;font-size:12.5px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stag{font-size:11px;font-weight:600;color:#5b4bb8;background:#ede9fb;border-radius:999px;padding:0 7px}
+.spill{justify-self:start;display:inline-flex;align-items:center;gap:6px;height:22px;margin-top:-1px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap;background:var(--okb);color:var(--ok)}
+.spill.s-needs,.spill.s-check{background:var(--needb);color:var(--need)}.spill.s-failed,.spill.s-stopped{background:var(--fl-failb,#fdecea);color:var(--fl-fail,#b42318)}
+.spill.s-notrun,.spill.s-skipped,.spill.s-nothing{background:transparent;color:var(--mut);box-shadow:inset 0 0 0 1px var(--bd2)}.spill.s-running,.spill.s-queued{background:var(--runb);color:var(--run)}
+.sw{font-size:12.5px;line-height:20px;color:var(--mut);text-align:right;white-space:nowrap}
+.srow.shd .sw{font-size:inherit;line-height:inherit;color:inherit}
+.sact{justify-content:flex-end;margin-top:-4px}.srow .sact .more3{visibility:hidden}.srow:hover .sact .more3,.srow .sact .more3[aria-expanded=true]{visibility:visible}
+.sitem{padding:7px 8px;background:var(--open);cursor:pointer}.sitem .sl1{font-size:13.5px}.sitn{overflow:hidden;text-overflow:ellipsis}
+.stree{position:absolute;left:43px;top:0;bottom:0;border-left:1.5px solid var(--tree)}.sitem.last .stree{bottom:50%}
+.stree::after{content:"";position:absolute;left:0;top:calc(50% - 1px);width:17px;border-top:1.5px solid var(--tree)}
+.sitem .stree::after{top:17px}.sitem.last .stree{bottom:auto;height:17px}
+.sbrief{display:flex;flex-direction:column;gap:10px;padding:4px 8px 16px 62px;background:var(--open)}
+.fnudge{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin:0 0 10px 62px;padding:10px 14px;border:1px solid var(--acc);border-radius:10px;background:var(--selb,var(--open));font-size:13.5px}
+.fnudge span{flex:1;min-width:220px}
+.sbrief .fnudge{margin:0}
+.sbrief .obare>p{font-size:14px}
+/* the outcome under an opened item: inset behind a line on its left */
+.sbrief .obare,.xa .obare{margin:2px 0 0 2px;padding:2px 0 4px 16px;border-left:2px solid var(--line)}
+.sbrief.s3{padding-left:88px;background-image:linear-gradient(var(--tree),var(--tree));background-size:1.5px 100%;background-position:43px 0;background-repeat:no-repeat}.sbrief.s3.last{background-image:none}
+.sbrief p{margin:0;font-size:14px;line-height:1.5}.sbrief .squote{font-size:13px;color:var(--mut);border-left:2px solid var(--line);padding-left:10px}
+.sbtns{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.slink{font-size:13px;color:var(--blue);text-decoration:none;margin-left:4px}
+.shint{font-size:12px;color:var(--faint)}
+.srunact{padding:8px 8px 12px 62px;background:var(--open)}
+.snext{color:var(--mut)}
+.sreset{position:fixed;right:20px;bottom:20px;z-index:8;display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--card);box-shadow:0 6px 20px rgba(28,28,26,.14);font:inherit;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer}
+.sreset span{font-weight:500;color:var(--mut)}.sreset:hover{border-color:var(--ink)}body.tb-has-act .sreset{bottom:60px}
+.vh .sdelv{color:var(--fl-fail,#b42318)}
+body.tb-has-act .selbar{bottom:60px}body.tb-has-act .panel{bottom:56px} /* above the live bar at the bottom (topbar.js) */
+/* selecting: a checkbox per run (all its items) and per item; the bar at the bottom copies, runs, skips or deletes them */
+.scb{width:15px;height:15px;margin:2px 0 0;cursor:pointer;accent-color:var(--blue)}.srow.shd .scb{margin:0}
+.srow .scb{opacity:.35}.srow:hover .scb,.srow .scb:checked,.srow .scb:indeterminate,.srow.shd .scb{opacity:1}
+.srow.sel{background:var(--bluebg)}
+
+/* separation: each day sits between two lines; a hairline between runs, a fainter one between a run's items */
+.sgrp{border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.sgrp>.srow{border-top:1px solid color-mix(in srgb,var(--line) 75%,transparent)}.sgrp>.srow:first-child{border-top:0}
+.sgrp>.srow.sitem{border-top:1px solid color-mix(in srgb,var(--line) 40%,transparent)}
+.sgrp .srun.open{box-shadow:inset 0 1px 0 color-mix(in srgb,var(--line) 75%,transparent)}
+.sday{padding:18px 4px 8px}.srow.shd{border-bottom:0;padding-bottom:2px}
+/* the run tier (render: runRowHtml): a run row, its items joined to it by tree lines, an item's outcome under its item */
+.row.runrow{display:flex;gap:10px;min-height:52px;padding:6px 14px 6px 8px;border-top:1px solid var(--line);background:var(--card)}
+.row.solo{border-top:1px solid var(--line)}
+.row.runrow.ropen{background:var(--gh)}.row.runrow .d{margin:0 2px}
+.runrow .rt{display:flex;flex-direction:column;min-width:0;gap:1px}.runrow .rt b{font-weight:600;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rchips{display:flex;gap:6px;flex-wrap:wrap;margin-left:8px}
+.rchip{font-size:11.5px;font-weight:600;border-radius:999px;padding:1px 8px;white-space:nowrap;background:var(--skipb);color:var(--mut)}
+.rchip.c-needs,.rchip.c-check{background:var(--needb);color:var(--need)}.rchip.c-failed,.rchip.c-stopped{background:var(--fl-failb,#fdecea);color:var(--fl-fail,#b42318)}
+.rchip.c-done{background:var(--okb);color:var(--ok)}.rchip.c-running,.rchip.c-queued{background:var(--runb);color:var(--run)}
+.rline{display:flex;align-items:center;gap:12px;padding:6px 14px 6px 46px;font-size:12px;color:var(--mut);background:var(--gh);border-top:1px solid var(--soft);
+  background-image:linear-gradient(var(--tree),var(--tree));background-size:1.5px 100%;background-position:21px 0;background-repeat:no-repeat}
+.rline span{flex:1;min-width:0}.rline a{color:var(--blue);text-decoration:none;white-space:nowrap}
+.row.t2{position:relative;padding-left:34px;min-height:42px}
+.row.t2::before{content:"";position:absolute;left:21px;top:0;bottom:0;border-left:1.5px solid var(--tree)}
+.row.t2.last::before{bottom:50%}
+.row.t2::after{content:"";position:absolute;left:21px;top:50%;width:11px;border-top:1.5px solid var(--tree)}
+.xa.t3,.xp.t3{padding-left:90px;background-image:linear-gradient(var(--tree),var(--tree));background-size:1.5px 100%;background-position:21px 0;background-repeat:no-repeat}
+.xa.t3.last,.xp.t3.last{background-image:none}
+/* the first-run popover (the plugin's demo) over the Inbox, and the strip that stays after Skip */
+.wpop{position:fixed;inset:0;z-index:60;display:flex;align-items:safe center;justify-content:center;padding:24px;background:rgba(20,20,19,.34);opacity:1;transition:opacity .7s ease}
+.wpop.out{opacity:0;pointer-events:none}
+.wpop .wbox{position:relative;width:min(680px,100%);max-height:calc(100vh - 48px);overflow-y:auto;box-sizing:border-box;padding:56px 64px 48px;display:flex;flex-direction:column;align-items:center;gap:22px;text-align:center;border-radius:20px;background:var(--bg);color:var(--ink);box-shadow:0 30px 80px rgba(20,20,19,.28);font-family:Inter,system-ui,sans-serif}
+.wpop .wskip{position:absolute;top:14px;right:16px;display:flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border:0;border-radius:8px;background:transparent;color:var(--ink2);font:inherit;font-size:13px;cursor:pointer}
+.wpop .weye{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--acc)}
+.wpop h1{margin:0;font-family:"Space Grotesk",Inter,sans-serif;font-size:44px;line-height:1.06;letter-spacing:-.02em;font-weight:600}
+.wpop .wlead{margin:0;max-width:470px;font-size:16px;line-height:1.55;color:var(--ink2)}
+.wpop .wrun{width:100%;display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.wpop label{font-size:13px;font-weight:600;color:var(--ink)}
+.wpop .wcmd{display:flex;align-items:center;gap:12px;padding:10px 10px 10px 22px;border:2px solid var(--ink);border-radius:16px;background:var(--card)}
+.wpop .wcmd input{flex:1;min-width:0;border:0;outline:0;background:transparent;font:inherit;font-size:22px;font-weight:600;color:var(--ink)}
+.wpop .wcopy{min-height:52px;border:0;border-radius:11px;padding:0 26px;background:var(--acc);color:var(--card);font:inherit;font-size:16px;font-weight:600;cursor:pointer}
+.wpop .wcopy.ok{background:#2f8a4a;color:#fff}
+.wpop .whint{font-size:13px;color:var(--ink2);min-height:18px}
+.wpop .wfacts{font-size:12.5px;color:var(--mut)}
+@media (max-width:640px){.wpop .wbox{padding:48px 22px 32px}.wpop h1{font-size:32px}.wpop .wcmd input{font-size:18px}}
+.wstrip{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:0 0 16px;padding:14px 18px;border:1px dashed var(--btnbd);border-radius:12px;color:var(--ink2);font-size:13.5px}
+.wstrip code{padding:3px 8px;border-radius:6px;background:var(--pill);font-size:13px}
+.wstrip .pri{background:var(--acc);border-color:var(--acc);color:var(--card)}
+/* narrow windows (about a third of a desktop screen or less): last, so it wins over the rules above */
+@media (max-width:760px){.wrap{flex-wrap:nowrap}.main{padding:14px 14px 120px}.row{min-width:0;gap:8px;padding:0 8px 0 4px}.srow{grid-template-columns:14px 12px minmax(0,1fr) 92px 34px 26px;gap:8px;padding:10px 4px}
+  .side.drawer{position:fixed;top:56px;left:0;z-index:40;width:min(280px,86vw);max-width:none;height:calc(100vh - 56px);overflow-y:auto;box-shadow:0 18px 48px rgba(0,0,0,.35)}
+  #sidescrim{position:fixed;top:56px;left:0;right:0;bottom:0;z-index:39;background:rgba(0,0,0,.35)}}
+#sidescrim[hidden]{display:none}
+@media (max-width:480px){.srow .scat,.srow .ssep{display:none}} /* very narrow: the coloured dot says the category, the name gets the room */
+</style>
+</head>
+<body>
+<header id="topbar" data-page="inbox"></header>
+<script src="topbar.js"></script>
+<div class="wrap">
+<nav class="side" aria-label="Views" id="side"></nav>
+<main class="main" id="app"><div class="empty">Loading…</div></main>
+</div>
+<div id="float"></div>
+<script>/* old links: workflows.html?w=… was the Workflow Viewer until 0.11.0, and the old dispatcher.html board used ?run=<request> and ?wf=<item> */(function(q){if(q.has("w"))return location.replace("workflow-viewer.html"+location.search+location.hash);var to=q.has("wf")?"item="+encodeURIComponent(q.get("wf")):q.has("run")?"pullin="+encodeURIComponent(q.get("run")):"";if(to)location.replace("workflows.html?"+to)})(new URLSearchParams(location.search))</script>
+<script src="runpath.js"></script>
+<script src="steps.js"></script>
+<script>
+/* Items: every item the workflow manager has seen, run or not, in one table.
+   Data: board-data.js (traces + done list), workflows-data.js (workflow names), views.json (views Claude writes).
+   The page never runs anything itself: every button copies a line for the Claude chat. See README.md, "Inbox page". */
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function ts(v){if(typeof v==="number")return v;var d=new Date(v);return isNaN(d)?0:d/1000}
+var DAYS=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+function hm(d){return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")}
+function when(t){if(!t)return"";var d=new Date(t*1000),n=new Date(),day=86400000;
+  var a=new Date(n.getFullYear(),n.getMonth(),n.getDate()).getTime(),b=new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime();
+  if(a===b)return hm(d);if(a-b===day)return"Yesterday "+hm(d);if(a-b<6*day)return DAYS[d.getDay()]+" "+hm(d);return d.getDate()+" "+d.toLocaleString("en-GB",{month:"short"})+" "+hm(d)}
+function dayLabel(t){var d=new Date(t*1000),n=new Date(),day=86400000,a=new Date(n.getFullYear(),n.getMonth(),n.getDate()).getTime(),b=new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime();
+  return a===b?"Today":a-b===day?"Yesterday":a-b<6*day?DAYS[d.getDay()]:d.toLocaleDateString("en-GB",{day:"numeric",month:"short"})}
+function ago(t){if(!t)return"";var s=Math.max(0,Date.now()/1000-t);return s<60?"just now":s<3600?Math.floor(s/60)+" min ago":s<82800?Math.floor(s/3600)+" h ago":s<172800?"yesterday":Math.floor(s/86400)+" days ago"}
+function exact(t){return t?new Date(t*1000).toLocaleString("en-GB",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):""}
+function age(t){var s=Math.max(0,Date.now()/1000-t);return s<3600?Math.max(1,Math.round(s/60))+" min":s<86400?Math.round(s/3600)+" h":Math.round(s/86400)+" days"}
+
+var B=null,W=null,V={views:[]},SIG="",ITEMS=[],BYKEY={},REQ={};
+var UI={view:"all",ow:{},open:{},ropen:{},sel:{},q:"",panel:"closed",pick:null,mode:"pull",more:{},toast:null,stage:{}};
+/* the rows you opened (runs and items) stay open when you leave the Inbox and come back, or switch views */
+var OPENKEY="board.inbox.open";
+/* each view keeps its own: rows opened in Recent stay open in Recent only; a run's own page has its own too */
+UI.byView={};UI.vk="";
+try{var _o=JSON.parse(localStorage.getItem(OPENKEY)||"{}");if(_o&&_o.views)UI.byView=_o.views;else if(_o&&(_o.open||_o.ropen))UI.byView={all:{open:_o.open||{},ropen:_o.ropen||{}}}}catch(e){}
+function viewKey(v){return v.id==="run"?"run:"+v.run:v.id}
+function useView(v){var k=viewKey(v);if(k===UI.vk)return;if(UI.vk)UI.byView[UI.vk]={open:UI.open,ropen:UI.ropen,more:UI.more};
+  var st=UI.byView[k]||{};UI.open=st.open||{};UI.ropen=st.ropen||{};UI.more=st.more||{};UI.vk=k}
+function saveOpen(){try{var pick=function(o){var r={};Object.keys(o||{}).forEach(function(k){if(o[k]!==undefined)r[k]=o[k]});return r};if(UI.vk)UI.byView[UI.vk]={open:pick(UI.open),ropen:pick(UI.ropen),more:{}};
+  localStorage.setItem(OPENKEY,JSON.stringify({views:UI.byView}))}catch(e){}}
+try{UI.sideFold=localStorage.getItem("board.inbox.sidefold")==="1"}catch(e){}
+/* a narrow window (about a third of a desktop screen, or less): the views start folded to their rail, and open as a
+   drawer over the list instead of pushing it down; picking a view, or a click outside, closes it */
+var NARROW=window.matchMedia("(max-width:760px)");
+function sideFolded(){return NARROW.matches?!UI.sideDrawer:!!UI.sideFold}
+try{NARROW.addEventListener("change",function(){UI.sideDrawer=false;render()})}catch(e){}
+
+/* ---------- workflow names: same rules as the Workflow Viewer ---------- */
+/* which workflow a run belongs to and which path it took: runpath.js, the same code the Workflow Viewer runs */
+var runSkills=RunPath.runSkills;
+function wfOf(run){return RunPath.classify(run,W)}
+function routeOf(run){if(!W||!run||!B)return"";var o=RunPath.ofRun(run,W,B.runs);return!o.done||!o.hasPaths?"":o.path||"Not one of the paths"}
+function catPath(k){var out=[],seen={},C=(W&&W.categories)||{};while(k&&C[k]&&!seen[k]){seen[k]=1;out.unshift(C[k]);k=C[k].parent}return out}
+function wfNames(def,skill){ /* -> {name:"Security · Alert", path:"Check B · Mac sign-in", area:"Security"} */
+  if(!def&&W&&skill)def=W.workflows.filter(function(w){return w.skill===skill})[0];
+  if(!def)return{name:skill?skill.replace(/^workflow-/,"").replace(/-/g," "):"Unknown workflow",path:"",area:""};
+  var p=catPath(def.category);
+  if(p.length>1)return{name:p.map(function(c){return c.name}).join(" · "),path:def.short||"",area:p[0].name};
+  return{name:(p[0]?p[0].name+" · ":"")+(def.short||def.name),path:"",area:p[0]?p[0].name:""}}
+function entryLabel(id){var e=((B&&B.entries)||[]).filter(function(x){return x.id===id})[0];return e?e.label:id?id:""}
+
+/* ---------- items from the traces and the done list ---------- */
+function build(){
+  var items={},reqs={};
+  function get(k){return items[k]||(items[k]={key:k,wf:/^wf-/.test(k)?k:"",name:"",attempts:[],events:[],ledger:[],entry:"",skill:"",input:null})}
+  B.runs.forEach(function(r){if(r.kind!=="run"&&r.kind!=="batch")reqs[r.id]=r});
+  /* a loop workflow's run (core-architect rule 33, run_item.py batch) is one row: the items that went round its loop
+     live inside it, on its run page, never as rows of their own */
+  var bkey={};B.runs.forEach(function(b){if(b.kind==="batch")bkey[b.group+"|"+b.skill]=b});
+  B.runs.forEach(function(r){
+    if(r.kind==="batch")return;
+    if(r.kind==="run"){var it=get(r.wf||r.id);it.attempts.push(r);if(!it.name)it.name=r.label;it.events.push({t:r.started||r.last,group:r.group,kind:"run"});if(r.via&&!it.skill)it.skill=r.via;return}
+    (r.steps||[]).forEach(function(s){
+      var m=/^forked\s*→\s*(\S+)/.exec(s.step||"");
+      if(m){var run=B.runs.filter(function(x){return x.id===m[1]})[0],k=run?(run.wf||run.id):m[1].replace(/-a\d+$/,"");var it=get(k);if(s.entry)it.entry=s.entry;else if(!it.entry&&r.entry)it.entry=r.entry;if(s.skill&&!it.skill)it.skill=s.skill;if(!it.name&&s.label)it.name=s.label}
+      var lk=RunPath.linkOf(s);if(lk){var it2=get(s.link_wf);if(!it2.name)it2.name=s.label||s.link_wf;if(!it2.entry)it2.entry=s.entry||r.entry||"";
+        it2.events.push({t:ts(s.t)||r.started,group:r.id,kind:lk})}
+    })});
+  (B.ledger||[]).forEach(function(row){if(!row.wf)return;var it=get(row.wf);it.ledger.push(row);if(row.label&&!it.name)it.name=row.label;if(row.entry&&!it.entry)it.entry=row.entry;if(row.skill&&!it.skill)it.skill=row.skill;if(row.input)it.input=row.input;
+    if(row.status==="pulled"&&!row.manual)it.events.push({t:ts(row.t),group:row.run,kind:"pulled"});
+    if(row.status==="queued")it.events.push({t:ts(row.t),group:row.run,kind:"queued"})});  /* kept by a run that is about to run it */
+  var out=[];
+  Object.keys(items).forEach(function(k){var it=items[k];
+    var del=it.ledger.filter(function(r){return r.status==="deleted"}).pop();
+    if(del){var dt=ts(del.t);it.events=it.events.filter(function(e){return e.t>dt});it.attempts=it.attempts.filter(function(r){return(r.started||0)>dt});
+      it.ledger=it.ledger.filter(function(r){return ts(r.t)>dt})}
+    if(!it.events.length&&!it.attempts.length)return;
+    if(it.attempts.some(function(a){return a.batch})&&it.attempts[it.attempts.length-1].batch)return; /* inside a loop's run */
+    it.events.sort(function(a,b){return a.t-b.t});
+    it.attempts.sort(function(a,b){return(a.attempt||0)-(b.attempt||0)||(a.started||0)-(b.started||0)});
+    /* found again by a later check (already handled): the item stays with the run that handled it, at that run's time;
+       the check gets its own row (checkOnly, below) */
+    var real=it.events.filter(function(e){return e.kind!=="seen"}),seenEv=it.events[it.events.length-1];
+    var last=real.length?real[real.length-1]:seenEv,run=it.attempts[it.attempts.length-1],lrow=it.ledger[it.ledger.length-1]||{};
+    it.run=run||null;it.time=last?last.t:(run&&run.last)||0;it.first=it.events.length?it.events[0].t:it.time;it.group=last?last.group:(run&&run.group)||"";
+    it.seen=!!(seenEv&&seenEv.kind==="seen");it.seenAt=it.seen?seenEv.t:0;it.isNew=!!(last&&last.kind!=="seen"&&it.attempts.length<=1);
+    var lastRunT=run?(run.started||0):0;
+    if(lrow.status==="skipped")it.st="skipped";
+    else if(last&&last.kind==="queued"&&(!run||last.t>lastRunT))it.st=reqs[last.group]&&reqs[last.group].state!=="done"&&reqs[last.group].state!=="stalled"?"queued":"notrun"; /* its run stopped before reaching it: not run */
+    else if(!run||(last&&last.kind==="pulled"&&last.t>=lastRunT))it.st=run||lrow.status==="pulled"?"notrun":"done";
+    else{var e=run.end||{};it.st=run.state==="running"||run.state==="scanning"?"running":run.state==="waiting"?"needs":run.state==="stalled"?"stopped":(run.steps||[]).some(function(x){return x.status==="failed"})?"failed":e.attention==="action"?"needs":e.attention==="review"?"check":"done"}
+    var man=it.ledger.filter(function(r){return r.manual}).pop();
+    if(man&&ts(man.t)>=lastRunT&&!(last&&last.t>ts(man.t))){var ms={pulled:"notrun",marked_done:"done",marked_needs:"needs",skipped:"skipped"}[man.status];if(ms){it.st=ms;it.manualAt=ts(man.t)}}
+    if(!it.name)it.name=it.wf||k;
+    var rn=RunPath.runName(it.name);if(run&&run.rerun_of)rn.tags=RunPath.runNameOf(Object.assign({},run,{label:rn.name})).tags.concat(rn.tags.filter(function(t){return!/^Answered|^Rerun/.test(t)}));it.name=rn.name;it.nameTags=rn.tags.filter(function(t){return t!=="Test"}); /* RUN-TRACE.md, Run names: the item's own name; a test already has its tag */
+    it.sugg=run?((B.suggestions||{}).items||[]).filter(function(s){return s.run===run.id&&s.status==="open"}):[]; /* the run reviewer's open suggestions: a small ⚠, the status unchanged (RUN-TRACE.md, Run review) */
+    if(bkey[it.group+"|"+it.skill]&&!run)return; /* kept for a loop's run, not started yet: the run's row says so */
+    var nm=wfNames(run?wfOf(run):null,it.skill);it.wfName=nm.name;it.path=run?nm.path:"";it.route=routeOf(run);it.area=nm.area;  /* the path (e.g. Check B) is only known once it has run */
+    it.trigger=entryLabel(it.entry);
+    var trow=it.ledger[it.ledger.length-1];it.isTry=!!(trow&&trow.try);it.tryReal=!!(trow&&trow.try_real);it.isTest=!!(trow&&(trow.test||trow.try&&!trow.try_real))||/^test:/.test(k); /* a try is a test on real data (core-dispatcher, Tests): both show in the Tests view */it.testSrc=!it.isTest?"":(trow&&trow.sample)||(run&&run.sample)?"sample":it.isTry?"real data":"recorded"; /* a try (a new workflow's run on real data, sends held back) is real work: it shows with the rest, tagged */ /* its latest line decides: an item tested before it ran for real (a new workflow's first runs) is real work now */
+    var erow=it.ledger.filter(function(r){return r.expect&&r.trace}).pop();  /* the workflow run's expected path; a trigger test's "carries on" is not one */it.expect=erow?erow.expect:"";it.tcase=erow?erow.case:"";it.tversion=(it.ledger.filter(function(r){return r.version}).pop()||{}).version||"";
+    var nrm=function(x){return String(x||"").replace(/^If:\s*/,"").trim()};
+    var rrow=it.ledger.filter(function(r){return r.result}).pop();  /* a trigger test: no run, the dispatcher recorded how the trigger sorted it */
+    it.sortRes=it.isTest&&rrow?rrow.result:"";it.sortExpect=rrow?rrow.expect||"":"";
+    /* Status is the workflow run's status: pass / fail only from a run that is still the item's latest state */
+    it.testRes=!it.isTest||!it.expect||!run||it.st==="notrun"?"":it.st==="running"?"running":!it.route?"":nrm(it.route)===nrm(it.expect)?"pass":"fail";
+    var tp=String(it.trigger||"").split(" · ");it.from=it.entry?(tp.length>1?tp.slice(1).join(" · "):it.trigger):"You";
+    it.category=it.area||(tp.length>1?tp[0]:"")||"Other";
+    var cat=W&&W.categories?Object.keys(W.categories).map(function(k){return W.categories[k]}).filter(function(c){return c.name===it.category&&!c.parent})[0]:null;it.tone=cat?cat.tone:"none";
+    out.push(it)});
+  /* a trigger run that ran no item (nothing kept, or every item already handled) is still a run: its own row, its
+     outcome the request's end line (RunPath.checkOnly) */
+  Object.keys(reqs).forEach(function(id){var r=reqs[id];if(!RunPath.checkOnly(r)||out.some(function(i){return i.group===id}))return;
+    var ek=(r.matches||[]).map(function(m){return m.entry}).filter(Boolean)[0]||"",en=((B.entries||[]).filter(function(x){return x.id===ek})[0])||{id:ek},def=W?wfOfEntry(en):null;
+    var nm=wfNames(def,en.workflow),e=r.end||{},q=String(r.request||""),seen=RunPath.seenSteps(r).length,t=r.started||0;
+    var vd=String(e.verdict||"").replace(/\*\*/g,"")||(seen?"Nothing new: "+seen+" already handled":"Nothing new");
+    var tp=String(entryLabel(ek)).split(" · "),cat=W&&W.categories?Object.keys(W.categories).map(function(k){return W.categories[k]}).filter(function(c){return c.name===(nm.area||tp[0])&&!c.parent})[0]:null;
+    var st=r.state==="stalled"?"stopped":(r.steps||[]).some(function(x){return x.status==="failed"})?"failed":e.attention==="action"?"needs":e.attention==="review"?"check":"nothing";
+    out.push({key:"req:"+id,isReq:true,req:r,wf:"",name:vd,label2:vd,nameTags:[],attempts:[],events:[{t:t,group:id,kind:"check"}],ledger:[],entry:ek,skill:en.workflow||"",input:null,
+      run:null,time:t,first:t,group:id,st:st,sugg:[],wfName:nm.name,path:"",route:"",area:nm.area,trigger:entryLabel(ek),from:tp.length>1?tp.slice(1).join(" · "):entryLabel(ek),
+      category:nm.area||(tp.length>1?tp[0]:"")||"Other",tone:cat?cat.tone:"none",isTry:!!r.try,isTest:!!r.try||/^\s*test\b/i.test(q),testSrc:r.try?"real data":"recorded",testRes:"",expect:"",seenN:seen,isNew:false})});
+  Object.keys(bkey).forEach(function(k){var b=bkey[k],e=b.end||{},def=W?wfOf(b):null,nm=wfNames(def,b.skill),ek=b.entry||"",t=b.started||0;
+    var tp=String(entryLabel(ek)).split(" · "),cat=W&&W.categories?Object.keys(W.categories).map(function(c){return W.categories[c]}).filter(function(c){return c.name===(nm.area||tp[0])&&!c.parent})[0]:null;
+    var st=b.state==="running"||b.state==="scanning"?"running":b.state==="waiting"?"needs":b.state==="stalled"?"stopped":(b.steps||[]).some(function(x){return x.status==="failed"})?"failed":e.attention==="action"?"needs":e.attention==="review"?"check":"done";
+    var its=B.runs.filter(function(x){return x.batch===b.id}).length,vd=String(e.verdict||"").replace(/\*\*/g,"");
+    out.push({key:"run:"+b.id,isBatch:true,run:b,wf:"",name:b.label||nm.name,label2:(vd||b.label||"")+(its&&!vd?" · "+its+" items":""),nameTags:[],attempts:[b],events:[{t:t,group:b.group,kind:"run"}],ledger:[],entry:ek,skill:b.skill||"",input:null,
+      time:b.last||t,first:t,group:b.group,st:st,sugg:((B.suggestions||{}).items||[]).filter(function(s){return s.run===b.id&&s.status==="open"}),wfName:nm.name,path:"",route:"",area:nm.area,trigger:entryLabel(ek),from:tp.length>1?tp.slice(1).join(" · "):entryLabel(ek),
+      category:nm.area||(tp.length>1?tp[0]:"")||"Other",tone:cat?cat.tone:"none",isTry:!!b.try,isTest:!!(b.try||b.test),testSrc:b.try?"real data":"recorded",testRes:"",expect:"",isNew:false})});
+  /* a name every run of a workflow shares (a status page is the same page each time) tells them apart by nothing: such a
+     row shows its outcome instead (RUN-TRACE.md, Run names) */
+  var nmc={};out.forEach(function(it){var k=(it.wfName||it.skill||"")+"|"+it.name;nmc[k]=(nmc[k]||0)+1});
+  out.forEach(function(it){if(it.isReq||it.isBatch)return;var e=it.run&&it.run.end;it.label2=nmc[(it.wfName||it.skill||"")+"|"+it.name]>1&&e&&e.verdict?String(e.verdict).replace(/\*\*/g,""):it.name});
+  /* "New" marks only what the latest pull-in brought in for the first time */
+  var used={};out.forEach(function(it){used[it.group]=1});
+  var latest=Object.keys(reqs).filter(function(k){return used[k]}).map(function(k){return reqs[k]}).sort(function(a,b){return(b.started||0)-(a.started||0)})[0];
+  out.forEach(function(it){it.isNew=!!(latest&&it.group===latest.id&&it.isNew)});
+  /* the first run's nudge lasts until another run starts; a try that waited on you stops saying so once its workflow
+     is published (the fix went into the workflow, so there is nothing left to answer) */
+  var tms=function(x){var t=Date.parse(String(x||""));return isNaN(t)?(+x||0)*1000:t},later=function(r){var t=tms(r&&r.started);return B.runs.some(function(z){return z!==r&&z.kind!=="request"&&!z.batch&&tms(z.started)>t+1000})};
+  out.forEach(function(it){var q=reqs[it.group];it.firstRun=!!(q&&q.first)&&!(it.run&&later(it.run));if(it.firstRun&&UI.open[it.key]===undefined)UI.open[it.key]=true; /* the first run opens by itself */
+    var d=it.run&&it.run.try&&W?wfOf(it.run):null;if(it.st==="needs"&&d&&d.category&&d.category!=="new")it.st="done"});
+  ITEMS=out;BYKEY={};out.forEach(function(i){BYKEY[i.key]=i});REQ=reqs;
+}
+
+/* warnings open in place: the ⚠ on a row opens the row on its warnings; [✓ Done] [⚠ 1 warning] in the outcome switch
+   that row's box (steps.js); a warning's Let's fix / Dismiss copy their line for the chat */
+document.addEventListener("click",function(ev){var b=ev.target.closest&&ev.target.closest("[data-owopen],[data-owtab],.owacts [data-copy]");if(!b)return;
+  ev.stopPropagation();ev.preventDefault();
+  if(b.dataset.owopen!=null){var k=b.dataset.owopen;if(k){UI.open[k]=true;UI.ow[k]="warnings"}render();return}
+  if(b.dataset.owtab){if(b.dataset.owkey)UI.ow[b.dataset.owkey]=b.dataset.owtab;render();return}
+  say(b.dataset.copy)},true);
+/* the run reviewer's open path warnings for this run: a small ⚠ that opens the row on its warnings; the status stays as it is */
+function suggWarn(it){var n=(it.sugg||[]).length;if(!n)return"";var info=it.sugg.every(function(s){return s.severity==="info"});
+  var t=n+(info?" info":" warning"+(n>1?"s":""))+" from the path check: "+it.sugg.map(function(s){return s.title}).join("; ");
+  if(info)return'<button class="swarn sinfo" type="button" data-owopen="'+esc(it.key||"")+'" title="'+esc(t)+'" aria-label="'+esc(t)+'"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6M12 7.5h.01"/></svg></button>';
+  return'<button class="swarn" type="button" data-owopen="'+esc(it.key||"")+'" title="'+esc(t)+'" aria-label="'+esc(t)+'"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg></button>'}
+
+/* ---------- views: two built in, the rest written by Claude to views.json ---------- */
+var COLS={item:"Item",category:"Category",workflow:"Workflow",status:"Status",when:"When",added:"Added",lastrun:"Last run",time:"Last update",trigger:"From",pulled:"Pulled in",waiting:"Waiting",attempts:"Runs",id:"Workflow ID"};
+var DEFCOLS=["item","trigger","workflow","status","when"];
+var BUILTIN=[{id:"all",name:"Recent",filter:{withTests:true},group:"pullin",sort:"newest"},{id:"scheduled",name:"Scheduled",filter:{scheduled:true},group:"pullin",sort:"newest"}];
+var ST={scheduled:"Scheduled",paused:"Paused",queued:"Queued",notrun:"Not run",running:"Running",failed:"Failed",needs:"Needs you",check:"Check this",stopped:"Stopped",done:"Done",nothing:"Nothing new",skipped:"Skipped"};
+var STORDER=["failed","needs","check","running","queued","notrun","stopped","done","nothing","skipped"];
+function allViews(){return BUILTIN.concat((V.views||[]).filter(function(v){return v&&v.id&&v.name}))}
+function list(x){return x==null?[]:Array.isArray(x)?x.map(String):String(x).split(",").map(function(s){return s.trim()}).filter(Boolean)}
+function curView(){
+  var Q0=new URLSearchParams(location.search),rid=Q0.get("run");
+  if(rid&&REQ[rid]){var rq=REQ[rid],pc=pullCounts(rq),en=pc.order,lb=en.length===1?entryLabel(en[0]):en.length>1?en.length+" workflows":reqTitle(rq).replace(/^SCHED:/,"");
+    return{id:"run",name:lb,run:rid,asked:"",custom:false,group:"pullin",sort:"newest",columns:DEFCOLS.slice(),filter:{withTests:true,pullin:rid},adhoc:false}}  /* one run, from Past runs: Recent narrowed to it, tests included */
+  var Q=new URLSearchParams(location.search),v=allViews().filter(function(x){return x.id===(Q.get("view")||UI.view)})[0]||BUILTIN[0];
+  var f=Object.assign({},v.filter||{}),out={id:v.id,name:v.name,asked:v.asked||"",custom:BUILTIN.indexOf(v)<0,group:v.group||"pullin",sort:v.sort||"newest",columns:list(v.columns).filter(function(c){return COLS[c]})};
+  ["status","workflow","area","trigger","since","q","pullin"].forEach(function(k){if(Q.has(k))f[k]=Q.get(k)});
+  if(Q.has("group"))out.group=Q.get("group");if(Q.has("sort"))out.sort=Q.get("sort");if(Q.has("cols"))out.columns=list(Q.get("cols")).filter(function(c){return COLS[c]});
+  if(!out.columns.length)out.columns=DEFCOLS.slice();if(out.columns.indexOf("item")<0)out.columns.unshift("item");
+  out.filter=f;out.adhoc=["status","workflow","area","trigger","since","q","pullin","group","sort","cols"].some(function(k){return Q.has(k)});return out}
+function sinceT(s){if(!s)return 0;var m=/^(\d+)\s*([hd])$/.exec(String(s));if(m)return Date.now()/1000-(+m[1])*(m[2]==="h"?3600:86400);var t=ts(s);return t||0}
+function matches(it,f){
+  if(f.tests?!it.isTest:it.isTest&&!f.withTests)return false;  /* Recent shows every run, tests included; Tests only tests; other views only real work */
+  if(f.scheduled&&!((REQ[it.group]||{}).schedule||it.events.some(function(e){return(REQ[e.group]||{}).schedule})))return false;  /* items a scheduled run found */  /* test runs show only in the Tests view; every other view is real work */
+  var st=list(f.status).map(function(s){return s.replace(/[-_ ]/g,"").replace("needsyou","needs")});if(st.length&&st.indexOf(it.st)<0)return false;
+  var wf=list(f.workflow).map(function(s){return s.toLowerCase()});if(wf.length&&!wf.some(function(w){return it.wfName.toLowerCase().indexOf(w)>=0||(it.skill||"").toLowerCase().indexOf(w)>=0||(it.path||"").toLowerCase().indexOf(w)>=0}))return false;
+  var ar=list(f.area).map(function(s){return s.toLowerCase()});if(ar.length&&ar.indexOf((it.area||"").toLowerCase())<0)return false;
+  var tr=list(f.trigger).map(function(s){return s.toLowerCase()});if(tr.length&&!tr.some(function(t){return t===(it.entry||"").toLowerCase()||(it.trigger||"").toLowerCase().indexOf(t)>=0}))return false;
+  var s=sinceT(f.since);if(s&&it.time<s)return false;
+  if(f.pullin&&it.group!==f.pullin&&!it.events.some(function(e){return e.group===f.pullin}))return false;
+  var q=((f.q||"")+" "+UI.q).trim().toLowerCase();if(q&&!q.split(/\s+/).every(function(w){return(it.name+" "+it.wfName+" "+it.path+" "+it.trigger+" "+it.wf).toLowerCase().indexOf(w)>=0}))return false;
+  return true}
+var GROUPS={pullin:"Pull-in",day:"Day",trigger:"Trigger",workflow:"Workflow",status:"Status",none:"No groups"};
+function cap(s){s=String(s);return s.charAt(0).toUpperCase()+s.slice(1)}
+function summary(v){ /* -> [label, value] pairs, read-only: what this view shows */
+  var f=v.filter,st=list(f.status),only=[];
+  if(list(f.area).length)only.push(list(f.area).join(", "));if(list(f.workflow).length)only.push(list(f.workflow).join(", "));
+  if(list(f.trigger).length)only.push(entryLabel(list(f.trigger)[0])+(list(f.trigger).length>1?" +"+(list(f.trigger).length-1):""));
+  if(f.since)only.push("last "+String(f.since).replace(/^(\d+)h$/,"$1 hours").replace(/^(\d+)d$/,"$1 days"));if(f.q)only.push("“"+f.q+"”");
+  if(f.pullin){var pr=REQ[f.pullin];only.push("the pull-in "+(pr?when(pr.started):f.pullin))}
+  var p=[["Showing",st.length?st.map(function(s){return ST[s.replace(/[-_ ]/g,"").replace("needsyou","needs")]||s}).join(" or "):"All statuses"]];
+  if(only.length)p.push(["Only",only.join(" · ")]);
+  p.push(["Grouped by",GROUPS[v.group]||cap(v.group)],["Sorted",v.sort==="oldest"?"Oldest first":"Newest first"],["Columns",v.columns.map(function(c){return COLS[c]}).join(", ")]);
+  return p}
+
+/* ---------- copy for the Claude chat ---------- */
+function short(it){return(it.skill||"").replace(/^workflow-/,"")||"the right workflow"}
+function runLine(it){return it.st==="notrun"?"run workflow "+short(it)+" on "+it.wf:"rerun workflow "+it.wf}
+function runText(arr){if(arr.length===1)return runLine(arr[0]);return"Run these "+arr.length+" items one at a time:\n"+arr.map(function(i){return"- "+runLine(i)+"  ("+i.name+")"}).join("\n")}
+/* a run waiting on the user's yes (core-dispatcher, Approvals wait on the Inbox): its last attempt ended Needs you on a step that asks */
+function waitsYes(i){return!!(i&&i.wf&&!i.isTest&&i.st==="needs"&&i.run&&(i.run.steps||[]).some(function(x){return x.status==="needs_user"&&x.ask}))}
+function say(text,what){
+  /* every copy goes through the one toast and button pulse the Builder uses too (topbar.js) */
+  TopBar.copy(text,null,what&&what!=="Copied for the Claude chat"?what:null)}
+
+/* ---------- render ---------- */
+function stHtml(s){return'<span class="st'+(s==="needs"?" st-needs":"")+'"><span class="d d-'+s+'" aria-hidden="true"></span>'+esc(ST[s]||s)+"</span>"}
+function lastRun(it){var r=it.run;if(!r)return 0;return(r.end&&ts(r.end.t))||r.last||r.started||0}
+function cell(c,it){
+  if(it.sched){if(c==="item")return'<span class="nmw"><span class="nm"><b>'+esc(it.name)+"</b></span></span>";
+    if(c==="when")return'<span class="when2"><span>'+(it.next?esc(RunPath.whenNext(it.next)):"paused")+"</span>"+(it.next?'<span class="w2">next run · '+esc(RunPath.schedText(it.sched))+"</span>":"")+"</span>";
+    if(c==="time"||c==="added"||c==="lastrun"||c==="pulled"||c==="waiting"||c==="attempts"||c==="id")return'<span class="mut sm">–</span>'}
+  if(c==="item"){var wt=it.st==="needs"&&it.run&&it.run.end&&it.run.end.waiting;
+    return'<span style="display:block;min-width:0"><span class="nmw"><span class="nm"><b>'+esc(it.name)+"</b></span>"+suggWarn(it)+(it.isTry&&it.tryReal?'<span class="tag2" style="white-space:nowrap" title="A try of a workflow before it is published, run for real: every step ran, saves and sends included">&nbsp;· Try · for real</span>':it.isTry?'<span class="tag2" style="white-space:nowrap" title="A try of a workflow before it is published: it read your real data and held back every send">&nbsp;· Try · nothing sent</span>':it.seen?'<span class="tag2" style="white-space:nowrap">&nbsp;· seen before</span>':it.isNew?'<span class="new">New</span>':"")+"</span>"+(wt?'<span class="tag2" style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(wt)+'">Waiting: '+esc(wt)+"</span>":"")+"</span>"}
+  if(c==="category")return'<span class="cat"><span class="cdot tone-'+esc(it.tone)+'" aria-hidden="true"></span>'+esc(it.category)+"</span>";
+  if(c==="workflow"){var wn=(CURCOLS.indexOf("category")>=0||CURCOLS.indexOf("trigger")>=0)&&it.area&&it.wfName.indexOf(it.area+" · ")===0?it.wfName.slice(it.area.length+3):it.wfName;return'<span class="sm" title="'+esc(it.wfName+(it.path?" · "+it.path:""))+'">'+esc(wn)+"</span>"}
+  if(c==="status"){if(it.testRes==="pass")return'<span class="st tres pass" title="Took the expected path: '+esc(it.expect)+'">✓ Passed</span>';
+    if(it.testRes==="fail")return'<span class="st tres fail" title="Expected: '+esc(it.expect)+'. '+(it.route?'Took: '+esc(String(it.route).replace(/^If:\s*/,"")):'')+'">✗ Failed</span>';
+    if(it.st==="notrun"&&it.sortRes)return stHtml(it.st).replace('<span class="st"','<span class="st" title="Not run by a workflow yet. Trigger test: '+(it.sortRes==="pass"?"sorted as expected":"not sorted as expected")+(it.sortExpect?" ("+esc(it.sortExpect)+")":"")+'"');
+    return stHtml(it.st)}
+  if(c==="time")return'<span class="when" title="'+esc(exact(it.time))+'">'+esc(ago(it.time))+"</span>";
+  if(c==="when"){ /* one column: what matters most, plus "added …" only when it was added well before it ran */
+    var lr2=lastRun(it),tip="Added "+exact(it.first)+(lr2?" · last run "+exact(lr2):""),main,sub="";
+    if(it.st==="running"){main='<span style="color:var(--blue)">running</span>';sub="started "+ago(it.run&&it.run.started)}
+    else if(it.st==="notrun"){main="added "+esc(ago(it.time));if(lr2)sub="last ran "+ago(lr2)}  /* it.time: its latest pull-in */
+    else if(!lr2){main="added "+esc(ago(it.first))}
+    else{main="ran "+esc(ago(lr2));if(lr2-it.first>1800)sub="added "+ago(it.first)}
+    if(it.manualAt){sub="set by you "+ago(it.manualAt)}
+    return'<span class="when2" title="'+esc(tip)+'"><span>'+main+"</span>"+(sub?'<span class="w2">'+esc(sub)+"</span>":"")+"</span>"}
+  if(c==="added")return'<span class="when" title="Added '+esc(exact(it.first))+'">'+esc(ago(it.first))+"</span>";
+  if(c==="lastrun"){var lr=lastRun(it);return it.st==="running"?'<span class="when" style="color:var(--blue)">running</span>':lr?'<span class="when" title="Last run '+esc(exact(lr))+'">'+esc(ago(lr))+"</span>":'<span class="when">–</span>'}
+  if(c==="trigger"){var sep=CURCOLS.indexOf("category")>=0; /* with no Category column, From carries it: dot + "News · BBC front page" */
+    return'<span class="cat" title="'+esc(it.category+" · "+(it.trigger?it.from:"you, directly"))+'">'+(sep?"":'<span class="cdot tone-'+esc(it.tone)+'" aria-hidden="true"></span>')+'<span class="ell">'+esc(sep?it.from:(it.entry?it.category+" · "+it.from:"You, directly"))+"</span></span>"}
+  if(c==="pulled")return'<span class="when">'+esc(when(it.first))+"</span>";
+  if(c==="waiting")return'<span class="when">'+(it.st==="notrun"?esc(age(it.first)):"–")+"</span>";
+  if(c==="attempts")return'<span class="when">'+(it.attempts.length||"–")+"</span>";
+  if(c==="id")return'<span class="when">'+esc(it.wf||"–")+"</span>";return"<span></span>"}
+var CURCOLS=[];
+var WIDTH={item:"minmax(160px,1fr)",category:"100px",workflow:"130px",status:"108px",when:"130px",added:"86px",lastrun:"86px",time:"104px",trigger:"170px",pulled:"110px",waiting:"80px",attempts:"56px",id:"110px"};
+/* a narrow window: the fixed columns shrink to what they hold ("8h", "Done"), so the item's name keeps most of the row */
+var WIDTH_N={item:"minmax(120px,1fr)",category:"78px",workflow:"96px",status:"94px",when:"44px",added:"44px",lastrun:"56px",time:"64px",trigger:"110px",pulled:"72px",waiting:"56px",attempts:"40px",id:"84px"};
+function grid(cols){var n=typeof NARROW!=="undefined"&&NARROW.matches,W=n?WIDTH_N:WIDTH;return(n?"22px 18px ":"28px 22px ")+cols.map(function(c){return W[c]||WIDTH[c]}).join(" ")+(n?" 32px":" 44px")}
+/* the ⋯ menu: set the status by hand, or delete the row. Saved straight away by the board server (POST /item). */
+var MSET=[["notrun","Not run","pulled"],["done","Done","done"],["needs","Needs you","needs"],["skipped","Skipped","skipped"]];
+function menuHtml(it){
+  var h='<div class="menu3" role="menu" aria-label="Actions for '+esc(it.name)+'">',mi=function(a,l,pri){return'<button class="mi3'+(pri?" pri3":"")+'" role="menuitem" type="button" data-act="'+a+'" data-key="'+esc(it.key)+'"><span class="ck"></span>'+l+"</button>"};
+  if(it.st==="notrun")h+=mi("run","Run",1);else if(it.st==="needs")h+=mi("answer","Answer in Claude chat",1)+mi("rerun","Run again");else if(it.st==="check"||it.st==="failed")h+=mi("discuss","Discuss in Claude chat",1)+mi("rerun","Run again");else if(it.st!=="running")h+=mi("rerun","Run again",1);
+  if(it.st!=="needs"&&it.st!=="check"&&it.st!=="failed")h+=mi("discuss","Discuss in Claude chat");
+  var wl=wfLinkHtml(it);if(wl)h+=wl.replace('class="btn sb"','class="mi3" role="menuitem"').replace(">Open in Builder ↗<",'><span class="ck"></span>Open in Builder ↗<');
+  h+='<div class="msep"></div><div class="mh">Set status</div>';
+  MSET.forEach(function(m){var on=it.st===m[0];h+='<button class="mi3'+(on?" on":"")+'" role="menuitemradio" aria-checked="'+on+'" type="button" data-setst="'+m[2]+'" data-key="'+esc(it.key)+'"><span class="ck">'+(on?"✓":"")+'</span><span class="d d-'+m[0]+'" aria-hidden="true"></span>'+m[1]+"</button>"});
+  h+='<div class="msep"></div><button class="mi3 del" role="menuitem" type="button" data-delrow="'+esc(it.key)+'" title="Copies the command for the Claude chat. If a trigger finds it again, it comes back as new."><span class="ck"></span>Delete row</button>';
+  return h+"</div>"}
+/* every change to an item is a chat command (core-dispatcher, "Change items by hand"): the page writes nothing */
+var MARKCMD={pulled:"not run",done:"done",needs:"needs you"};
+function markLine(its,st){var one=its.length===1,list=its.map(function(i){return"- "+i.wf+"  ("+i.name+")"}).join("\n");
+  if(st==="skipped")return one?"skip "+its[0].wf+"  ("+its[0].name+"): don't run it, and mark it skipped in the done list.":"Skip these items: don't run them, and mark them skipped in the done list:\n"+list;
+  if(st==="deleted")return one?"delete "+its[0].wf+"  ("+its[0].name+") from the board":"delete these items from the board (they come back as new if a trigger finds them again):\n"+list;
+  return one?"mark "+its[0].wf+" "+MARKCMD[st]+"  ("+its[0].name+")":"mark these items "+MARKCMD[st]+":\n"+list}
+/* link to this item's workflow on the Workflow Viewer; a run that happened opens drawn on the flow */
+function wfLinkHtml(it){
+  var def=it.run?wfOf(it.run):null;if(!def&&W&&it.skill)def=W.workflows.filter(function(w){return w.skill===it.skill})[0];if(!def)return"";
+  var url="workflow-viewer.html?w="+encodeURIComponent(def.id)+(it.run&&/^(done|running|scanning|stalled)$/.test(it.run.state)?"&run="+encodeURIComponent(it.run.id):"");
+  return'<a class="btn sb" href="'+url+'" title="'+esc(it.run?"See this run in the Builder, on "+it.wfName+(it.path?" · "+it.path:""):"See "+it.wfName+" in the Builder")+'">Open in Builder ↗</a>'}
+function detail(it){
+  var r=it.run,ns=it.st==="notrun",h="";
+  if(ns){
+    h+='<div class="xp not"><span class="kind"><span class="d d-notrun" aria-hidden="true"></span>Not run yet: what will happen</span><div class="two">';
+    h+='<div><div class="k">It will be given</div>'+(it.input?'<div class="kv">'+Object.keys(it.input).map(function(k){return"<span>"+esc(k)+"</span><span>"+esc(it.input[k])+"</span>"}).join("")+"</div>":'<p class="sm mut" style="margin:0">The details saved when it was pulled in.</p>')+"</div>";
+    h+='<div><div class="k">It will go to</div><p style="margin:0">'+esc(it.wfName)+(it.path?" · "+esc(it.path):"")+'</p><p class="sm mut" style="margin:6px 0 0">From '+esc(it.trigger||"you")+", pulled in "+esc(when(it.first))+". Anything that changes the outside world still asks you first.</p></div>";
+    h+='</div><div class="acts"><button class="btn sb pri" type="button" data-act="run" data-key="'+esc(it.key)+'">Run now</button><button class="btn sb" type="button" data-act="skip" data-key="'+esc(it.key)+'">Skip</button><button class="btn sb" type="button" data-act="discuss" data-key="'+esc(it.key)+'">Discuss in Claude chat</button>'+wfLinkHtml(it)+'</div></div>';
+    return h}
+  if(!r){return'<div class="xa"><div class="out"><div class="k">Outcome</div><div class="v">Handled in an earlier run</div></div><p class="sm mut" style="margin:0">Its run is no longer on this board. Workflow ID '+esc(it.wf)+".</p></div>"}
+  /* an item that ran: just its Workflow outcome (the same box as the Builder's, steps.js) and what you can do next */
+  h+='<div class="xa">'+Steps.outcome(r,{kind:"Workflow",bare:true,boxed:true,chat:"Discuss in Claude chat",inInbox:true,test:it.isTest,details:(wfLinkHtml(it).match(/href="([^"]+)"/)||[])[1]||"",warnings:it.sugg,wtab:UI.ow[it.key],wkey:it.key})+"</div>";
+  return h}
+function groupOf(it,g){
+  if(g==="pullin"){var r=REQ[it.group];return{key:"p:"+(it.group||"none"),t:r?r.started:it.time,req:r}}
+  if(g==="day"){var d=new Date(it.time*1000);return{key:"d:"+d.toDateString(),t:new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime()/1000,label:dayLabel(it.time)}}
+  if(g==="trigger")return{key:"t:"+(it.entry||"you"),label:it.trigger||"You, directly"};
+  if(g==="workflow")return{key:"w:"+it.wfName,label:it.wfName};
+  if(g==="status")return{key:"s:"+it.st,label:ST[it.st],o:STORDER.indexOf(it.st)};
+  return{key:"all"}}
+/* the next scheduled run of any workflow (its trigger's `schedule`), as one quiet link to that workflow */
+var SCHCLK='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;margin-right:3px"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+/* every workflow schedule (its trigger's `schedule`), soonest first; paused ones last when asked for */
+function schedList(withPaused){var list=[];(W&&W.workflows||[]).forEach(function(w){var k=(w.entries||[]).filter(function(x){return(W.entries||{})[x]})[0],sc=k?W.entries[k].schedule:null;
+    if(!sc)return;var t=RunPath.nextRun(sc);if(t||(withPaused&&sc.paused))list.push({w:w,t:t,sc:sc})});
+  return list.sort(function(a,b){return(a.t?a.t.getTime():9e15)-(b.t?b.t.getTime():9e15)})}
+/* the default view: one row saying how many workflows run on a schedule, and the next one, opening the Scheduled view */
+/* a schedule as an item: the workflow it runs, its trigger as From, "Scheduled" (or Paused), and its next run */
+function schedItems(){return schedList(true).map(function(x){var k=(x.w.entries||[]).filter(function(e){return(W.entries||{})[e]})[0],like=ITEMS.filter(function(i){return i.entry===k})[0]||{},sh=x.w.short||x.w.id;
+    return{key:"sched:"+k,sched:x.sc,next:x.t,schedWf:x.w,entry:k,name:sh,st:x.sc.paused?"paused":"scheduled",area:like.area||"",category:like.category||"",tone:like.tone||"none",
+      from:like.from||((W.entries[k]||{}).name||k),trigger:like.trigger||"",wfName:like.wfName||sh,skill:like.skill||"",path:"",wf:"",events:[],first:0,time:x.t?x.t.getTime()/1000:0,
+      seen:false,isNew:false,isTest:false,isTry:false,route:"",input:null,ledger:[],attempts:[]}})}
+function schedRowsHtml(v,gt){var its=schedItems();if(!its.length)return"";
+  var h='<div class="gh"><b>'+SCHCLK+'Coming up</b><span class="mut sm">'+its.length+" scheduled workflow"+(its.length>1?"s":"")+" · each run starts on its own while the Claude app is open</span></div>";
+  its.forEach(function(it){var o=!!UI.open[it.key];BYKEY[it.key]=it;
+    h+='<div class="row'+(o?" open":"")+'" data-row="'+esc(it.key)+'" style="grid-template-columns:'+gt+'"><button class="tg" type="button" data-tog="'+esc(it.key)+'" aria-expanded="'+o+'" aria-label="'+(o?"Close ":"Open ")+esc(it.name)+'"><span class="cv'+(o?" o":"")+'"></span></button><input type="checkbox" disabled aria-label="'+esc(it.name)+'">'+v.columns.map(function(c){return cell(c,it)}).join("")+'<span class="act"></span></div>';
+    if(o)h+=schedDetail(it)});
+  return h}
+/* a schedule, opened: when it runs, what each run does, and the lines to change it */
+function schedDetail(it){var sc=it.sched,n=String(it.skill||"").replace(/^workflow-/,"")||it.schedWf.id,ph=((W.entries||{})[it.entry]||{}).starts_on,ph0=(ph||[])[0]||"run workflow "+n,nx=[],t=it.next;
+  for(var i=0;i<3&&t;i++){nx.push(RunPath.whenNext(t));t=RunPath.nextRun(sc,new Date(t.getTime()+60000))}
+  var b=function(label,line,pri){return'<button class="btn sb'+(pri?" pri":"")+'" type="button" data-act="say" data-line="'+esc(line)+'">'+esc(label)+"</button>"};
+  return'<div class="xp not"><span class="kind"><span class="d d-'+it.st+'" aria-hidden="true"></span>'+(sc.paused?"Paused: it runs only when you ask":"Scheduled: what will happen")+'</span><div class="two">'+
+    '<div><div class="k">When</div><div class="kv"><span>Schedule</span><span>'+esc(RunPath.schedText(sc))+"</span>"+(nx.length?"<span>Next runs</span><span>"+esc(nx.join(", "))+"</span>":"")+
+    '</div><p class="sm mut" style="margin:6px 0 0">Runs while the Claude app is open. A run due while it is closed runs when the app opens, and looks back to the last finished run.</p></div>'+
+    '<div><div class="k">Each run</div><p style="margin:0">Reads what is new from '+esc(it.trigger||it.from)+" and runs each new item through "+esc(it.name)+'.</p><p class="sm mut" style="margin:6px 0 0">Nothing is sent on its own: anything that needs your yes waits here as Needs you.</p></div>'+
+    '</div><div class="acts">'+b("Run it now",ph0,true)+b("Change the schedule","change schedule workflow "+n+": "+RunPath.schedText(sc))+b(sc.paused?"Resume":"Pause",(sc.paused?"resume":"pause")+" schedule workflow "+n)+
+    b("Remove the schedule","remove schedule workflow "+n)+'<a class="btn sb" href="workflow-viewer.html?w='+encodeURIComponent(it.schedWf.id)+'">Open in Builder ↗</a></div></div>'}
+function schedSummaryHtml(){var l=schedList(false);if(!l.length)return"";var f=l[0],wn=RunPath.whenNext(f.t);
+  return'<div class="gh up"><b>'+SCHCLK+esc(l.length+" scheduled workflow"+(l.length>1?"s":""))+'</b><span class="mut sm">'+esc("next run "+wn+", "+(f.w.short||f.w.id))+'</span><span style="flex:1"></span><button class="qlink sm" type="button" data-view="scheduled">View scheduled ›</button></div>'}
+/* the Scheduled view: each schedule and its next run (or paused), then below, what scheduled runs found */
+function upcomingHtml(withPaused){return schedList(withPaused).map(function(x){var wn=x.t?RunPath.whenNext(x.t):"";wn=wn?wn.charAt(0).toUpperCase()+wn.slice(1):"Paused";
+    return'<div class="gh up"><b>'+SCHCLK+esc(wn+" · "+(x.w.short||x.w.id))+'</b><span class="mut sm">'+esc(RunPath.schedText(x.sc)+(x.t?" · not started yet":" · paused"))+'</span><span style="flex:1"></span><a class="sm up-l" href="workflow-viewer.html?w='+encodeURIComponent(x.w.id)+'">Schedule ›</a></div>'}).join("")}
+function nextSchedHtml(){var list=[];(W&&W.workflows||[]).forEach(function(w){var k=(w.entries||[]).filter(function(x){return(W.entries||{})[x]})[0],sc=k?W.entries[k].schedule:null;
+    var t=sc?RunPath.nextRun(sc):null;if(t)list.push({w:w,t:t,sc:sc})});
+  if(!list.length)return"";list.sort(function(a,b){return a.t-b.t});var f=list[0],more=list.slice(1);
+  return'<a class="nxs" href="workflow-viewer.html?w='+encodeURIComponent(f.w.id)+'" title="'+esc(list.map(function(x){return RunPath.whenNext(x.t)+": "+(x.w.short||x.w.id)+" ("+RunPath.schedText(x.sc)+")"}).join("\n"))+'">'+
+    '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;margin-right:4px"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'+"Next scheduled run: "+esc(RunPath.whenNext(f.t))+", "+esc(f.w.short||f.w.id)+(more.length?' <span class="nxm">· '+more.length+" more</span>":"")+"</a>"}
+function reqTitle(r){var q=String(r.request||"").toLowerCase(),ms=(r.matches||[]).map(function(m){return m.entry}).filter(Boolean);
+  if(r.schedule)return'SCHED:'+"Scheduled, "+r.schedule+(ms.length?" · "+ms.map(entryLabel).join(", "):"")+(r.due?" · ran late, when the app opened"+(r.since?" · looked back to "+r.since:""):"");
+  if(/workflow manager|run all triggers|dispatcher/.test(q))return"Run your triggers"+(ms.length?" · "+ms.length+" trigger"+(ms.length>1?"s":""):"");
+  if(r.try||ms.some(function(m){return/^New · /.test(entryLabel(m))}))return"Try · "+(ms.length?ms.map(function(m){return entryLabel(m).replace(/^New · /,"")}).join(", "):String(r.label||"new workflow").replace(/^Try:\s*/,"")); /* a new workflow's try */
+  if(/^\s*rerun/.test(q))return"Rerun";if(/^\s*test\b/.test(q))return/end to end/.test(q)?"Test end to end":/^\s*test trigger/.test(q)?"Test trigger":"Test workflow";if(/^\s*run workflow/.test(q))return"Run one workflow";
+  return ms.length?ms.map(entryLabel).join(", "):(r.request?"“"+r.request+"”":"Request")}
+/* ---------- the simple list (grouped by run): day headings; per run Category · Workflow, what it ran on, one status, the time;
+   open a run for its items (tree lines), open an item for one sentence and the buttons that act on it ---------- */
+var SGRP={}; /* run key -> its selectable item keys (simpleHtml) */
+/* "Reset view": shown once anything is opened or ticked; closes every row and run and clears the ticks */
+function changed(){var on=function(o){return Object.keys(o||{}).some(function(k){return o[k]})};return on(UI.open)||on(UI.ropen)||on(UI.sel)||on(UI.more)}
+function resetBtn(){if(!changed()||UI.panel==="pick")return"";var n=Object.keys(UI.open).filter(function(k){return UI.open[k]}).length+Object.keys(UI.ropen||{}).filter(function(k){return UI.ropen[k]}).length;
+  return'<button class="sreset" type="button" data-act="resetview" title="Close everything you opened and clear the ticks">↺ Reset view'+(n?'<span>'+n+" open</span>":"")+"</button>"}  /* floats bottom right */
+function isSimple(v){return true}  /* every view uses the simple list */
+var CHEV='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>';
+var SRANK=["needs","failed","check","stopped","running","queued","notrun","done","nothing","skipped"];
+function wfShort(it){var d=it.run?wfOf(it.run):null;if(!d&&W&&it.skill)d=(W.workflows||[]).filter(function(w){return w.skill===it.skill})[0];
+  var n=d?(d.short||d.name||""):String(it.wfName||"").split(" · ").slice(-1)[0]||short(it),c=String(it.category||"");
+  if(c&&n.toLowerCase().indexOf(c.toLowerCase()+" ")===0&&/\s/.test(n.slice(c.length+1).trim()))n=n.slice(c.length+1).replace(/^./,function(x){return x.toUpperCase()});return n}
+function dayOf(t){var d=new Date(t*1000),n=new Date(),a=new Date(n.getFullYear(),n.getMonth(),n.getDate()).getTime()/1000;return t>=a?"Today":t>=a-86400?"Yesterday":"Earlier"}
+function sWhen(t){if(!t)return"";var x=Math.max(0,Date.now()/1000-t);  /* relative, short: now, 5m, 3h, 2d, 1w */
+  return x<60?"now":x<3600?Math.floor(x/60)+"m":x<86400?Math.floor(x/3600)+"h":x<7*86400?Math.floor(x/86400)+"d":x<365*86400?Math.floor(x/(7*86400))+"w":Math.floor(x/(365*86400))+"y"}
+function sPill(st,text){return'<span class="spill s-'+st+'">'+(st==="running"?'<span class="pulse" aria-hidden="true"></span>':"")+esc(text||ST[st]||st)+"</span>"}
+function runPill(items){var sts=items.map(function(i){return i.st}),top=SRANK.filter(function(s){return sts.indexOf(s)>=0})[0]||"done",n=sts.filter(function(s){return s===top}).length;
+  if(items.length===1||n===items.length&&top!=="needs")return sPill(top,ST[top]);
+  return sPill(top,n+" "+(top==="needs"?(n===1?"needs you":"need you"):(ST[top]||top).toLowerCase()))}
+function menuBtn(it){return it.wf?'<span class="act sact"><button class="more3" type="button" data-menu="'+esc(it.key)+'" aria-haspopup="menu" aria-expanded="'+(UI.menu===it.key)+'" aria-label="More for '+esc(it.name)+'">⋯</button>'+(UI.menu===it.key?menuHtml(it):"")+"</span>":'<span class="act sact"></span>'}
+/* an opened item: one sentence, what it would send, and the buttons; the full outcome is a click away (See details) */
+/* an opened item: the Workflow outcome box, the same component as the Builder's (steps.js), with See details to the run */
+function briefHtml(it,cls){
+  if(it.isReq){var rq=it.req,ek2=it.entry,sn=RunPath.seenSteps(rq);
+    return'<div class="sbrief '+(cls||"")+'">'+Steps.outcome(rq,{kind:"Workflow",bare:true,boxed:true,inInbox:true,test:it.isTest,details:reqHref(ek2,rq)})+
+      (sn.length?'<p class="sm mut" style="margin:8px 0 0">Already handled, so not run again: '+sn.map(function(x){var i2=BYKEY[x.link_wf];return'<a href="?item='+encodeURIComponent(x.link_wf)+'" data-goitem="'+esc(x.link_wf)+'">'+esc((i2&&i2.name)||x.label||x.link_wf)+"</a>"+(i2&&i2.run?" (ran "+esc(ago(i2.run.started))+")":"")}).join(", ")+".</p>":"")+"</div>"}
+  var r=it.run,href=(wfLinkHtml(it).match(/href="([^"]+)"/)||[])[1]||"",fd=it.firstRun&&r?wfOf(r):null;
+  if(r)return'<div class="sbrief '+(cls||"")+'">'+(fd?firstNudge(fd.id,r.id):"")+Steps.outcome(r,{loopNodes:RunPath.loopNodes(r,W,B.runs),kind:"Workflow",bare:true,boxed:true,inInbox:true,test:it.isTest,details:href,warnings:it.sugg,wtab:UI.ow[it.key],wkey:it.key})+"</div>";
+  var btn=function(lab,a,pri){return'<button class="btn sb'+(pri?" pri":"")+'" type="button" data-act="'+a+'" data-key="'+esc(it.key)+'">'+esc(lab)+"</button>"};
+  return'<div class="sbrief '+(cls||"")+'"><p>'+(it.st==="notrun"?"<b>Not run yet.</b> Found "+esc(ago(it.first))+"; its run ended before it got here.":"Handled in an earlier run that is no longer on this board.")+"</p>"+
+    (it.st==="notrun"?'<div class="sbtns">'+btn("Run it","run",1)+btn("Skip it","skip")+"</div>":"")+"</div>"}
+/* a status pill for one item; in the Tests view its test result (Passed / Failed) when it has one */
+function itemPill(it){if(it.testRes==="pass")return sPill("done","Passed");if(it.testRes==="fail")return sPill("failed","Failed");return sPill(it.st)}
+function groupPill(its){var tr=its.filter(function(i){return i.testRes==="pass"||i.testRes==="fail"});
+  if(its.length===1)return itemPill(its[0]);
+  if(tr.length){var ps=tr.filter(function(i){return i.testRes==="pass"}).length;return sPill(ps===tr.length?"done":"failed",ps+" of "+tr.length+" passed")}
+  return runPill(its)}
+/* one run (or one item standing alone) and, when open, its items and outcomes: the same row in every view */
+function runRowsHtml(g,t,opts){
+  var r=g.req,its=opts.byRun?runOrder(g.items):g.items,one=its.length===1&&!live(r),f=its[0],ro=one?!!UI.open[f.key]||(UI.ropen[g.key]===true):runOpen(g),h="";
+  var wfs={};its.forEach(function(i){wfs[i.category+" · "+wfShort(i)]=i});var wk=Object.keys(wfs),lead=wfs[wk[0]];
+  var sub=one?f.label2||f.name:its.length+" items: "+its.map(function(i){return i.label2||i.name}).join(" · ");
+  var ks=its.filter(function(i){return i.wf||i.isReq}).map(function(i){return i.key}),ns=ks.filter(function(k){return UI.sel[k]}).length;SGRP[g.key]=ks;
+  var rcb=ks.length?'<input type="checkbox" class="scb" data-selrun="'+esc(g.key)+'"'+(ns&&ns===ks.length?" checked":"")+(ns&&ns<ks.length?' data-part="1"':"")+' aria-label="Select '+esc(one?f.name:"this run’s "+ks.length+" items")+'">':"<span></span>";
+  h+='<div class="srow srun'+(ro?" open":"")+(ns?" sel":"")+'" data-rrow="'+esc(g.key)+'"'+(one?' data-one="'+esc(f.key)+'"':"")+'>'+rcb+'<button class="schev" type="button" data-rtog="'+esc(g.key)+'"'+(one?' data-one="'+esc(f.key)+'"':"")+' aria-expanded="'+ro+'" aria-label="'+(ro?"Close":"Open")+'">'+CHEV+"</button>"+
+    '<span class="sname"><span class="sl1"><span class="cdot tone-'+esc(lead.tone)+'" aria-hidden="true"></span><span class="scat">'+esc(lead.category)+'</span><span class="ssep">·</span><b>'+esc(wfShort(lead))+"</b>"+(wk.length>1?'<span class="scat">+ '+(wk.length-1)+" more</span>":"")+(its.some(function(i){return i.isTest})?'<span class="stag" title="A test: nothing was sent. Its data: '+esc(its.filter(function(i){return i.isTest})[0].testSrc)+'">Test</span>':"")+"</span>"+
+    '<span class="sl2">'+esc(sub)+(one?suggWarn(f):its.some(function(i){return(i.sugg||[]).length})?suggWarn({run:{id:""},key:(its.filter(function(i){return(i.sugg||[]).length})[0]||{}).key,sugg:[].concat.apply([],its.map(function(i){return i.sugg||[]}))}):"")+"</span></span>"+groupPill(its)+'<span class="sw" title="'+esc(exact(t))+'">'+esc(sWhen(t))+"</span>"+(one?menuBtn(f):'<span class="sact"></span>')+"</div>";
+  if(!ro)return h;
+  if(one)return h+briefHtml(f,"s2");
+  var lim=UI.more[g.key]?1e9:12,n=Math.min(its.length,lim);
+  its.slice(0,lim).forEach(function(it,ix){var o=!!UI.open[it.key],last=ix===n-1&&its.length<=lim;
+    h+='<div class="srow sitem'+(last?" last":"")+(o?" open":"")+(UI.sel[it.key]?" sel":"")+'" data-row="'+esc(it.key)+'"><span class="stree" aria-hidden="true"></span>'+(it.wf||it.isReq?'<input type="checkbox" class="scb sub" data-sel="'+esc(it.key)+'"'+(UI.sel[it.key]?" checked":"")+' aria-label="Select '+esc(it.name)+'">':"<span></span>")+'<span></span><span class="sname"><span class="sl1"><button class="schev" type="button" data-tog="'+esc(it.key)+'" aria-expanded="'+o+'" aria-label="'+(o?"Close ":"Open ")+esc(it.name)+'">'+CHEV+'</button><span class="sitn">'+esc(it.name)+"</span>"+(it.nameTags||[]).map(function(t){return'<span class="tag2">&nbsp;· '+esc(t)+"</span>"}).join("")+suggWarn(it)+(it.isNew?'<span class="new">New</span>':"")+"</span></span>"+itemPill(it)+'<span class="sw"></span>'+menuBtn(it)+"</div>";
+    if(o)h+=briefHtml(it,"s3"+(last?" last":""))});
+  if(its.length>lim)h+='<div class="more"><button class="lnk" type="button" data-more="'+esc(g.key)+'">Show the other '+(its.length-lim)+"</button></div>";
+  var nr=its.filter(function(i){return i.st==="notrun"&&!i.isTest});
+  if(nr.length)h+='<div class="srunact"><button class="btn sb" type="button" data-act="rungroup" data-g="'+esc(g.key)+'">Run the '+nr.length+" not run</button></div>";
+  return h}
+/* a run that has started but has no row of its own yet: from the moment it is sent, the same row it will become
+   (Category · Workflow, from the trigger its words name), what it is doing now in plain words, and for a first run
+   the way to watch it in the Builder */
+function nowText(r){var t=r.now&&r.now.text?String(r.now.text):"";return!t||/^starting/i.test(t)?"Starting…":t}
+function phRowHtml(r){var t=r.started||0,ek=(r.matches||[]).map(function(m){return m.entry}).filter(Boolean)[0]||r.named||"",en=ek?((B.entries||[]).filter(function(x){return x.id===ek})[0]||{id:ek}):null,def=en&&W?wfOfEntry(en):null;
+  var title;if(def&&!r.schedule){var nm=wfNames(def,en.workflow),cat=W.categories?Object.keys(W.categories).map(function(k){return W.categories[k]}).filter(function(c){return c.name===nm.area&&!c.parent})[0]:null;
+    title='<span class="cdot tone-'+esc(cat?cat.tone:"none")+'" aria-hidden="true"></span><span class="scat">'+esc(nm.area||"")+'</span><span class="ssep">·</span><b>'+esc(def.short||def.name)+"</b>"}
+  else title="<b>"+esc(reqTitle(r).replace(/^SCHED:/,""))+"</b>";
+  return'<div class="srow srun"><span></span><span></span><span class="sname"><span class="sl1">'+title+'</span><span class="sl2">'+esc(nowText(r))+"</span></span>"+sPill("running","Running")+'<span class="sw" title="'+esc(exact(t))+'">'+esc(sWhen(t))+'</span><span class="sact"></span></div>'+(r.first&&def?firstNudge(def.id,r.id):"")}
+/* the first run, started from the welcome: its row says how to watch it step by step */
+function firstNudge(wid,run){return'<div class="fnudge"><span><b>Your first run.</b> Watch each step happen in the Builder.</span><a class="btn sb pri" href="workflow-viewer.html?w='+encodeURIComponent(wid)+"&run="+encodeURIComponent(run)+'">View in Builder ↗</a></div>'}
+/* the Scheduled view's "Coming up": one row per schedule; open it for when it runs and the lines to change it */
+function schedSimpleHtml(){var its=schedItems();if(!its.length)return"";
+  var h='<div class="sday">Coming up</div><div class="sgrp">';
+  its.forEach(function(it){var o=!!UI.open[it.key];BYKEY[it.key]=it;
+    h+='<div class="srow srun'+(o?" open":"")+(UI.sel[it.key]?" sel":"")+'" data-row="'+esc(it.key)+'"><input type="checkbox" class="scb" data-sel="'+esc(it.key)+'"'+(UI.sel[it.key]?" checked":"")+' aria-label="Select '+esc(it.name)+'"><button class="schev" type="button" data-tog="'+esc(it.key)+'" aria-expanded="'+o+'" aria-label="'+(o?"Close ":"Open ")+esc(it.name)+'">'+CHEV+"</button>"+
+      '<span class="sname"><span class="sl1"><span class="cdot tone-'+esc(it.tone)+'" aria-hidden="true"></span><span class="scat">'+esc(it.category||"Other")+'</span><span class="ssep">·</span><b>'+esc(it.name)+'</b></span><span class="sl2">'+esc(RunPath.schedText(it.sched))+"</span></span>"+
+      sPill(it.st==="paused"?"notrun":"queued",it.st==="paused"?"Paused":"Scheduled")+'<span class="sw">'+esc(it.next?RunPath.whenNext(it.next):"")+'</span><span class="sact"></span></div>';
+    if(o)h+='<div class="sbrief s2">'+schedDetail(it)+"</div>"});
+  return h+"</div>"}
+function simpleHtml(v,order,shown,phs){
+  var l=schedList(false),nx=l.length&&v.id==="all"?'<button class="qlink snext" type="button" data-view="scheduled" title="Next: '+esc(wfShortDef(l[0].w))+", "+esc(RunPath.whenNext(l[0].t))+'">'+l.length+" workflow"+(l.length>1?"s":"")+" scheduled</button>":"";  /* All items only */
+  if(v.id==="run"){var rr=REQ[v.run];UI.ropen["p:"+v.run]=UI.ropen["p:"+v.run]===false?false:true;
+    var hh='<div class="vh"><button class="qlink" type="button" data-act="runback">← Back</button><h2>'+esc(v.name)+'</h2><span class="sm mut">'+esc("ran "+(rr?exact(rr.started):""))+"</span></div>";
+    return hh+simpleBody(v,order,shown,phs)}
+  var h='<div class="vh"><h2>'+esc(v.name)+"</h2>"+(v.custom?'<span class="sm mut"'+(v.asked?' title="You asked: '+esc(v.asked)+'"':"")+'>custom view</span>':"")+(v.adhoc?'<button class="qlink" type="button" data-act="clearlink">Back to '+esc(v.name)+"</button>":"")+'<span style="flex:1"></span>'+nx+(v.custom?'<button class="qlink" type="button" data-act="changeview" title="Copies a request to change this view, to paste into the Claude chat">Change view</button>':"")+(v.custom?'<button class="qlink sdelv" type="button" data-act="deleteview" title="Copies a request to delete this view, to paste into the Claude chat">Delete view</button>':"")+"</div>";
+  return h+simpleBody(v,order,shown,phs)}
+function simpleBody(v,order,shown,phs){var h="";
+  var allK=[];order.forEach(function(g){g.items.forEach(function(i){if(i.wf||i.isReq)allK.push(i.key)})});SGRP={};
+  if(v.id==="scheduled")schedItems().forEach(function(i){allK.push(i.key);BYKEY[i.key]=i});
+  h+='<section class="slist" aria-label="'+esc(v.name)+'"><div class="srow shd"><input type="checkbox" class="scb" data-selall="1" aria-label="Select all shown"'+(allK.length&&allK.every(function(k){return UI.sel[k]})?" checked":"")+'><span></span><span>Workflow</span><span>Status</span><span class="sw">When</span><span></span></div>';
+  if(v.id==="scheduled")h+=schedSimpleHtml();
+  var byRun=v.group==="pullin",open="",sec=function(t){h+=(open?"</div>":"")+'<div class="sday">'+esc(t)+'</div><div class="sgrp">';open=t};
+  if(!byRun&&phs.length){sec("Running now");phs.forEach(function(r){h+=phRowHtml(r)})}
+  if(!order.length&&!(byRun&&phs.length)){var pq=v.filter&&v.filter.pullin&&REQ[v.filter.pullin];h+=(open?"</div>":"")+'<div class="empty">'+(pq?libLine(pq,true):v.id==="scheduled"?"Nothing has run on a schedule yet. Items a scheduled run finds show here.":ITEMS.length?"Nothing in this view right now.":"No items yet. Use Run to pull some in.")+"</div>";open=""}
+  order.forEach(function(g){
+    if(byRun){var r=g.req,t=(r&&r.started)||g.t||0,dy=dayOf(t);if(dy!==open)sec(dy);
+      if(g.ph){h+=phRowHtml(r);return}
+      h+=runRowsHtml(g,t,{byRun:true});return}
+    /* any other grouping (day, status, workflow, trigger, none): a heading per group, each item its own row */
+    var lab=v.group==="none"?"All":g.label||"";if(lab!==open)sec(lab);
+    var lim=UI.more[g.key]?1e9:(v.group==="none"?60:20);
+    g.items.slice(0,lim).forEach(function(it){h+=runRowsHtml({key:"i:"+it.key,items:[it],req:null},lastRun(it)||it.time,{})});
+    if(g.items.length>lim)h+='<div class="more"><button class="lnk" type="button" data-more="'+esc(g.key)+'">Show the other '+(g.items.length-lim)+"</button></div>"});
+  return h+(open?"</div>":"")+"</section>"}
+function wfShortDef(w){return w.short||w.name||w.id}
+/* ---------- the run tier: one row per run, its items under it with tree lines, an item's outcome under the item ---------- */
+function tiered(v,g){return v.group==="pullin"&&!v.filter.tests&&!g.ph&&!!g.req}
+function live(r){return!!r&&r.state!=="done"&&r.state!=="stalled"}
+function solo(g){return g.items.length===1&&!live(g.req)}
+function runOpen(g){var k=g.key;if(UI.ropen[k]!==undefined)return UI.ropen[k];return live(g.req)||g.items.some(function(i){return UI.open[i.key]})}
+function runOrder(items){return items.slice().sort(function(a,b){return((a.run&&a.run.started)||a.first||0)-((b.run&&b.run.started)||b.first||0)})}
+var RSW={failed:"failed",needs:"need you",check:"to check",running:"running",queued:"queued",notrun:"not run",stopped:"stopped",done:"done",skipped:"skipped"};
+function runRowHtml(g,title,meta,runBtn,ro){
+  var top=STORDER.filter(function(s){return g.items.some(function(i){return i.st===s})})[0]||"done";
+  var chips=STORDER.map(function(s){var n=g.items.filter(function(i){return i.st===s}).length;return n?'<span class="rchip c-'+s+'">'+n+" "+(n===1&&s==="needs"?"needs you":RSW[s])+"</span>":""}).join("");
+  return'<div class="row runrow'+(ro?" ropen":"")+'" data-rrow="'+esc(g.key)+'"><button class="tg" type="button" data-rtog="'+esc(g.key)+'" aria-expanded="'+ro+'" aria-label="'+(ro?"Close":"Open")+' this run"><span class="cv'+(ro?" o":"")+'"></span></button>'+
+    '<span class="d d-'+top+'" role="img" aria-label="'+esc(ST[top])+'"></span><span class="rt"><b>'+title+'</b><span class="mut sm">'+esc(meta)+'</span></span><span class="rchips">'+chips+'</span><span style="flex:1"></span>'+runBtn+"</div>"}
+/* a request opens on its workflow's page, its trigger stage showing what the trigger did (no trigger page of its own) */
+function reqHref(ek,r){var w=ek?wfOfEntry(Object.assign({id:ek},W.entries[ek])):null;if(!w)return"workflows.html?pullin="+encodeURIComponent(r.id);  /* no dispatcher page: a request no workflow owns stays on the Inbox */
+  return"workflow-viewer.html?w="+encodeURIComponent(w.id)+"&run="+encodeURIComponent(r.id)}
+function runLineHtml(g){var r=g.req,ek=(r.matches||[]).map(function(m){return m.entry}).filter(function(e){return W&&W.entries&&W.entries[e]})[0],tk=Steps.took(r);
+  var href=reqHref(ek,r),vd=r.end&&r.end.verdict?String(r.end.verdict):"";
+  return'<div class="rline"><span>'+esc(vd||(g.items.length+" items from this run"))+(tk?" · "+esc(tk.replace(/^Took/,"took")):"")+'</span><a href="'+esc(href)+'">See run details ↗</a></div>'}
+/* The first look (the plugin's demo): a popover over the Inbox while nothing has run here and it hasn't been skipped.
+   Copy puts the demo's phrase on the clipboard for the chat; the popover fades out by itself once the first run starts.
+   Skip closes it for good and leaves a small strip in the Inbox to copy the phrase or show the welcome again. */
+var POP={copied:false,key:""};
+function popClosed(){try{return!!localStorage.getItem("wm-welcome-closed")}catch(e){return false}}
+function hasRuns(){return ITEMS.some(function(i){return!i.isTest})||Object.keys(REQ).some(function(k){var r=REQ[k];return r.state!=="done"&&r.state!=="stalled"&&Date.now()/1000-(r.started||0)<1800})}
+function popWanted(){return!!(B&&B.demo)&&!popClosed()&&!hasRuns()}
+/* the strip that stays once the popover is skipped, while nothing has run */
+function welcomeStrip(){var D=B&&B.demo;if(!D||!popClosed()||hasRuns())return"";
+  return'<div class="wstrip" role="note"><span style="flex:1;min-width:240px">Try the demo any time: say <code>'+esc(D.phrase)+'</code> in the Claude chat. '+esc(D.needs)+'</span><button class="btn pri" type="button" data-act="welcomecopy">Copy “'+esc(D.phrase)+'”</button><button class="btn" type="button" data-act="welcomeagain">Show the welcome again</button></div>'}
+function popHtml(D){
+  return'<section class="wbox" role="dialog" aria-modal="true" aria-label="Welcome"><button class="wskip" type="button" data-act="welcomeskip">Skip <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6"/></svg></button>'
+   +'<div class="weye">Welcome</div><h1>Start automating<br>your work.</h1>'
+   +'<p class="wlead">'+esc(D.pitch||D.what)+"</p>"
+   +'<div class="wrun"><label for="wm-pop-cmd">Run this command in the Claude chat</label><div class="wcmd"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="var(--acc)" stroke-width="1.6" aria-hidden="true"><path d="M3 8h9M9 4l4 4-4 4"/></svg><input id="wm-pop-cmd" readonly value="'+esc(D.phrase)+'"><button class="wcopy'+(POP.copied?" ok":"")+'" type="button" data-act="welcomecopy">'+(POP.copied?"Copied":"Copy")+"</button></div>"
+   +'<div class="whint">'+(POP.copied?"Now paste it into the Claude chat. This closes once it starts running.":"Copy it, then paste it into the Claude chat.")+"</div></div>"
+   +'<div class="wfacts">'+esc(D.facts||D.needs)+"</div></section>"}
+function renderPop(){var el=document.getElementById("wm-pop"),want=popWanted();
+  if(!want){if(el&&!el.classList.contains("out")){el.classList.add("out");setTimeout(function(){if(el.classList.contains("out"))el.remove()},800)}return}
+  var key=JSON.stringify([B.demo,POP.copied]);
+  if(!el){el=document.createElement("div");el.id="wm-pop";el.className="wpop";document.body.appendChild(el);POP.key=""}
+  el.classList.remove("out");
+  if(POP.key!==key){el.innerHTML=popHtml(B.demo);POP.key=key}}
+document.addEventListener("click",function(ev){var b=ev.target.closest&&ev.target.closest('[data-act="welcomecopy"],[data-act="welcomeskip"],[data-act="welcomeagain"]');if(!b)return;
+  ev.stopPropagation();ev.preventDefault();var a=b.dataset.act;
+  if(a==="welcomecopy"){window.LAUNCH_FROM="welcome";TopBar.copy(B.demo.phrase,b);if(document.getElementById("wm-pop")){POP.copied=true;renderPop()}return}
+  if(a==="welcomeskip"){try{localStorage.setItem("wm-welcome-closed","1")}catch(e){}}
+  if(a==="welcomeagain"){try{localStorage.removeItem("wm-welcome-closed")}catch(e){}POP.copied=false}
+  SIG="";render()},true);
+document.addEventListener("keydown",function(ev){if(ev.key==="Escape"&&document.getElementById("wm-pop")&&popWanted()){try{localStorage.setItem("wm-welcome-closed","1")}catch(e){}SIG="";render()}});
+function render(){
+  if(!B)return;var v=curView(),app=document.getElementById("app");
+  var shown=ITEMS.filter(function(it){return matches(it,v.filter)});
+  shown.sort(function(a,b){return v.sort==="oldest"?a.time-b.time:b.time-a.time});
+  var gs={},order=[];shown.forEach(function(it){var g=groupOf(it,v.group);if(!gs[g.key]){gs[g.key]=g;g.items=[];order.push(g)}gs[g.key].items.push(it)});
+  /* a run that has started but found nothing yet: a placeholder row straight away, replaced by its items as they come */
+  var liveR=Object.keys(REQ).map(function(k){return REQ[k]}).filter(function(r){var q=String(r.request||"");return r.state!=="done"&&r.state!=="stalled"&&Date.now()/1000-(r.started||0)<1800&&(v.filter.withTests||!!v.filter.tests===(/^\s*test\b/i.test(q)||!!r.try))&&!/^\s*(skip|mark|delete|turn)\b/i.test(q)});
+  var phs=liveR.filter(function(r){return!shown.some(function(it){return it.group===r.id})});
+  if(v.group==="pullin")phs.forEach(function(r){var g={key:"p:"+r.id,t:r.started,req:r,items:[],ph:true};gs[g.key]=g;order.push(g)});
+  order.sort(function(a,b){if(v.group==="status")return a.o-b.o;if(v.group==="trigger"||v.group==="workflow")return a.label.localeCompare(b.label);var ta=a.t||Math.max.apply(null,a.items.map(function(i){return i.time})),tb=b.t||Math.max.apply(null,b.items.map(function(i){return i.time}));return v.sort==="oldest"?ta-tb:tb-ta});
+  useView(v);saveOpen();
+  if(isSimple(v)){app.innerHTML=welcomeStrip()+simpleHtml(v,order,shown,phs);renderPop();app.querySelectorAll("[data-part]").forEach(function(x){x.indeterminate=true});renderSide(v);renderFloat();renderRunBtn();return}  /* grouped by run: the simple list (simpleHtml) */
+  CURCOLS=v.columns;var gt=grid(v.columns),h='<div class="vh"><h2>'+esc(v.name)+"</h2>"+(v.custom?'<span class="sm mut"'+(v.asked?' title="You asked: '+esc(v.asked)+'"':"")+">made with Claude</span>":v.id==="all"?'<span class="sm mut">default view</span>':"")+(v.adhoc?'<span class="sm mut">· changed by link</span><button class="qlink" type="button" data-act="clearlink">Back to '+esc(v.name)+"</button>":"")+'</div>';
+  h+='<div class="vsum" aria-label="What this view shows">'+summary(v).map(function(x){return'<span class="vs"><span class="vl">'+esc(x[0])+'</span><span class="vv">'+esc(x[1])+"</span></span>"}).join("")+'<button class="qlink" type="button" data-act="changeview" title="Copies a request to change this view, to paste into the Claude chat">Change view with Claude</button></div>';
+  h+='<section class="tbl" aria-label="'+esc(v.name)+'"><div class="scroll"><div class="row hd" style="grid-template-columns:'+gt+'"><span></span><input type="checkbox" data-selall="1" aria-label="Select all shown"'+(shown.length&&shown.every(function(i){return UI.sel[i.key]})?" checked":"")+">"+v.columns.map(function(c){return"<span>"+COLS[c]+"</span>"}).join("")+'<span class="act"><span style="position:absolute;width:1px;height:1px;overflow:hidden">Actions</span></span></div>';
+  function phRow(r){var n=(r.matches||[]).filter(function(m){return m.entry}).length,kept=(r.steps||[]).filter(function(s){return s.type==="Sorted"}).pop();
+    return'<div class="row phrow" style="grid-template-columns:'+gt+'"><span></span><span class="pulse" aria-hidden="true" style="margin:auto"></span><span style="grid-column:3/-1;min-width:0;justify-self:start;text-align:left"><b>'+(kept?"Running the items it kept":"Looking for items")+'…</b> <span class="mut sm">'+esc(r.now&&r.now.text?"Now: "+r.now.text:kept?kept.result||"":n?"Reading its source":"Starting")+"</span></span></div>"}
+  if(v.group!=="pullin")phs.forEach(function(r){h+=phRow(r)});
+  if(v.id==="all")h+=schedSummaryHtml();
+  if(v.id==="scheduled")h+=schedRowsHtml(v,gt);
+  if(!shown.length&&!phs.length){var pq=v.filter&&v.filter.pullin&&REQ[v.filter.pullin];
+    h+='<div class="empty">'+(pq?libLine(pq,true):v.id==="scheduled"?"Nothing has run on a schedule yet. Items a scheduled run finds show here.":ITEMS.length?"Nothing in this view right now.":"No items yet. Use Run to pull some in.")+"</div>"}
+  order.forEach(function(g){
+    if(g.ph){var pr=g.req;h+='<div class="gh"><b><span class="pulse" aria-hidden="true"></span> '+esc(when(pr.started)+" · "+reqTitle(pr))+' · running</b><span class="mut sm">nothing found yet</span></div>'+phRow(pr);return}
+    if(v.group!=="none"){var nr=g.items.filter(function(i){return i.st==="notrun"&&!i.isTest}),title,meta="";  /* test items are never run for real */
+      if(v.group==="pullin"){var r=g.req;title=r?(when(r.started)+" · "+reqTitle(r).replace(/^SCHED:/,"\u0001")+(function(rt){return rt?" · "+(rt==="Not one of the paths"?"not one of the paths":"took the path “"+rt+"”"):""})(RunPath.ofRequest(r,W,B.runs))):"Earlier";
+        var nw=g.items.filter(function(i){return!i.seen}).length,sn=g.items.length-nw;meta=g.items.length+" item"+(g.items.length>1?"s":"")+(sn?" · "+nw+" new · "+sn+" seen before":"");
+        if(v.filter.tests){var tr=g.items.filter(function(i){return i.testRes==="pass"||i.testRes==="fail"}),ps=tr.filter(function(i){return i.testRes==="pass"}).length,vv=(g.items.filter(function(i){return i.tversion&&i.testRes})[0]||{}).tversion;var sr=g.items.filter(function(i){return i.sortRes==="pass"||i.sortRes==="fail"}),sp=sr.filter(function(i){return i.sortRes==="pass"}).length;meta=(tr.length?ps+" of "+tr.length+" passed":sr.length?sp+" of "+sr.length+" sorted as expected, not run":g.items.length+" item"+(g.items.length>1?"s":""))+(vv?" · "+vv:"")}
+        if(r&&r.state!=="done"&&r.state!=="stalled")title='<span class="pulse" aria-hidden="true"></span> '+esc(title).replace("\u0001",SCHCLK)+" · running"+(r.now&&r.now.text?' · <b>Now:</b> '+esc(r.now.text):"");else title=esc(title).replace("\u0001",SCHCLK)}
+      else{title=esc(g.label||"");meta=g.items.length+" item"+(g.items.length>1?"s":"")}
+      var runBtn=nr.length?'<span class="sm">'+nr.length+' not run</span><button class="btn sb'+(order[0]===g?" pri":"")+'" type="button" data-act="rungroup" data-g="'+esc(g.key)+'">Run '+nr.length+"</button>":"";
+      /* the default grouping is three tiers: the run, its items, an item's outcome. A run of one item is just that item (two tiers) */
+      if(tiered(v,g)){var ro=runOpen(g);
+        if(!solo(g)){h+=runRowHtml(g,title,meta,runBtn,ro);if(!ro)return}}
+      else h+='<div class="gh"><b>'+title+'</b><span class="mut sm">'+esc(meta)+'</span><span style="flex:1"></span>'+runBtn+"</div>"}
+    var lim=UI.more[g.key]?1e9:(v.group==="none"?60:12),t2=v.group!=="none"&&tiered(v,g)&&!solo(g),its=t2?runOrder(g.items):g.items,shownN=Math.min(its.length,lim);
+    if(t2)h+=runLineHtml(g);
+    its.slice(0,lim).forEach(function(it,ix){var o=!!UI.open[it.key],last=t2&&ix===shownN-1&&its.length<=lim;
+      h+='<div class="row'+(o?" open":"")+(t2?" t2"+(last?" last":""):v.group!=="none"&&tiered(v,g)?" solo":"")+'" data-row="'+esc(it.key)+'" style="grid-template-columns:'+gt+'"><button class="tg" type="button" data-tog="'+esc(it.key)+'" aria-expanded="'+o+'" aria-label="'+(o?"Close ":"Open ")+esc(it.name)+'"><span class="cv'+(o?" o":"")+'"></span></button><input type="checkbox" data-sel="'+esc(it.key)+'"'+(UI.sel[it.key]?" checked":"")+(it.wf||it.isReq?"":" disabled")+' aria-label="Select '+esc(it.name)+'">'+v.columns.map(function(c){return cell(c,it)}).join("")+'<span class="act">'+(it.wf?'<button class="more3" type="button" data-menu="'+esc(it.key)+'" aria-haspopup="menu" aria-expanded="'+(UI.menu===it.key)+'" aria-label="More for '+esc(it.name)+'">⋯</button>':"")+(UI.menu===it.key?menuHtml(it):"")+"</span></div>";
+      if(o)h+=t2?detail(it).replace('<div class="xa"','<div class="xa t3'+(last?" last":"")+'"').replace('<div class="xp not"','<div class="xp not t3'+(last?" last":"")+'"'):detail(it)});
+    if(g.items.length>lim)h+='<div class="more"><button class="lnk" type="button" data-more="'+esc(g.key)+'">Show the other '+(g.items.length-lim)+"</button></div>"});
+  h+="</div></section>";
+  var ae=document.activeElement,hadQ=ae&&ae.id==="q",pos=hadQ?ae.selectionStart:0;
+  app.innerHTML=welcomeStrip()+h;renderPop();if(hadQ){var qi=document.getElementById("q");qi.focus();try{qi.setSelectionRange(pos,pos)}catch(e){}}
+  renderSide(v);renderFloat();renderRunBtn()}
+/* the views panel folds to a slim strip of counts ([ or the panel button), remembered per browser */
+var FOLDI=function(open){return'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/><path d="'+(open?"M14 10l2 2-2 2":"M16 10l-2 2 2 2")+'"/></svg>'};
+function renderSide(v){
+  var cnt=function(view){var f=(view.filter||{});return ITEMS.filter(function(it){return matches(it,f)}).length};
+  var custom=(V.views||[]).filter(function(x){return x&&x.id&&x.name});
+  var nsch=schedList(true).length,side=document.getElementById("side"),fd=sideFolded(),dr=NARROW.matches&&!fd;side.classList.toggle("fold",fd);side.classList.toggle("drawer",dr);
+  var scrim=document.getElementById("sidescrim");if(!scrim){scrim=document.createElement("div");scrim.id="sidescrim";scrim.addEventListener("click",function(){UI.sideDrawer=false;render()});document.body.appendChild(scrim)}scrim.hidden=!dr;
+  if(fd){var all=BUILTIN.filter(function(x){return x.id!=="scheduled"||nsch||v.id==="scheduled"}).concat(custom);
+    side.innerHTML='<button class="sfold" type="button" data-act="sidefold" aria-label="Show the views" title="Show the views  [">'+FOLDI(true)+"</button>"+
+      all.map(function(x){var n=x.id==="scheduled"?nsch:cnt(x);return'<button class="vmini'+(x.id===v.id?" on":"")+'" type="button" data-view="'+esc(x.id)+'" aria-label="'+esc(x.name+": "+n)+'" title="'+esc(x.name)+'"'+(x.id===v.id?' aria-current="page"':"")+">"+n+"</button>"}).join("");return}
+  var h='<div class="lbl"><span>Views</span><button class="sfold" type="button" data-act="sidefold" aria-label="Fold the views away" title="Fold away  [">'+FOLDI(false)+"</button></div>"+BUILTIN.filter(function(x){return x.id!=="scheduled"||nsch||v.id==="scheduled"}).map(function(x){return'<button class="v'+(x.id===v.id?" on":"")+'" type="button" data-view="'+x.id+'"'+(x.id===v.id?' aria-current="page"':"")+">"+esc(x.name)+'<span class="n">'+(x.id==="scheduled"?nsch:cnt(x))+"</span></button>"}).join("");
+  if(custom.length)h+='<div class="lbl" style="margin-top:16px">Custom views</div>'+custom.map(function(x){return'<button class="v'+(x.id===v.id?" on":"")+'" type="button" data-view="'+esc(x.id)+'"'+(x.asked?' title="You asked: '+esc(x.asked)+'"':"")+">"+esc(x.name)+'<span class="n">'+cnt(x)+"</span></button>"}).join("");
+  h+='<button class="qnew" type="button" data-act="newview">+ New view <span>via Claude</span></button>';
+  document.getElementById("side").innerHTML=h}
+
+/* ---------- Run triggers panel ---------- */
+/* the "Pulling in" panel and button follow only a trigger run ("run workflow manager", "run all triggers", "run trigger …",
+   a trigger's phrase). One workflow, a rerun, a test, several items or a change by hand never open it. Until the request's
+   text or its trigger line says which it is, it isn't shown. */
+function liveReq(){return TopBar.liveReq(B)} /* topbar.js knows which runs are trigger runs */
+function lastPull(id){var r=B.runs.filter(function(x){return x.kind!=="run"&&(x.matches||[]).some(function(m){return m.entry===id})}).sort(function(a,b){return b.started-a.started})[0];if(!r)return null;
+  var n=(r.steps||[]).filter(function(s){return(s.entry||r.entry)===id&&(/^forked/.test(s.step||"")||RunPath.linkOf(s))}).length;return{t:r.started,n:n}}
+/* the Run triggers / Running button is in the top bar (topbar.js); here it opens this page's panel */
+function openPanel(){if(!B)return;UI.panel=liveReq()?"run":"pick";if(UI.panel==="pick"&&(UI.ptab||"new")==="new")UI.rfocus="rq";renderFloat()}
+TopBar.onRun=openPanel;
+function renderRunBtn(){TopBar.render()}
+function renderFloat(){
+  var h="",L=B&&liveReq();
+  if(L&&UI.panel==="closed")UI.panel="tab";if(!L&&(UI.panel==="run"||UI.panel==="tab"))UI.panel="closed";
+  if(UI.panel==="pick")h+=pickHtml();
+  else if(UI.panel==="run"&&L)h+=runHtml(L);
+  else if(UI.panel==="tab"&&L){var nd=(L.matches||[]).filter(function(m){return m.entry}).length;h+='<button class="tab" type="button" data-act="expand" aria-label="Open the Run workflows panel"><span class="pulse" aria-hidden="true"></span><span class="t2"><b>Pulling in</b><span class="mut sm">'+(L.now&&L.now.text?"Now: "+esc(L.now.text):nd?nd+" trigger"+(nd>1?"s":"")+" so far":"starting")+'</span></span><span class="mut" aria-hidden="true">‹</span></button>'}
+  var sel=Object.keys(UI.sel).filter(function(k){return UI.sel[k]&&BYKEY[k]});
+  if(sel.length){var its=sel.map(function(k){return BYKEY[k]});h+='<div class="selbar" role="region" aria-label="Selected items"><b>'+sel.length+' selected</b><span class="mut sm" style="max-width:300px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(its.map(function(i){return i.name}).join(" · "))+'</span><button class="btn sb" type="button" data-act="copysel" title="Copies the selected items as a list, with their workflow IDs">Copy</button><button class="btn sb sdel" type="button" data-act="delsel">Delete</button>'+(function(){var na=its.filter(waitsYes).length;return na?'<button class="btn sb pri" type="button" data-act="approvesel" title="Copies an answer line for each selected run that waits for your yes: paste it into the Claude chat">Approve '+(na===sel.length?"selected":na)+"</button>":""})()+(function(){var nr=its.filter(function(i){return!i.isReq}).length;return nr?'<button class="btn sb'+(its.some(waitsYes)?"":" pri")+'" type="button" data-act="runsel">Run '+nr+"</button>":""})()+"</div>"}
+  h+=resetBtn();
+  var fl=document.getElementById("float"),ae=document.activeElement,fid=ae&&(ae.id==="rq"||ae.id==="pq"||ae.id==="rpctx")?ae.id:UI.rfocus,pos=ae&&ae.id===fid?ae.selectionStart:null;UI.rfocus="";
+  fl.innerHTML=h;fl.querySelectorAll("[data-part]").forEach(function(x){x.indeterminate=true});
+  var fi=fid&&document.getElementById(fid);if(fi){fi.focus();var n=pos==null?fi.value.length:pos;try{fi.setSelectionRange(n,n)}catch(e){}}}
+function areaOf(e){var p=String(e.label||"").split(" · ");return p.length>1?p[0]:"Other"}
+function nameOf(e){var p=String(e.label||"").split(" · ");return p.length>1?p.slice(1).join(" · "):e.label}
+/* the workflow a trigger starts, by its own short name (a trigger lives inside its workflow) */
+function wfOfEntry(e){var w=W&&(W.workflows||[]).filter(function(x){return(x.entries||[]).indexOf(e.id)>=0||(!!e.workflow&&(x.match||{}).skill===e.workflow)})[0];return w||null}  /* a workflow with no skill of its own never matches an entry that names none */
+function runName(e){var w=wfOfEntry(e);return w?(w.short||w.name||nameOf(e)):nameOf(e)}
+function pickHtml(){
+  var tab=UI.ptab||"new";
+  var h='<aside class="panel" role="dialog" aria-label="Run workflows"><div class="ph"><h2>Run workflows</h2><span style="flex:1"></span>'+(tab==="new"?'<button class="x rp-gearb'+(UI.rgear?" on":"")+'" type="button" data-act="rgear" aria-label="Run settings" aria-expanded="'+!!UI.rgear+'" title="Run settings">'+GEAR+"</button>":"")+'<button class="x" type="button" data-act="closepanel" aria-label="Close">×</button></div>';
+  h+='<div class="ptabs" role="tablist"><button class="ptab'+(tab==="new"?" on":"")+'" role="tab" aria-selected="'+(tab==="new")+'" type="button" data-ptab="new">New run</button><button class="ptab'+(tab==="past"?" on":"")+'" role="tab" aria-selected="'+(tab==="past")+'" type="button" data-ptab="past">Past runs</button></div>';
+  return h+(tab==="past"?pastHtml():newHtml())+(tab==="new"&&UI.rgear?rGearHtml():"")+"</aside>"}
+var GEAR='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>';
+/* the gear's pop-up: the two standing switches. Each copies its "turn … on|off" line for the Claude chat (the board changes nothing itself) */
+function rGearHtml(){var once=!(B.settings&&B.settings.skip_done===false),auto=!(B.settings&&B.settings.auto_approve===false);
+  var sw=function(act,on,label,sub,tip){return'<button class="rp-gsw" type="button" role="switch" aria-checked="'+on+'" data-act="'+act+'" data-to="'+(on?"off":"on")+'" title="'+esc(tip)+'"><span class="tx"><b>'+esc(label)+"</b><span>"+esc(sub)+'</span></span><span class="rp-sw'+(on?" on":"")+'"><span class="tr" aria-hidden="true"><span></span></span></span></button>'};
+  return'<section class="rp-gear" role="dialog" aria-label="Run settings"><div class="rp-gh">Every run</div>'+
+    sw("autoapprove",auto,"Approve automatically",auto?"Steps that need your yes just run":"Steps that need your yes wait in the Inbox",auto?"Click to copy the line that turns it off.":"Click to copy the line that turns it on.")+
+    sw("once",once,"Run each item once",once?"Items already handled are skipped":"Items run again",once?"Click to copy the line that turns it off.":"Click to copy the line that turns it on.")+"</section>"}
+/* ---------- New run: type what to run. The box holds tags (a workflow, or a whole category); suggestions show as
+   you type; Enter adds, Enter on an empty box runs. It opens with what you ran last time. ---------- */
+var RUNLAST="board.run.last";
+function rEntries(){return(B&&B.entries)||[]}
+function rCats(){var o=[],m={};rEntries().forEach(function(e){var a=areaOf(e);if(!m[a]){m[a]=[];o.push(a)}m[a].push(e)});return{order:o,by:m}}
+function rTone(a){var C=(W&&W.categories)||{},c=Object.keys(C).map(function(k){return C[k]}).filter(function(x){return x.name===a&&!x.parent})[0];return c?c.tone:"none"}
+function rName(e){var a=areaOf(e),nm=runName(e);if(nm.toLowerCase().indexOf(a.toLowerCase()+" ")===0&&/\s/.test(nm.slice(a.length+1).trim()))nm=nm.slice(a.length+1).replace(/^./,function(x){return x.toUpperCase()});return nm}
+function rById(id){return rEntries().filter(function(e){return e.id===id})[0]}
+/* the tags as a set of trigger ids; a category tag is its workflows minus the ones taken out */
+function rIds(toks){var out=[],seen={};(toks||UI.rtok||[]).forEach(function(t){var ids=t.c==="cat"?(rCats().by[t.n]||[]).map(function(e){return e.id}).filter(function(id){return!(t.out||{})[id]}):[t.id];
+  ids.forEach(function(id){if(!seen[id]&&rById(id)){seen[id]=1;out.push(id)}})});return out}
+function rTokensFor(ids){var C=rCats(),toks=[],left=ids.slice();C.order.forEach(function(a){var es=C.by[a].map(function(e){return e.id});if(es.length>1&&es.every(function(id){return ids.indexOf(id)>=0})){toks.push({c:"cat",n:a,out:{}});left=left.filter(function(id){return es.indexOf(id)<0})}});
+  left.forEach(function(id){toks.push({c:"wf",id:id})});return toks}
+function rLast(){try{var j=JSON.parse(localStorage.getItem(RUNLAST)||"null");if(j&&j.toks&&rIds(j.toks).length)return j}catch(e){}return null}
+function rInit(){if(UI.rtok)return;var l=rLast();UI.rtok=l?JSON.parse(JSON.stringify(l.toks)):rTokensFor(rEntries().filter(function(e){return e.run_all!==false}).map(function(e){return e.id}));UI.rFromLast=!!l;UI.rq="";UI.rhi=0}
+function rDue(){return rEntries().filter(function(e){if(e.run_all===false)return false;var lp=lastPull(e.id);return!lp||Date.now()/1000-lp.t>20*3600}).map(function(e){return e.id})}
+/* what the box suggests: with nothing typed, ways to start and the categories; with text, matching categories then workflows */
+function rSuggest(){var q=String(UI.rq||"").trim().toLowerCase(),C=rCats(),have=rIds(),out=[];
+  if(!q)return out;
+  C.order.forEach(function(a){if(a.toLowerCase().indexOf(q)<0)return;var ids=C.by[a].map(function(e){return e.id}),inn=ids.every(function(id){return have.indexOf(id)>=0});out.push({k:"cat",cat:a,title:a,sub:inn?"already in":"all "+ids.length+" in the category",dim:inn})});
+  rEntries().forEach(function(e){var nm=rName(e),hay=(nm+" "+runName(e)+" "+areaOf(e)+" "+((e.triggers||[])[0]||"")).toLowerCase();if(hay.indexOf(q)<0)return;var lp=lastPull(e.id),inn=have.indexOf(e.id)>=0;
+    out.push({k:"wf",id:e.id,cat:areaOf(e),title:nm,sub:inn?"already added":areaOf(e)+(lp?" · "+sWhen(lp.t)+" · "+lp.n+" found":" · not run yet"),dim:inn})});return out}
+function rApply(x){if(!x)return;if(x.k==="set"){UI.rtok=rTokensFor(x.ids)}else if(x.k==="cat"){UI.rtok=(UI.rtok||[]).filter(function(t){return!(t.c==="wf"&&areaOf(rById(t.id)||{})===x.cat)&&!(t.c==="cat"&&t.n===x.cat)});UI.rtok.push({c:"cat",n:x.cat,out:{}})}
+  else if(x.k==="wf"&&rIds().indexOf(x.id)<0){var ct=(UI.rtok||[]).filter(function(t){return t.c==="cat"&&t.n===areaOf(rById(x.id))})[0];if(ct&&ct.out[x.id])delete ct.out[x.id];else UI.rtok.push({c:"wf",id:x.id})}
+  UI.rq="";UI.rhi=0;UI.rbs=false;UI.rFromLast=false}
+function rSetIds(ids){UI.rmode="";UI.rtok=rTokensFor(rEntries().map(function(e){return e.id}).filter(function(id){return ids.indexOf(id)>=0}));UI.rFromLast=false;UI.rbs=false}
+function rToggleWf(id){var ids=rIds(),k=ids.indexOf(id);if(k>=0)ids.splice(k,1);else ids.push(id);rSetIds(ids)}
+function rToggleCat(a){var ids=rIds(),es=(rCats().by[a]||[]).map(function(e){return e.id}),all=es.every(function(id){return ids.indexOf(id)>=0});
+  rSetIds(all?ids.filter(function(id){return es.indexOf(id)<0}):ids.concat(es.filter(function(id){return ids.indexOf(id)<0})))}
+/* every category with its workflows: click a category to add or remove all of it, open it to pick single workflows */
+function rTreeHtml(){var C=rCats(),ids=rIds();UI.rexp=UI.rexp||{};
+  var h='<div class="rp-sh">Workflows</div>';
+  C.order.forEach(function(a){var es=C.by[a],k=es.filter(function(e){return ids.indexOf(e.id)>=0}).length,op=!!UI.rexp[a];
+    h+='<div class="rp-cat"><button type="button" class="schev" data-rcexp="'+esc(a)+'" aria-expanded="'+op+'" aria-label="'+(op?"Hide":"Show")+" the workflows in "+esc(a)+'">'+CHEV+'</button><button type="button" class="rp-catb" data-rcat="'+esc(a)+'" title="'+(k===es.length?"Remove all of ":"Add all of ")+esc(a)+'"><span class="cdot tone-'+esc(rTone(a))+'"></span><b>'+esc(a)+'</b><span class="rp-cnt">'+(k===es.length?(k>1?"all "+k:"1"):k?k+" of "+es.length:es.length)+'</span><span class="rp-ck'+(k===es.length?" on":k?" part":"")+'">'+(k===es.length?"✓":k?"–":"")+"</span></button></div>";
+    if(op)es.forEach(function(e){var on=ids.indexOf(e.id)>=0,lp=lastPull(e.id);h+='<button type="button" class="rp-wf'+(on?" on":"")+'" data-rwf="'+esc(e.id)+'"><span class="st">'+esc(rName(e))+'</span><span class="r">'+(lp?esc(sWhen(lp.t))+" · "+lp.n+" found":"not run yet")+'</span><span class="rp-ck'+(on?" on":"")+'">'+(on?"✓":"")+"</span></button>"})});
+  return h}
+function newHtml(){rInit();
+  var toks=UI.rtok,ids=rIds(),C=rCats(),l=rLast(),mode=UI.rmode==="choose"?"choose":UI.rFromLast&&l?"last":ids.length&&ids.length===rEntries().length?"all":"choose";
+  var seg=function(k,label,tip,dis){return'<button type="button" role="radio" class="rp-seg'+(mode===k?" on":"")+'" data-rmode="'+k+'" aria-checked="'+(mode===k)+'"'+(dis?" disabled":"")+' title="'+esc(tip)+'">'+label+"</button>"};
+  var h='<div class="rp-pad"><div class="rp-segs" role="radiogroup" aria-label="What to run">'+
+    seg("last","Last time",l?"What you ran "+sWhen(l.t)+" ago: "+rIds(l.toks).map(function(id){return rName(rById(id))}).join(", "):"Nothing run yet",!l)+
+    seg("all","Everything","All "+rEntries().length+" workflows")+seg("choose","Choose","Pick workflows or categories")+'</div><div class="rp-box" data-rfocus="1">';
+  toks.forEach(function(t,k){var sel=UI.rbs&&k===toks.length-1;
+    if(t.c==="cat"){var all=C.by[t.n]||[],n=all.filter(function(e){return!(t.out||{})[e.id]}).length;
+      h+='<span class="rp-tok'+(sel||UI.rpop===t.n?" sel":"")+'" data-rpop="'+esc(t.n)+'" title="Show what’s in it"><span class="cdot tone-'+esc(rTone(t.n))+'"></span>'+esc(t.n)+'<em>'+(n===all.length?n:n+" of "+all.length)+'</em><button type="button" data-rx="'+k+'" aria-label="Remove '+esc(t.n)+'">×</button></span>'}
+    else{var e=rById(t.id);if(!e)return;h+='<span class="rp-tok'+(sel?" sel":"")+'"><span class="cdot tone-'+esc(rTone(areaOf(e)))+'"></span>'+esc(rName(e))+'<button type="button" data-rx="'+k+'" aria-label="Remove '+esc(rName(e))+'">×</button></span>'}});
+  h+='<input id="rq" class="rp-in" type="text" autocomplete="off" spellcheck="false" value="'+esc(UI.rq||"")+'" placeholder="'+(toks.length?"Add…":"Search workflows or categories…")+'" aria-label="Type a workflow or a category"></div>';
+  if(UI.rpop&&(C.by[UI.rpop])){var t=toks.filter(function(x){return x.c==="cat"&&x.n===UI.rpop})[0];if(t){var all=C.by[UI.rpop],n=all.filter(function(e){return!(t.out||{})[e.id]}).length;
+    h+='<div class="rp-pop"><div class="rp-poph"><span class="cdot tone-'+esc(rTone(UI.rpop))+'"></span><b>'+esc(UI.rpop)+'</b><span>'+n+" of "+all.length+"</span></div>"+all.map(function(e){var on=!(t.out||{})[e.id],lp=lastPull(e.id);
+      return'<button type="button" class="rp-popr'+(on?"":" off")+'" data-rpopt="'+esc(e.id)+'"><span class="ck">'+(on?"✓":"")+"</span><span>"+esc(rName(e))+'</span><span class="r">'+(lp?esc(sWhen(lp.t)):"")+"</span></button>"}).join("")+'<div class="rp-pophint">Click to take one out or put it back</div></div>'}}
+  h+="</div>";
+  var sg=rSuggest(),fd=sg.findIndex(function(x){return!x.dim}),hi=UI.rhi||(fd<0?-1:fd);hi=Math.min(hi,sg.length-1);  /* the first one that can still be added */
+  if(UI.rq&&!sg.length)h+='<div class="rp-empty"><b>No workflow matches “'+esc(UI.rq)+'”</b><span>Try a category: '+esc(C.order.join(", "))+'</span><button class="lnk" type="button" data-act="newwf">+ Add a workflow: “'+esc(UI.rq)+'”</button><small>copies a request for the Claude chat</small></div>';
+  else if(!UI.rpop){h+='<div class="rp-sl" role="listbox">';sg.forEach(function(x,k){if(x.head)h+='<div class="rp-sh">'+esc(x.head)+"</div>";
+      h+='<button type="button" class="rp-sr'+(UI.rq&&k===hi?" hi":"")+(x.dim?" dim":"")+'" data-rsug="'+k+'">'+(x.cat?'<span class="cdot tone-'+esc(rTone(x.cat))+'"></span>':"")+'<span class="st"><b>'+esc(x.title)+"</b> <span>"+esc(x.sub||"")+"</span></span>"+(UI.rq&&k===hi?"<kbd>↵</kbd>":"")+"</button>"});if(!UI.rq)h+=rTreeHtml();h+="</div>"}
+  var once=!(B.settings&&B.settings.skip_done===false),auto=!(B.settings&&B.settings.auto_approve===false);
+  /* extra context for this run, sent with the run line ("… Context: <text>", core-dispatcher's Context): a link until opened */
+  var once=!(B.settings&&B.settings.skip_done===false);
+  if(UI.rctxOpen||UI.rctx)h+='<div class="rp-ctx"><label for="rpctx">Context for this run</label><textarea id="rpctx" rows="2" placeholder="e.g. only the last 2 hours, or mention the Q4 report">'+esc(UI.rctx||"")+"</textarea></div>";
+  else h+='<div class="rp-ctxl"><button class="lnk" type="button" data-act="rctx">+ Add context for this run</button></div>';
+  h+='<div class="pf"><span class="mut sm" style="flex:1">'+(ids.length?ids.length+" workflow"+(ids.length>1?"s":""):"Nothing picked")+(once?"":' · <span style="color:var(--need,#8a4100)">runs items again</span>')+'</span><button class="btn pri" type="button" data-act="start"'+(ids.length?"":" disabled")+">Run"+(ids.length?" "+ids.length:"")+"</button></div>";return h}
+function pullCounts(r){ /* per trigger in one request: how many found, new and pulled, already there, run */
+  var ms=(r.matches||[]).map(function(m){return m.entry}).filter(Boolean),out={};ms.forEach(function(e){out[e]={found:0,ran:0,pulled:0,seen:0}});
+  (r.steps||[]).forEach(function(st){var e=st.entry||ms[0];if(!out[e])return;var c=out[e];
+    if(/^forked/.test(st.step||"")){c.ran++;c.found++}
+    else if(st.type==="Pulled In"){if(/^still waiting/.test(st.step||""))c.seen++;else c.pulled++;c.found++}
+    else if(RunPath.linkOf(st)==="seen"){c.seen++;c.found++}});
+  return{order:ms,by:out}}
+/* a request that ran nothing: say so, and link to its run on its workflow's page, where the trigger stage shows
+   what it read and why nothing carried on (workflow-viewer.html?w=<workflow>&run=<request>) */
+function libLine(r,long){var ek=(r.matches||[]).map(function(m){return m.entry}).filter(function(e){return W&&W.entries&&W.entries[e]})[0];
+  var href=reqHref(ek,r);
+  return(long?"This run didn’t pull anything in"+(r.end&&r.end.verdict?": "+esc(r.end.verdict.replace(/\.$/,""))+".":".")+" ":"<b>Nothing new to run.</b> ")+'<a class="pwlib" href="'+esc(href)+'">See what it did in the Builder ↗</a>'}
+/* ---------- Past runs: newest first under day headings; a run of several opens to each workflow's result; hover for
+   Run again (back into New run) and Open (its items in the Inbox); the box filters by workflow or category ---------- */
+function pastStatus(r,pc){var its=ITEMS.filter(function(i){return i.group===r.id||i.events.some(function(e){return e.group===r.id})}),found=0;pc.order.forEach(function(e){found+=pc.by[e].found});
+  if(r.state!=="done"&&r.state!=="stalled")return sPill("running","Running");if(r.state==="stalled")return sPill("stopped","Stopped");if(its.length)return groupPill(its);return sPill(found?"done":"skipped",found?"Done":"Nothing new")}
+function pastHtml(){
+  var q=String(UI.pq||"").trim().toLowerCase(),toneOf=rTone;
+  var rs=Object.keys(REQ).map(function(k){return REQ[k]}).filter(function(r){return(r.matches||[]).some(function(m){return m.entry})||(r.steps||[]).some(function(s){return/^forked/.test(s.step||"")})}).sort(function(a,b){return(b.started||0)-(a.started||0)});
+  var all=rs.length;if(q)rs=rs.filter(function(r){return pullCounts(r).order.some(function(e){return entryLabel(e).toLowerCase().indexOf(q)>=0})});
+  var lim=UI.pastMore?rs.length:20,h='<div class="rp-pad"><div class="rp-box"><input id="pq" class="rp-in" type="text" autocomplete="off" spellcheck="false" value="'+esc(UI.pq||"")+'" placeholder="Filter by workflow or category…" aria-label="Filter past runs"></div></div><div class="rp-pl">';
+  if(!all)h+='<div class="rp-emp"><b>No runs yet</b><span>Runs show here once you start one from New run, or a schedule starts one.</span><button class="lnk" type="button" data-ptab="new">Go to New run</button></div>';
+  else if(!rs.length)h+='<div class="rp-emp"><b>No runs match “'+esc(UI.pq)+'”</b></div>';
+  var day="",shown=rs.slice(0,lim);
+  shown.forEach(function(r){var pc=pullCounts(r),ents=pc.order,live2=r.state!=="done"&&r.state!=="stalled",dy=live2?"Running now":dayOf(r.started||0);
+    if(dy!==day){var dd=shown.filter(function(x){return(x.state!=="done"&&x.state!=="stalled"?"Running now":dayOf(x.started||0))===dy}),f=0;dd.forEach(function(x){var c=pullCounts(x);c.order.forEach(function(e){f+=c.by[e].found})});
+      h+='<div class="rp-dh"><span>'+dy+"</span></div>";day=dy}
+    var multi=ents.length>1,open=multi&&!!(UI.pastOpen||{})[r.id],found=0,ran=0;ents.forEach(function(e){found+=pc.by[e].found;ran+=pc.by[e].ran});
+    var lab=ents.length?entryLabel(ents[0]):reqTitle(r),a=areaOf({label:lab}),isTest=!!r.try||/^\s*test\b/i.test(String(r.request||""));
+    var sub=live2&&r.now&&r.now.text?r.now.text:"";  /* one line: only a running run says what it's doing */
+    h+='<div class="rp-pr'+(live2?" live":"")+'" data-pastrow="'+esc(r.id)+'">'+(multi?'<button type="button" class="schev" data-pastopen="'+esc(r.id)+'" aria-expanded="'+open+'" aria-label="'+(open?"Close":"Open")+'">'+CHEV+"</button>":live2?'<span class="pulse" aria-hidden="true" style="margin-top:6px"></span>':"<span></span>")+
+      '<span class="sname"><span class="sl1">'+(multi?"":'<span class="cdot tone-'+esc(toneOf(a))+'" aria-hidden="true"></span><span class="scat">'+esc(a)+'</span><span class="ssep">·</span>')+"<b>"+esc(multi?ents.length+" workflows":nameOf({label:lab}))+"</b>"+(isTest?'<span class="stag">Test</span>':"")+"</span>"+(sub?'<span class="sl2">'+esc(sub)+"</span>":"")+"</span>"+
+      '<span class="rp-n">'+(live2?"":found?found+" found":"")+'</span><span class="rp-st">'+pastStatus(r,pc)+'</span><span class="rp-acts"><button class="btn sb" type="button" data-again="'+esc(r.id)+'">Run again</button><button class="btn sb" type="button" data-act="showpull" data-r="'+esc(r.id)+'">Open</button></span><span class="sw" title="'+esc(exact(r.started))+'">'+esc(sWhen(r.started))+"</span></div>";
+    if(open)ents.forEach(function(e){var c=pc.by[e],a2=areaOf({label:entryLabel(e)});h+='<div class="rp-pr sub"><span class="stree" aria-hidden="true"></span><span class="sname"><span class="sl1"><span class="cdot tone-'+esc(toneOf(a2))+'"></span><span>'+esc(nameOf({label:entryLabel(e)}))+'</span></span></span>'+'<span class="rp-n">'+(c.found?c.found+" found":"")+"</span>"+sPill(c.found?"done":"skipped",c.found?"Done":"Nothing new")+'<span></span><span class="sw"></span></div>'})});
+  if(rs.length>lim)h+='<button class="lnk" type="button" data-act="pastmore" style="margin:10px 4px">Show '+(rs.length-lim)+" older</button>";
+  h+="</div>";if(all)h+='<div class="pf"><span class="mut sm" style="flex:1">'+(q?rs.length+" of "+all+" runs":all+" runs")+"</span></div>";
+  return h}
+function runHtml(L){
+  var ms=(L.matches||[]).filter(function(m){return m.entry}),gi=ITEMS.filter(function(i){return i.group===L.id});
+  var h='<aside class="panel" role="dialog" aria-label="Pulling in"><div class="ph" style="display:block"><div style="display:flex;align-items:center;gap:10px"><h2>Pulling in</h2><span class="mut sm">'+esc(reqTitle(L))+'</span><span style="flex:1"></span><button class="col" type="button" data-act="collapse">Collapse ›</button></div>';
+  if(L.now&&L.now.text)h+='<p class="sm" style="margin:10px 0 0"><span class="mut">Now:</span> '+esc(L.now.text)+"</p>";h+="</div><div class=\"pb\">";
+  if(!ms.length)h+='<p class="mut sm">Choosing which triggers to run…</p>';
+  ms.forEach(function(m,i){var cur=i===ms.length-1&&L.state!=="done",n=gi.filter(function(it){return it.entry===m.entry}).length;
+    h+='<div class="ptr"><span class="ic '+(cur?"go":"ok")+'" aria-hidden="true">'+(cur?"":"✓")+"</span><span>"+esc(entryLabel(m.entry))+'</span><span class="res"'+(cur?' style="color:var(--blue)"':"")+">"+(cur?"working…":n+" found")+"</span></div>"});
+  h+='</div><div class="pf"><span class="mut sm" style="flex:1">'+gi.length+" item"+(gi.length===1?"":"s")+' so far</span></div></aside>';return h}
+
+/* ---------- events ---------- */
+document.addEventListener("click",function(ev){
+  var mb=ev.target.closest("[data-menu]");if(mb){UI.menu=UI.menu===mb.dataset.menu?"":mb.dataset.menu;render();return}
+  var ss=ev.target.closest("[data-setst]");if(ss){var it0=BYKEY[ss.dataset.key];UI.menu="";if(it0&&it0.wf)say(markLine([it0],ss.dataset.setst));render();return}
+  var dr=ev.target.closest("[data-delrow]");if(dr){var it1=BYKEY[dr.dataset.delrow];UI.menu="";if(it1&&it1.wf)say(markLine([it1],"deleted"));render();return}
+  if(UI.menu&&!ev.target.closest(".menu3")){UI.menu="";render();if(!ev.target.closest("[data-row]"))return}
+  if(ev.target.closest(".menu3")&&!ev.target.closest("[data-act],a")){return}
+  if(ev.target.closest(".menu3 [data-act]")){UI.menu="";render()}
+  if(UI.rgear&&!ev.target.closest(".rp-gear")&&!ev.target.closest('[data-act="rgear"]')){UI.rgear=false;renderFloat()}
+  var rmo=ev.target.closest("[data-rmode]");if(rmo&&!rmo.disabled){var mk=rmo.dataset.rmode,lt=rLast();UI.rpop="";UI.rq="";
+    if(mk==="last"&&lt){UI.rtok=JSON.parse(JSON.stringify(lt.toks));UI.rFromLast=true;UI.rmode=""}
+    else if(mk==="all"){rSetIds(rEntries().map(function(e){return e.id}));UI.rmode=""}
+    else{UI.rmode="choose";UI.rFromLast=false;UI.rfocus="rq"}renderFloat();return}
+  var rx=ev.target.closest("[data-rx]");if(rx){UI.rtok.splice(+rx.dataset.rx,1);UI.rpop="";UI.rbs=false;UI.rFromLast=false;UI.rfocus="rq";renderFloat();return}
+  var rs2=ev.target.closest("[data-rsug]");if(rs2){rApply(rSuggest()[+rs2.dataset.rsug]);UI.rfocus="rq";renderFloat();return}
+  var rce=ev.target.closest("[data-rcexp]");if(rce){UI.rexp=UI.rexp||{};UI.rexp[rce.dataset.rcexp]=!UI.rexp[rce.dataset.rcexp];renderFloat();return}
+  var rca=ev.target.closest("[data-rcat]");if(rca){rToggleCat(rca.dataset.rcat);renderFloat();return}
+  var rwf=ev.target.closest("[data-rwf]");if(rwf){rToggleWf(rwf.dataset.rwf);renderFloat();return}
+  var rpt=ev.target.closest("[data-rpopt]");if(rpt){var ct=(UI.rtok||[]).filter(function(t){return t.c==="cat"&&t.n===UI.rpop})[0];if(ct){ct.out=ct.out||{};if(ct.out[rpt.dataset.rpopt])delete ct.out[rpt.dataset.rpopt];else ct.out[rpt.dataset.rpopt]=1;UI.rFromLast=false}renderFloat();return}
+  var rpp=ev.target.closest("[data-rpop]");if(rpp){UI.rpop=UI.rpop===rpp.dataset.rpop?"":rpp.dataset.rpop;renderFloat();return}
+  if(ev.target.closest("[data-rclear]")){UI.rtok=[];UI.rpop="";UI.rFromLast=false;UI.rfocus="rq";renderFloat();return}
+  if(ev.target.closest("[data-rfocus]")&&!ev.target.closest("button")){var ri=document.getElementById("rq");if(ri)ri.focus();if(UI.rpop){UI.rpop="";renderFloat()}return}
+  var po=ev.target.closest("[data-pastopen]");if(po){UI.pastOpen=UI.pastOpen||{};UI.pastOpen[po.dataset.pastopen]=!UI.pastOpen[po.dataset.pastopen];renderFloat();return}
+  var ag=ev.target.closest("[data-again]");if(ag){var rr=REQ[ag.dataset.again];if(rr){UI.rtok=rTokensFor(pullCounts(rr).order.filter(function(id){return rById(id)}));UI.rFromLast=false;UI.rq="";UI.rpop="";UI.ptab="new";UI.rfocus="rq";renderFloat()}return}
+  var pr=ev.target.closest("[data-pastrow]");if(pr&&!ev.target.closest("button")){var r3=REQ[pr.dataset.pastrow];if(r3&&pullCounts(r3).order.length>1){UI.pastOpen=UI.pastOpen||{};UI.pastOpen[r3.id]=!UI.pastOpen[r3.id];renderFloat();return}var b3=pr.querySelector('[data-act="showpull"]');if(b3)b3.click();return}
+  var pf=ev.target.closest("[data-pfold]");if(pf){UI.pfold=UI.pfold||{};UI.pfold[pf.dataset.pfold]=!UI.pfold[pf.dataset.pfold];renderFloat();return}
+  var pt=ev.target.closest("[data-ptab]");if(pt){UI.ptab=pt.dataset.ptab;renderFloat();return}
+  var rt=ev.target.closest("[data-rtog]")||(!ev.target.closest("input,a,button,label")&&ev.target.closest("[data-rrow]"));
+  if(rt&&rt.dataset.one){var k1=rt.dataset.one;UI.open[k1]=!UI.open[k1];render();return}
+  if(rt){var gk2=rt.dataset.rtog||rt.dataset.rrow,g2=null;var cur2=document.querySelector('[data-rtog="'+(window.CSS&&CSS.escape?CSS.escape(gk2):gk2)+'"]');UI.ropen[gk2]=!(cur2&&cur2.getAttribute("aria-expanded")==="true");render();return}
+  var t=ev.target.closest("[data-tog],[data-act],[data-view],[data-more]");
+  if(!t){var rw=ev.target.closest("[data-row]");if(rw&&!ev.target.closest("input,a,button,label")&&!(window.getSelection&&String(window.getSelection())))t={dataset:{tog:rw.dataset.row}};else return}
+  if(t.dataset.tog){var k=t.dataset.tog;UI.open[k]=!UI.open[k];render();return}
+  if(t.dataset.more){UI.more[t.dataset.more]=1;render();return}
+  if(t.dataset.view){UI.view=t.dataset.view;if(NARROW.matches)UI.sideDrawer=false;history.replaceState(null,"",location.pathname+(UI.view==="all"?"":"?view="+encodeURIComponent(UI.view)));render();return}
+  var a=t.dataset.act,it=t.dataset.key?BYKEY[t.dataset.key]:null,v=curView();
+  if(a==="say"&&t.dataset.line){say(t.dataset.line,t.dataset.what);return}
+  if(a==="run"||a==="rerun"){if(it)say(a==="run"?runLine(it):"rerun workflow "+it.wf);return}
+  if(a==="answer"&&it){say("Let's answer the open question on "+it.wf+" ("+it.name+"): ");return}
+  if(a==="discuss"&&it){say("Let's talk about "+it.wf+" ("+it.name+"): ");return}
+  if(a==="skip"&&it){say(markLine([it],"skipped"));return}
+  if(a==="once"){say("turn Run each item once "+t.dataset.to);return}
+  if(a==="autoapprove"){say("turn Approve automatically "+t.dataset.to);return}
+  if(a==="rungroup"){var gk=t.dataset.g,its=ITEMS.filter(function(i){return matches(i,v.filter)&&groupOf(i,v.group).key===gk&&i.st==="notrun"&&i.wf});if(its.length)say(runText(its));return}
+  var sel=Object.keys(UI.sel).filter(function(k){return UI.sel[k]&&BYKEY[k]}).map(function(k){return BYKEY[k]});
+  var sch=sel.filter(function(i){return i.sched});sel=sel.filter(function(i){return!i.sched});
+  /* "Nothing new" requests: only Copy and Delete apply ("delete request dispatch-…", RunPath.reqDeleteLine) */
+  var rqs=sel.filter(function(i){return i.isReq}).map(function(i){return{id:i.group,name:"Nothing new, "+(String(i.req.request||"").trim()||"a trigger check")+", "+RunPath.relTime(i.time)}});sel=sel.filter(function(i){return!i.isReq});
+  var scN=function(i){return String(i.skill||"").replace(/^workflow-/,"")||i.schedWf.id},scRun=function(i){return(((W.entries||{})[i.entry]||{}).starts_on||[])[0]||"run workflow "+scN(i)};
+  var both=function(x,y){return[x,y].filter(Boolean).join("\n")};
+  if(a==="runsel"&&(sel.length||sch.length)){say(both(sel.length?runText(sel):"",sch.map(scRun).join("\n")));return}
+  if(a==="delsel"&&(sch.length||rqs.length)){say(both(both(sel.length?markLine(sel,"deleted"):"",RunPath.reqDeleteLine(rqs)),sch.map(function(i){return"remove schedule workflow "+scN(i)}).join("\n")));return}
+  if(a==="copysel"&&rqs.length){say(sel.map(function(i){return"- "+i.wf+"  "+i.name+" · "+(i.category?i.category+" · ":"")+wfShort(i)+" · "+(ST[i.st]||i.st)}).concat(rqs.map(function(r){return"- "+r.id+"  "+r.name})).join("\n"),"Copied "+(sel.length+rqs.length)+" selected");return}
+  if(a==="copysel"&&sch.length){say(both(sel.map(function(i){return"- "+i.wf+"  "+i.name+" · "+(i.category?i.category+" · ":"")+wfShort(i)+" · "+(ST[i.st]||i.st)}).join("\n"),sch.map(function(i){return"- "+i.name+" · "+RunPath.schedText(i.sched)+(i.next?" · next "+RunPath.whenNext(i.next):" · paused")}).join("\n")),"Copied "+(sel.length+sch.length)+" selected");return}
+  if(a==="copysel"&&sel.length){say(sel.map(function(i){return"- "+i.wf+"  "+i.name+" · "+(i.category?i.category+" · ":"")+wfShort(i)+" · "+(ST[i.st]||i.st)}).join("\n"),"Copied "+sel.length+" item"+(sel.length>1?"s":""));return}
+  if(a==="approvesel"){var ap=sel.filter(waitsYes);if(ap.length)say(ap.map(function(i){return"answer "+i.wf+": yes"}).join("\n"),"Copied "+ap.length+" approval"+(ap.length>1?"s":"")+" for the Claude chat");return}
+  if(a==="skipsel"&&sel.length){say(markLine(sel,"skipped"));return}
+  if(a==="delsel"&&sel.length){say(markLine(sel,"deleted"));return}
+  if(a==="clearsel"){UI.sel={};render();return}
+  var vf=(B&&B.views_file)||"views.json";
+  if(a==="changeview"){say(v.custom?"Change the “"+v.name+"” view on the Inbox page ("+vf+") so that ":"Make a view on the Inbox page ("+vf+") like “"+v.name+"” but ");return}
+  if(a==="deleteview"&&v.custom){say("Delete the “"+v.name+"” view from the Inbox page ("+vf+").");return}
+  if(a==="sidefold"){setSideFold(!sideFolded());return}
+  if(a==="newview"){say("Make a new view on the Inbox page ("+vf+") that shows ");return}
+  if(a==="resetview"){UI.open={};UI.sel={};UI.more={};var ro={};Object.keys(UI.ropen||{}).forEach(function(k){ro[k]=false});UI.ropen=ro;render();return}
+  if(a==="runback"){history.replaceState(null,"",location.pathname+(UI.view==="all"?"":"?view="+encodeURIComponent(UI.view)));render();return}
+  if(a==="showpull"&&REQ[t.dataset.r]){ /* a run's own page (?run=), not a view: its items, tests included */
+    history.replaceState(null,"",location.pathname+"?run="+encodeURIComponent(t.dataset.r));UI.panel="closed";render();window.scrollTo(0,0);return}
+  if(a==="showpull"){ /* a test request's items live in the Tests view (every other view is real work): open that one */
+    var pid=t.dataset.r,mine=ITEMS.filter(function(i){return i.group===pid||i.events.some(function(e){return e.group===pid})}),onlyTest=mine.length&&mine.every(function(i){return i.isTest});
+    if(!mine.length){var fw=(REQ[pid]&&REQ[pid].steps||[]).map(function(x){var m=/forked → (wf-[0-9a-f]+)/.exec(x.step||"");return m&&m[1]}).filter(Boolean),it=fw.length&&BYKEY[fw[0]];
+      if(it){UI.view="all";UI.wantItem=fw[0];history.replaceState(null,"",location.pathname);UI.panel="closed";UI.open={};render();goToItem();return}}
+    history.replaceState(null,"",location.pathname+"?pullin="+encodeURIComponent(pid));UI.panel="closed";UI.open={};render();return}
+  if(a==="pastmore"){UI.pastMore=1;renderFloat();return}
+  if(a==="clearlink"){history.replaceState(null,"",location.pathname+(UI.view==="all"?"":"?view="+encodeURIComponent(UI.view)));render();return}
+  if(a==="openpanel"){openPanel();return}
+  if(a==="closepanel"){UI.panel="closed";UI.rgear=false;renderFloat();return}
+  if(a==="rgear"){UI.rgear=!UI.rgear;renderFloat();return}
+  if(a==="rctx"){UI.rctxOpen=true;UI.rfocus="rpctx";if(document.activeElement)document.activeElement.blur();renderFloat();return}
+  if(a==="collapse"){UI.panel="tab";renderFloat();return}
+  if(a==="expand"){UI.panel="run";renderFloat();return}
+  if(a==="newwf"){say("Add a workflow: "+(UI.rq||""));return}
+  if(a==="start"){var ids=rIds();if(!ids.length)return;try{localStorage.setItem(RUNLAST,JSON.stringify({toks:UI.rtok,t:Date.now()/1000}))}catch(e){}UI.rFromLast=true;
+    var cx=String(UI.rctx||"").replace(/\s+/g," ").trim();
+    say("run workflow manager with these triggers, no question: "+ids.join(", ")+"."+(cx?" Context: "+cx:""),"Copied for the Claude chat");UI.rctx="";UI.panel="closed";renderFloat();return}
+});
+document.addEventListener("input",function(ev){if(ev.target&&ev.target.id==="rpctx")UI.rctx=ev.target.value});
+document.addEventListener("change",function(ev){var t=ev.target;
+  if(t.dataset.selrun){(SGRP[t.dataset.selrun]||[]).forEach(function(k){UI.sel[k]=t.checked});render();return}
+  if(t.dataset.sel&&isSimple(curView())){UI.sel[t.dataset.sel]=t.checked;render();return}
+  if(t.dataset.sel){UI.sel[t.dataset.sel]=t.checked;renderFloat();var hd=document.querySelector("[data-selall]");if(hd&&!t.checked)hd.checked=false;return}
+  if(t.dataset.selall){var v=curView();ITEMS.filter(function(i){return matches(i,v.filter)&&i.wf}).forEach(function(i){UI.sel[i.key]=t.checked});if(v.id==="scheduled")schedItems().forEach(function(i){UI.sel[i.key]=t.checked});render();return}
+  if(t.dataset.pick){UI.pick[t.dataset.pick]=t.checked;renderFloat();return}
+  if(t.dataset.pickcat){(B.entries||[]).filter(function(e){return areaOf(e)===t.dataset.pickcat}).forEach(function(e){UI.pick[e.id]=t.checked});renderFloat();return}
+  if(t.dataset.pickall){(B.entries||[]).forEach(function(e){UI.pick[e.id]=t.checked});renderFloat();return}
+  if(t.name==="mode"){UI.mode=t.value;return}
+});
+document.addEventListener("input",function(ev){if(ev.target.id==="q"){UI.q=ev.target.value;render()}
+  if(ev.target.id==="rq"){UI.rq=ev.target.value;UI.rhi=0;UI.rbs=false;UI.rpop="";UI.rfocus="rq";renderFloat()}
+  if(ev.target.id==="pq"){UI.pq=ev.target.value;UI.rfocus="pq";renderFloat()}});
+document.addEventListener("keydown",function(ev){if(ev.target.id!=="rq")return;var sg=rSuggest();
+  if(ev.key==="ArrowDown"||ev.key==="ArrowUp"){ev.preventDefault();UI.rhi=Math.max(0,Math.min(sg.length-1,(UI.rhi||0)+(ev.key==="ArrowDown"?1:-1)));renderFloat();return}
+  if(ev.key==="Enter"){ev.preventDefault();if(UI.rq){var fd2=sg.findIndex(function(y){return!y.dim}),x=sg[Math.min(UI.rhi||(fd2<0?0:fd2),sg.length-1)];if(x&&!x.dim)rApply(x);UI.rfocus="rq";renderFloat()}else{var st=document.querySelector('[data-act="start"]');if(st&&!st.disabled)st.click()}return}
+  if(ev.key==="Backspace"&&!UI.rq&&UI.rtok&&UI.rtok.length){ev.preventDefault();if(UI.rbs){UI.rtok.pop();UI.rbs=false;UI.rFromLast=false}else UI.rbs=true;UI.rfocus="rq";renderFloat()}});
+function setSideFold(f){if(NARROW.matches){UI.sideDrawer=!f;render();return}UI.sideFold=f;try{localStorage.setItem("board.inbox.sidefold",f?"1":"0")}catch(e){}render()}
+document.addEventListener("keydown",function(ev){var tg=ev.target,typing=tg&&(tg.tagName==="INPUT"||tg.tagName==="TEXTAREA"||tg.isContentEditable);
+  if(ev.key==="["&&!typing&&!ev.metaKey&&!ev.ctrlKey&&!ev.altKey){ev.preventDefault();setSideFold(!sideFolded())}
+  if(ev.key==="Escape"&&NARROW.matches&&UI.sideDrawer){UI.sideDrawer=false;render()}});
+document.addEventListener("keydown",function(ev){if(ev.key==="Escape"&&UI.panel==="pick"){UI.panel="closed";renderFloat()}});
+
+/* ---------- data: same polling as the other pages ---------- */
+function load(src,cb){var s=document.createElement("script");s.src=src+"?ts="+Date.now();s.onload=function(){s.remove();cb(true)};s.onerror=function(){s.remove();cb(false)};document.head.appendChild(s)}
+function loadViews(cb){fetch("views.json?ts="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():{views:[]}}).then(function(j){var nv=j&&Array.isArray(j.views)?j:{views:[]},ch=JSON.stringify(nv)!==JSON.stringify(V);V=nv;cb(ch)}).catch(function(){cb(false)})}
+function poll(){
+  load("board-data.js",function(ok){
+    if(ok&&window.BOARD){B=window.BOARD;
+      var sig=(W?W.built:0)+"|"+(B.ledger||[]).length+"|"+B.runs.map(function(r){return r.id+r.state+(r.last||0)+(r.steps||[]).length+((r.now||{}).t||"")}).join(",");
+      if(sig!==SIG&&W){SIG=sig;build();render();goToItem()}
+      if(UI.wantPanel&&W){UI.wantPanel=0;var Q=new URLSearchParams(location.search);Q.delete("panel");history.replaceState(null,"",location.pathname+(Q.toString()?"?"+Q:""));openPanel()}}
+    loadViews(function(ch){if(ch&&B&&W)render()});
+    setTimeout(poll,ok?1500:3000)})}
+setInterval(function(){if(B&&W&&!document.querySelector(".row.open:hover"))render()},60000); /* keep "min ago" fresh */
+function pollDefs(){load("workflows-data.js",function(ok){if(ok&&window.WFDEF&&(!W||window.WFDEF.built!==W.built)){W=window.WFDEF;SIG="";if(B){build();render()}}setTimeout(pollDefs,10000)})}
+(function(){var Q=new URLSearchParams(location.search);if(Q.get("view"))UI.view=Q.get("view");if(Q.get("item"))UI.wantItem=Q.get("item");if(Q.get("panel"))UI.wantPanel=1})(); /* ?panel=1: the top bar's Run triggers, from another page */
+function goToItem(){ /* ?item=<workflow ID>, from the Workflow Viewer: open that row and bring it into view */
+  var k=UI.wantItem;if(!k||!ITEMS.length)return;UI.wantItem="";var it=BYKEY[k]||ITEMS.filter(function(i){return i.attempts.some(function(r){return r.id===k})})[0];
+  var Q=new URLSearchParams(location.search);Q.delete("item");history.replaceState(null,"",location.pathname+(Q.toString()?"?"+Q:""));
+  if(!it)return;var v=curView();if(!matches(it,v.filter)){UI.view="all";history.replaceState(null,"",location.pathname)}
+  useView(curView());UI.open[it.key]=1;var g=groupOf(it,curView().group);UI.more[g.key]=1;UI.ropen[g.key]=true;render();
+  var el=document.querySelector('[data-row="'+(window.CSS&&CSS.escape?CSS.escape(it.key):it.key)+'"]');if(el){el.scrollIntoView({block:"center"});el.classList.add("flash");setTimeout(function(){el.classList.remove("flash")},1600)}}
+pollDefs();poll();
+</script>
+</body>
+</html>

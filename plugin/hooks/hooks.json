@@ -1,0 +1,73 @@
+{
+  "description": "Trace board for dispatcher runs (start the board, trigger trace, live Now: line) and the board opened on the right page for the other core skills, a guard that keeps the plugin and its source read-only from an install, and a hidden skill history saved at the end of each turn, and a test-mode guard that refuses outside calls while a test runs, and a first-run welcome that opens the board once per folder. WM_HOOKS_VERSION on the prompt hook is this plugin's version (the same as plugin.json, on every release): it tells reload_check.py whether a session has loaded the hooks on disk.",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "WM_HOOKS_VERSION=0.13.6 \"${CLAUDE_PLUGIN_ROOT}\"/workflow-ui/scripts/on_prompt.sh"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/workflow-ui/scripts/on_test_guard.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -I \"${CLAUDE_PLUGIN_ROOT}\"/workflow-ui/scripts/guard.py"
+          }
+        ]
+      },
+      {
+        "matcher": "Skill",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/workflow-ui/scripts/on_skill_start.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/workflow-ui/scripts/on_tool.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/workflow-ui/scripts/on_stop.sh"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -I \"${CLAUDE_PLUGIN_ROOT}\"/workflow-ui/scripts/welcome.py session"
+          }
+        ]
+      }
+    ]
+  }
+}

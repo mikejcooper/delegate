@@ -1,0 +1,22 @@
+{
+ "kind": "workflow",
+ "from_run": "wf-3ce5c957-a1",
+ "recorded": "2026-11-22T14:58:12Z",
+ "path": "If: a story",
+ "item": {
+  "headline": "China’s Spies Set Sights on A.I. Chips Years Before Nvidia Scandal",
+  "link": "https://www.nytimes.com/2026/11/21/world/asia/china-nvidia-spy-chips-state-security.html",
+  "summary": "China’s espionage agency has been running a secret campaign to help the country’s companies acquire advanced A.I. chips and to gather intelligence on the sector, officials say.",
+  "published": "Sun, 22 Nov 2026 11:03:04 +0000",
+  "author": "Chris Buckley and Julian E. Barnes"
+ },
+ "reads": [
+  {
+   "type": "Summary Written",
+   "result": "China's spy agency has been secretly helping Chinese companies get advanced A.I. chips and gathering intelligence on the industry, officials say.",
+   "status": "done"
+  }
+ ],
+ "writes": [],
+ "systems": {}
+}
