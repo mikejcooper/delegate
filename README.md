@@ -100,6 +100,9 @@ Suggested `.gitignore`: `.workflow-manager-data/history/` and `.workflow-manager
   (`workflow-manager--v<version>`, made by `claude plugin tag`), or the tracked branch's tip when there are no tags.
   It waits while a run or test is open, and skips (saying why on the dashboard) when the clone has changes or commits
   of its own. Turn it off with `"auto_update": false` in `.workflow-manager-data/config/settings.json`.
+  Keep the clone outside the folder you use it in: a plugin inside its own working folder counts as the plugin's
+  source and never updates itself. One clone per machine: Claude Code knows a marketplace by its name
+  (`workflow-manager`), so installing from a second clone points every folder at that one.
 - **Releasing:** bump `version` in `plugin/.claude-plugin/plugin.json` and `WM_HOOKS_VERSION` in
   `plugin/hooks/hooks.json` to the same value (`plugin/workflow-ui/tests/test_reload_check.py` checks they match),
   add `plugin/migrations/<version>/` when stored data changes shape, then tag the release.
