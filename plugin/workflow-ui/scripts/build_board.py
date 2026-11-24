@@ -234,9 +234,19 @@ def load_demo():
     """The plugin's demo workflow (workflows.json "demo"): what the welcome card on the Inbox suggests first."""
     try:
         with open(os.path.join(paths.CODE, "workflows.json"), encoding="utf-8") as fh:
-            return json.load(fh).get("demo") or None
+            demo = json.load(fh).get("demo") or None
     except (OSError, ValueError):
         return None
+    if demo:   # in the Claude app the welcome's first step is to name and pin the chat it was installed in
+        try:
+            with open(paths.WELCOMED, encoding="utf-8") as fh:
+                w = json.load(fh)
+        except (OSError, ValueError):
+            w = {}
+        demo["in_app"] = bool(w.get("in_app"))
+        demo["pinned"] = bool(w.get("pinned"))   # "delegate pin" was sent: step 1 is done
+        demo["chat_name"] = "🔀 Delegate Dashboard"
+    return demo
 
 
 def load_pages():

@@ -30,6 +30,7 @@ TABLE = [
     ("Dashboard", "delegate dashboard", r"(?:open\s+)?(?:the\s+)?dashboard", "", "open the dashboard"),
     ("Dashboard", "delegate start", r"start", "", "/delegate:start"),
     ("Dashboard", "delegate help", r"help|commands", "", "list Delegate's commands"),
+    ("Dashboard", "delegate pin", r"pin(?:\s+(?:this|the|my))?(?:\s+chat)?", "", "name this chat and pin it"),
 
     ("Run", "delegate run", r"run", "core-dispatcher", "run workflow manager"),
     ("Run", "delegate run all", r"run\s+all(?:\s+triggers)?", "core-dispatcher", "run all triggers"),
@@ -234,7 +235,7 @@ def prompt_note(text):
         return ("Delegate command: delegate help. Show the user this list as it is, under one line saying every "
                 "command starts with \"delegate\", and that a workflow's own phrase works with or without it:\n" + help_md())
     if not p["skill"]:
-        return ""   # the dashboard and start: welcome.py answers those
+        return ""   # the dashboard, start and pin: welcome.py answers those
     return (f"Delegate command ({p['form']}). It means \"{p['means']}\": handle it exactly as that request, "
             f"with the {p['skill']} skill. The user typed: \"{p['command']}\".")
 

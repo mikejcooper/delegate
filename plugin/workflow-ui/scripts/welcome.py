@@ -6,10 +6,12 @@
                          (in the browser; in the Claude app, Claude opens it in the side pane with its first reply)
                          and tells Claude to suggest the demo. Once per folder; later sessions print nothing.
     welcome.py start     the welcome again, whether or not this folder had it (the start command)
-    welcome.py installed install.sh's last step: gets the board ready; in the app, asks on a card to pin this chat
-                         and name it "🔀 Delegate Dashboard", then says to send "delegate dashboard" (in a terminal:
-                         `claude "delegate dashboard"`)
+    welcome.py installed install.sh's last step: gets the board ready, then says to send "delegate dashboard"
+                         (in a terminal: `claude "delegate dashboard"`); the board's welcome then asks, in the app,
+                         to name and pin the chat (step 1) before the first workflow (step 2)
     welcome.py open      "/dashboard", "delegate dashboard" (the prompt hook): the board, up to date and open.
+    (prompt hook)        "delegate pin": Claude names this chat "🔀 Delegate Dashboard" and pins it (the welcome's
+                         step 1); welcomed.json records it so the board's welcome moves on
     welcome.py prompt    the prompt hook (JSON on stdin): "/delegate:start" gives the welcome again and opens
                          the board; "/dashboard", "delegate dashboard" open the board; anything else, nothing
     welcome.py is-dashboard   reads the prompt hook's JSON on stdin: exit 0 when the request is only to see the board
@@ -32,7 +34,6 @@ DEMO = "check the new york times"
 # The one formatted next step every welcome ends with: delegate dashboard (its first-look popover takes it from
 # there). Plain words, not /dashboard: in the session that ran the install the plugin's commands aren't loaded yet.
 OPEN = "delegate dashboard"
-HOME = "🔀 Delegate Dashboard"   # the name the install chat gets when the user pins it
 NEXT_STEP = ("---\n\n**Installed. Run this next to open your dashboard:**\n\n```\n" + OPEN + "\n```")
 
 
@@ -121,16 +122,8 @@ def installed():
     with open(paths.WELCOMED, "w", encoding="utf-8") as fh:
         json.dump({"t": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "in_app": IN_APP, "by": "install"}, fh)
     if IN_APP:
-        print("Installed in " + paths.PROJECT + ". Two steps now, in this order, with nothing else said:\n\n"
-              "1. Ask with the AskUserQuestion tool (a card the user clicks, never a question in your text): question "
-              "\"Pin this chat and name it " + HOME + "?\", header \"This chat\", options \"Pin and rename "
-              "(Recommended)\" (\"Keeps it at the top of your sidebar, ready whenever you need it\") and \"Not now\" "
-              "(\"Leave this chat as it is\"). On Pin and rename: get_session with \"self\" for this chat's sessionId "
-              "(load mcp__ccd_session_mgmt__get_session with ToolSearch if it isn't loaded), then set_session_title to "
-              "\"" + HOME + "\" and set_pinned to true for it (mcp__ccd_session_mgmt__set_session_title and "
-              "mcp__ccd_sidebar__set_pinned). If either can't be done, say so in one line and go on.\n"
-              "2. Then your reply is the block below, word for word (it is markdown), with nothing before or after "
-              "it:\n\n" + NEXT_STEP)
+        print("Installed in " + paths.PROJECT + ". Your reply is the block below, word for word (it is markdown), "
+              "with nothing before or after it:\n\n" + NEXT_STEP)
     else:
         print("Installed in " + paths.PROJECT + ". Start Claude here and send \"" + OPEN + "\":\n\n    cd \""
               + paths.PROJECT + "\" && claude \"" + OPEN + "\"")
@@ -150,6 +143,34 @@ ASKS = __import__("re").compile(
     r"|(open|show|see|view)( me)?( the| my)? (delegate |workflow manager |workflow )?(dashboard|board))\s*[.!?]*\s*$", 2)
 
 
+PIN = __import__("re").compile(r"^\s*(delegate\s+)?pin(\s+(this|the|my))?(\s+chat)?\s*[.!?]*\s*$", 2)
+CHAT_NAME = "🔀 Delegate Dashboard"   # what "delegate pin" names the chat
+
+
+def pin_chat():
+    """"delegate pin": the user asks Claude to name this chat and pin it (the welcome's step 1). The board learns it
+    from welcomed.json, so its welcome moves on to step 2."""
+    if not paths.PLUGIN:
+        return
+    os.makedirs(paths.SYSTEM, exist_ok=True)
+    try:
+        with open(paths.WELCOMED, encoding="utf-8") as fh:
+            w = json.load(fh)
+    except (OSError, ValueError):
+        w = {}
+    w["pinned"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    with open(paths.WELCOMED, "w", encoding="utf-8") as fh:
+        json.dump(w, fh)
+    if IN_APP:
+        print("Delegate: the user asked to name this chat \"" + CHAT_NAME + "\" and pin it. Load "
+              "mcp__ccd_session_mgmt__set_session_title and mcp__ccd_sidebar__set_pinned in one ToolSearch, then call "
+              "both with session_id \"self\": the title \"" + CHAT_NAME + "\", and pinned true. Then say only: \"Done: this chat is now "
+              + CHAT_NAME + ", pinned at the top of your sidebar.\" If either can't be done, say which in one line.")
+    else:
+        print("Delegate: the user asked to name and pin this chat, which only the Claude app can do. Say so in one "
+              "line.")
+
+
 START = __import__("re").compile(r"^\s*(/(delegate:|workflow-manager:)?start|start (delegate|the workflow manager)|delegate start\.?)\s*$", 2)
 
 
@@ -165,6 +186,8 @@ def on_prompt():
         session(again=True)
     elif ASKS.match(first):
         open_board()
+    elif PIN.match(first):
+        pin_chat()
 
 
 def is_dashboard():

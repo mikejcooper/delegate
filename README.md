@@ -16,8 +16,8 @@ Run <path to this repo>/install.sh
 1. Claude checks the folder. An empty one gets "Install Delegate in <folder>?"; one with other things in
    it gets the choice of a new folder (you pick where) or installing there anyway.
 2. It installs the plugin there.
-3. Claude asks, on a card to click, to pin this chat and name it "🔀 Delegate Dashboard".
-4. Send `delegate dashboard`, in the same chat. The dashboard opens with a demo to run (`check the new york times`).
+3. Send `delegate dashboard`, in the same chat. The dashboard opens on its welcome, in two steps: send `delegate pin`
+   (Claude names this chat "🔀 Delegate Dashboard" and pins it), then run the demo (`check the new york times`).
 
 From then on it loads in every chat in that folder; `/delegate:start` shows the welcome again.
 In a terminal, `sh install.sh` asks the same questions, installs it and says how to start Claude there

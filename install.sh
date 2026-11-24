@@ -13,8 +13,8 @@
 #   2. It installs the plugin into that folder (project scope). From GitHub it first clones the repo, once per
 #      computer, to ~/.workflow-manager/workflow-manager (WM_CLONE to change it); the plugin runs from that clone
 #      and keeps it up to date itself.
-#   3. In the Claude app, Claude asks on a card to pin this chat and name it "🔀 Delegate Dashboard".
-#   4. Then it says to send "delegate dashboard", in the same chat.
+#   3. It says to send "delegate dashboard", in the same chat. The board's welcome then has two steps: in the Claude
+#      app, "delegate pin" (Claude names and pins this chat); then run the first workflow.
 #
 # Where the plugin comes from, first that applies: an argument (a folder or owner/repo), $WM_SOURCE, the repo this
 # script sits in, else GITHUB. Safe to run again: what is already installed is kept.

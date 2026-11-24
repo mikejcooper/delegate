@@ -316,7 +316,12 @@ body.tb-has-act .selbar{bottom:60px}body.tb-has-act .panel{bottom:56px} /* above
 .wpop h1{margin:0;font-family:"Space Grotesk",Inter,sans-serif;font-size:44px;line-height:1.06;letter-spacing:-.02em;font-weight:600}
 .wpop .wlead{margin:0;max-width:470px;font-size:16px;line-height:1.55;color:var(--ink2)}
 .wpop .wrun{width:100%;display:flex;flex-direction:column;gap:10px;margin-top:10px}
-.wpop label{font-size:13px;font-weight:600;color:var(--ink)}
+.wpop label{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--ink)}
+.wpop .wnum{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--acc);color:var(--card);font-size:12px;font-weight:700}
+.wpop .wrun{transition:opacity .3s ease}.wpop .wrun.woff{opacity:.38;pointer-events:none}
+.wpop .wrun.woff .wcmd{border-color:var(--line)}.wpop .wrun.woff .wcopy{background:var(--pill);color:var(--mut)}
+.wpop .wrun.wdone label{color:var(--ink2);font-weight:500}.wpop .wrun.wdone .wnum{background:#2f8a4a;color:#fff}
+.wpop .wlink{border:0;background:none;padding:0;margin-left:4px;font:inherit;color:var(--acc);cursor:pointer;text-decoration:underline}
 .wpop .wcmd{display:flex;align-items:center;gap:12px;padding:10px 10px 10px 22px;border:2px solid var(--ink);border-radius:16px;background:var(--card)}
 .wpop .wcmd input{flex:1;min-width:0;border:0;outline:0;background:transparent;font:inherit;font-size:22px;font-weight:600;color:var(--ink)}
 .wpop .wcopy{min-height:52px;border:0;border-radius:11px;padding:0 26px;background:var(--acc);color:var(--card);font:inherit;font-size:16px;font-weight:600;cursor:pointer}
@@ -806,28 +811,41 @@ function runLineHtml(g){var r=g.req,ek=(r.matches||[]).map(function(m){return m.
 /* The first look (the plugin's demo): a popover over the Inbox while nothing has run here and it hasn't been skipped.
    Copy puts the demo's phrase on the clipboard for the chat; the popover fades out by itself once the first run starts.
    Skip closes it for good and leaves a small strip in the Inbox to copy the phrase or show the welcome again. */
-var POP={copied:false,key:""};
+var POP={copied:false,pincopied:false,skip1:false,key:""};
 function popClosed(){try{return!!localStorage.getItem("wm-welcome-closed")}catch(e){return false}}
 function hasRuns(){return ITEMS.some(function(i){return!i.isTest})||Object.keys(REQ).some(function(k){var r=REQ[k];return r.state!=="done"&&r.state!=="stalled"&&Date.now()/1000-(r.started||0)<1800})}
 function popWanted(){return!!(B&&B.demo)&&!popClosed()&&!hasRuns()}
 /* the strip that stays once the popover is skipped, while nothing has run */
 function welcomeStrip(){var D=B&&B.demo;if(!D||!popClosed()||hasRuns())return"";
   return'<div class="wstrip" role="note"><span style="flex:1;min-width:240px">Try the demo any time: say <code>'+esc(D.phrase)+'</code> in the Claude chat. '+esc(D.needs)+'</span><button class="btn pri" type="button" data-act="welcomecopy">Copy “'+esc(D.phrase)+'”</button><button class="btn" type="button" data-act="welcomeagain">Show the welcome again</button></div>'}
+/* In the Claude app the welcome has two steps, one active at a time: 1. name and pin this chat ("delegate pin", which
+   Claude does), 2. run the first workflow. Step 1 is done once "delegate pin" is sent (welcomed.json) or skipped. */
+function popCmd(id,val,act,copied,on){
+  return'<div class="wcmd"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="var(--acc)" stroke-width="1.6" aria-hidden="true"><path d="M3 8h9M9 4l4 4-4 4"/></svg><input id="'+id+'" readonly value="'+esc(val)+'"'+(on?"":' tabindex="-1"')+'><button class="wcopy'+(copied?" ok":"")+'" type="button" data-act="'+act+'"'+(on?"":' tabindex="-1"')+">"+(copied?"Copied":"Copy")+"</button></div>"}
 function popHtml(D){
-  return'<section class="wbox" role="dialog" aria-modal="true" aria-label="Welcome"><button class="wskip" type="button" data-act="welcomeskip">Skip <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6"/></svg></button>'
+  var two=!!D.in_app,done1=!!(D.pinned||POP.skip1),on2=!two||done1;
+  var h='<section class="wbox" role="dialog" aria-modal="true" aria-label="Welcome"><button class="wskip" type="button" data-act="welcomeskip">Skip <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6"/></svg></button>'
    +'<div class="weye">Welcome</div><h1>Start automating<br>your work.</h1>'
-   +'<p class="wlead">'+esc(D.pitch||D.what)+"</p>"
-   +'<div class="wrun"><label for="wm-pop-cmd">Run this command in the Claude chat</label><div class="wcmd"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="var(--acc)" stroke-width="1.6" aria-hidden="true"><path d="M3 8h9M9 4l4 4-4 4"/></svg><input id="wm-pop-cmd" readonly value="'+esc(D.phrase)+'"><button class="wcopy'+(POP.copied?" ok":"")+'" type="button" data-act="welcomecopy">'+(POP.copied?"Copied":"Copy")+"</button></div>"
-   +'<div class="whint">'+(POP.copied?"Now paste it into the Claude chat. This closes once it starts running.":"Copy it, then paste it into the Claude chat.")+"</div></div>"
-   +'<div class="wfacts">'+esc(D.facts||D.needs)+"</div></section>"}
+   +'<p class="wlead">'+esc(D.pitch||D.what)+"</p>";
+  if(two){
+    h+=done1?'<div class="wrun wdone"><label><span class="wnum">✓</span>'+(D.pinned?"This chat is named “"+esc(D.chat_name)+"” and pinned":"Name and pin this chat: skipped")+"</label></div>"
+      :'<div class="wrun"><label for="wm-pop-pin"><span class="wnum">1</span>Name and pin this chat</label>'+popCmd("wm-pop-pin","delegate pin","welcomepin",POP.pincopied,true)
+       +'<div class="whint">'+(POP.pincopied?"Now paste it into the Claude chat. Claude names it “"+esc(D.chat_name)+"” and pins it.":"Copy it, then paste it into the Claude chat. Claude names it “"+esc(D.chat_name)+"” and pins it.")+' <button class="wlink" type="button" data-act="welcomeskip1">Skip this step</button></div></div>'}
+  h+='<div class="wrun'+(on2?"":" woff")+'"'+(on2?"":' aria-disabled="true"')+'><label for="wm-pop-cmd">'+(two?'<span class="wnum">2</span>Run your first workflow':"Run this command in the Claude chat")+"</label>"
+   +popCmd("wm-pop-cmd",D.phrase,"welcomecopy",POP.copied,on2)
+   +'<div class="whint">'+(!on2?"Next, once this chat is pinned.":POP.copied?"Now paste it into the Claude chat. This closes once it starts running.":"Copy it, then paste it into the Claude chat.")+"</div></div>"
+   +'<div class="wfacts">'+esc(D.facts||D.needs)+"</div></section>";
+  return h}
 function renderPop(){var el=document.getElementById("wm-pop"),want=popWanted();
   if(!want){if(el&&!el.classList.contains("out")){el.classList.add("out");setTimeout(function(){if(el.classList.contains("out"))el.remove()},800)}return}
-  var key=JSON.stringify([B.demo,POP.copied]);
+  var key=JSON.stringify([B.demo,POP.copied,POP.pincopied,POP.skip1]);
   if(!el){el=document.createElement("div");el.id="wm-pop";el.className="wpop";document.body.appendChild(el);POP.key=""}
   el.classList.remove("out");
   if(POP.key!==key){el.innerHTML=popHtml(B.demo);POP.key=key}}
-document.addEventListener("click",function(ev){var b=ev.target.closest&&ev.target.closest('[data-act="welcomecopy"],[data-act="welcomeskip"],[data-act="welcomeagain"]');if(!b)return;
+document.addEventListener("click",function(ev){var b=ev.target.closest&&ev.target.closest('[data-act="welcomecopy"],[data-act="welcomepin"],[data-act="welcomeskip1"],[data-act="welcomeskip"],[data-act="welcomeagain"]');if(!b)return;
   ev.stopPropagation();ev.preventDefault();var a=b.dataset.act;
+  if(a==="welcomepin"){TopBar.copy("delegate pin",b);POP.pincopied=true;renderPop();return}
+  if(a==="welcomeskip1"){POP.skip1=true;renderPop();return}
   if(a==="welcomecopy"){window.LAUNCH_FROM="welcome";TopBar.copy(B.demo.phrase,b);if(document.getElementById("wm-pop")){POP.copied=true;renderPop()}return}
   if(a==="welcomeskip"){try{localStorage.setItem("wm-welcome-closed","1")}catch(e){}}
   if(a==="welcomeagain"){try{localStorage.removeItem("wm-welcome-closed")}catch(e){}POP.copied=false}
