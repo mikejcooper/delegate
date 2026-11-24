@@ -24,7 +24,7 @@ In a terminal, `sh install.sh` asks the same questions, installs it and says how
 (`claude "delegate dashboard"`).
 
 From GitHub, the one message is
-`Run curl -fsSL https://raw.githubusercontent.com/mikejcooper/delegate/main/install.sh | sh`.
+`Run curl -fsSL https://github.com/mikejcooper/delegate/raw/main/install.sh | sh`.
 
 On a Mac the dashboard stays on by itself: a small login item (one per folder, in `~/Library/LaunchAgents/`,
 named `local.workflow-board.…`) keeps its server running through sleep and app restarts. To turn that off for a

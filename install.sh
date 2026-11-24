@@ -4,7 +4,7 @@
 # In the Claude app, open a session on the folder you want it in and send:
 #     Run <path to this repo>/install.sh
 # From GitHub, the same from anywhere:
-#     Run curl -fsSL https://raw.githubusercontent.com/mikejcooper/delegate/main/install.sh | sh
+#     Run curl -fsSL https://github.com/mikejcooper/delegate/raw/main/install.sh | sh
 #
 # The steps:
 #   1. Without --yes it installs nothing: it says which folder it would install into, so Claude can ask the user
