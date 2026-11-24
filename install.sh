@@ -162,8 +162,21 @@ echo "Installing the workflow manager into $FOLDER"
 claude plugin marketplace add "$SOURCE" --scope project >/dev/null 2>&1 || true
 claude plugin install "$PLUGIN" --scope project >/dev/null 2>&1 || true
 
-# Where Claude Code reads the installed plugin from (a local folder in place; a GitHub one from its plugin cache)
-ROOT=$(claude plugin list 2>/dev/null | sed -n "/$PLUGIN/,/^\$/p" | sed -n 's/^ *Read from: //p' | head -1)
+# Where Claude Code reads the installed plugin from (a local folder in place; a GitHub one from its plugin cache).
+# The list holds every folder's installs on this computer: take this folder's (a user-wide one if it has none).
+ROOT=$(claude plugin list --json 2>/dev/null | WM_PLUGIN="$PLUGIN" WM_FOLDER="$FOLDER" python3 -I -c '
+import json, os, sys
+try:
+    items = json.load(sys.stdin)
+except ValueError:
+    items = []
+here = os.path.realpath(os.environ["WM_FOLDER"])
+mine = [p for p in items if isinstance(p, dict) and p.get("id") == os.environ["WM_PLUGIN"]]
+mine.sort(key=lambda p: 0 if os.path.realpath(p.get("projectPath") or "/nowhere") == here else 1 if p.get("scope") == "user" else 2)
+for p in mine[:1]:
+    if os.path.realpath(p.get("projectPath") or "/nowhere") == here or p.get("scope") == "user":
+        print(p.get("readFromFolder") or p.get("installPath") or "")
+')
 if [ ! -f "$ROOT/workflow-ui/scripts/welcome.py" ]; then
   echo "The plugin didn't install. Check: claude plugin marketplace add $SOURCE --scope project" >&2
   exit 1
