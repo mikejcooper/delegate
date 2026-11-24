@@ -296,13 +296,28 @@ PIDFILE = paths.WATCH_PID
 
 
 def watcher_running():
+    """A watcher of this copy of the plugin is running. One from another copy (the plugin updated from Claude Code's
+    cache: each version has its own folder, and a chat still on the old one may have started it) keeps writing the
+    board's data with old code, so it is stopped and this copy's starts instead."""
     try:
         with open(PIDFILE) as fh:
             pid = int(fh.read().strip())
         os.kill(pid, 0)
-        return True
     except (OSError, ValueError):
         return False
+    try:
+        import subprocess
+        cmd = subprocess.run(["ps", "-o", "command=", "-p", str(pid)], capture_output=True, text=True,
+                             timeout=3).stdout
+    except Exception:
+        return True
+    if os.path.abspath(__file__) in cmd or not cmd.strip():
+        return True
+    try:
+        os.kill(pid, 15)
+    except OSError:
+        pass
+    return False
 
 
 if __name__ == "__main__":
