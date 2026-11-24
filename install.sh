@@ -51,6 +51,42 @@ if [ -f "$here/install.sh" ]; then MSG="Run $(printf '%s' "$here/install.sh" | s
 else MSG="the same install message"; fi
 DOCS="https://code.claude.com/docs/en/desktop#start-a-session"
 
+# 0. What it needs, checked before anything is asked or installed, so a missing piece is named up front instead of
+#    failing halfway: a Mac, Claude Code's `claude` command, and git and Python 3 (both in Apple's Command Line
+#    Tools). Without the Tools, macOS has only stand-ins at /usr/bin/git and /usr/bin/python3 that open an "install
+#    the developer tools?" window and fail, so those don't count; a git or Python from elsewhere (Homebrew) does.
+MISSING=""
+need() { MISSING="$MISSING
+- $1"; }
+OS=$(uname -s)
+if [ "$OS" != "Darwin" ]; then
+  need "A Mac. The workflow manager runs on macOS only for now (this computer runs $OS)."
+fi
+if ! command -v claude >/dev/null 2>&1; then
+  need "Claude Code's \`claude\` command (the Claude app has Claude Code built in, but this command is a separate
+  install). Install it with: curl -fsSL https://claude.ai/install.sh | bash
+  then open a new terminal, or restart the Claude app (https://code.claude.com/docs/en/setup)."
+fi
+TOOLS=1
+if [ "$OS" = "Darwin" ] && ! xcode-select -p >/dev/null 2>&1; then TOOLS=""; fi
+usable() {   # $1 is a real command here, not one of macOS's stand-ins
+  p=$(command -v "$1" 2>/dev/null) || return 1
+  case "$p" in /usr/bin/*) [ -n "$TOOLS" ] ;; *) return 0 ;; esac
+}
+if [ "$OS" = "Darwin" ] && { ! usable git || ! usable python3; }; then
+  need "Apple's Command Line Tools (they include git and Python 3). Install them with: xcode-select --install
+  (a window opens; it takes a few minutes)."
+elif usable python3 && ! python3 -c 'import sys; sys.exit(0 if sys.version_info >= (3, 8) else 1)' 2>/dev/null; then
+  need "Python 3.8 or newer (this computer has $(python3 --version 2>&1)). Update Apple's Command Line Tools in
+  System Settings > General > Software Update."
+fi
+if [ -n "$MISSING" ]; then
+  echo "Nothing installed. The workflow manager needs:$MISSING"
+  echo
+  echo "Once that's done, run the same install again."
+  exit 1
+fi
+
 # --new-folder [--in=<folder>]: the user chose a folder of its own, made inside the folder they picked (their home
 # folder when none is given): "Workflow Manager", or "… 2", "… 3" when that is taken and not empty. Then it says how
 # to start a chat in it. Nothing is installed here.
