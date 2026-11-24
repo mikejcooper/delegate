@@ -424,7 +424,7 @@ def context(run, created, request=""):
                 pass
         slug = run.replace('-', '_')
         # a plain run is one workflow: the board opens on its run page (the Builder follows the steps as the runner
-        # logs them); the chat shows one line while it runs and one card when it ends, no other text, no script call
+        # logs them); the chat shows one line when it starts and one when it ends, no card, no other text
         tm = re.search(r"\(trigger `([^`]+)`", b or "")
         if not tm and os.path.exists(bf):
             try:
@@ -434,18 +434,23 @@ def context(run, created, request=""):
                 tm = None
         url = builder_url(run, e={"id": tm.group(1)}) if tm else paths.URL
         return (
-            f"Plain run {run}: Delegate's workflow runner does it in a session of its own. The chat shows one line and "
-            f"one card, nothing else. Now, in one message: open the board on this run's page, {url} (front the "
-            f"board's tab in the built-in browser pane with tabs_select and navigate it there; no board tab: "
-            f"preview_start name workflow-ui, then navigate; then mcp__ccd_view__show_pane pane preview), the line "
-            f"\"Running {name}.\" and the runner (Agent tool, description \"{name}\", subagent_type "
-            f"\"delegate:workflow-runner\", prompt exactly: \"Folder: {paths.PROJECT}. Brief: {paths.rel(bf)}.\"). "
-            f"Keep the board on that page while it runs. Don't invoke core-dispatcher or read the brief yourself, "
-            f"whatever a Delegate command note says. When it reports: open each page on its OPEN line in a new board "
-            f"tab (tabs_create, then navigate), so the run page stays, then show its CARD block as the card "
-            f"(show_widget, title \"run_done_{slug}\", loading_messages [\"{name}\"], widget_code exactly the CARD "
-            f"block) and write nothing. No CARD (stopped or failed): say its SAID line only, and invoke core-dispatcher "
-            f"only when the user asks to carry on.")
+            f"Plain run {run}: Delegate's workflow runner does it in a session of its own. The chat shows two lines, "
+            f"one at the start and one at the end, nothing else (no card, no other text). Now, in one message: open "
+            f"the board on this run's page, {url} (front the board's tab in the built-in browser pane with "
+            f"tabs_select and navigate it there; no board tab: preview_start name workflow-ui, then navigate; then "
+            f"mcp__ccd_view__show_pane pane preview) and the runner (Agent tool, description \"{name}\", "
+            f"subagent_type \"delegate:workflow-runner\", prompt exactly: \"Folder: {paths.PROJECT}. Brief: "
+            f"{paths.rel(bf)}.\"), with no text before them. Once they return, write the line \"> 🔀 **{name}** · "
+            f"running\" (a Markdown quote) as the turn's only text, so the turn ends on it. Write nothing else while it runs. Keep the "
+            f"board on that page while it runs. Don't invoke core-dispatcher or read the brief yourself, whatever a "
+            f"Delegate command note says. When it reports: open each page on its OPEN line in a new board tab "
+            f"(tabs_create, then navigate), so the run page stays; don't show its CARD block. Then write one line only, a Markdown quote: "
+            f"\"> ✅ **{name}** · \" followed by its SAID sentence without the \"Done:\", reworded short (e.g. "
+            f"\"> ✅ **{name}** · nothing new: all 5 newest stories were already briefed\"). Stopped or failed: "
+            f"\"> ⚠️ **{name}** · \" followed by its SAID sentence with \"Stopped:\" or \"Failed:\" lower-cased "
+            f"(e.g. \"> ⚠️ **{name}** · stopped: Outlook isn't set up\"), and invoke core-dispatcher only when "
+            f"the user asks to "
+            f"carry on.")
     return head + rules_note()
 
 
