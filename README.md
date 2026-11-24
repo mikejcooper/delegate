@@ -121,7 +121,7 @@ and send the fixed version back. A share never carries a sign-in, key or token, 
 
 - **Installed with the install script from GitHub** (the usual way): the script clones this repo once per
   computer, to `~/.workflow-manager/workflow-manager` (set `WM_CLONE` to choose another folder), and Claude Code
-  runs the plugin from that clone. The plugin keeps it current itself: on a message, at most every hour, it
+  runs the plugin from that clone. The plugin keeps it current itself: on a message and at the end of each turn, at most every 5 minutes, it
   checks this repo over HTTPS and fast-forwards to the newest release tag (`delegate--v<version>`, made by
   `claude plugin tag`; `workflow-manager--v<version>` before the rename), or the branch tip when there are no tags. The new release, its migrations included, runs
   from the next message, in every folder that uses the clone. It waits while a run or test is open, and skips

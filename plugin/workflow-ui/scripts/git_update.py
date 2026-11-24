@@ -5,7 +5,8 @@ For a plugin loaded in place from a clone of its public repo (a local folder mar
 installed from a marketplace's cache is Claude Code's to update (reload_check.py tells the user when it has), and
 the plugin's own source repo (paths.SOURCE) is never pulled.
 
-On a message, at most every CHECK_EVERY (an hour) (the prompt hook starts it in the background, so it never slows a message):
+On a message and at the end of each turn, at most every CHECK_EVERY (5 minutes; the prompt and Stop hooks start it
+in the background, so it never slows anything):
   1. The check, over HTTPS: `git ls-remote` of the public repo (the clone's remote, as an https:// address even when
      the clone was made over SSH) lists its release tags and branch tips, a few hundred bytes, no sign-in. The
      newest release tag (delegate--v<version>, or workflow-manager--v<version> from before the rename) is the version on offer;
@@ -39,8 +40,8 @@ sys.path.insert(0, HERE)
 import paths  # noqa: E402
 import reload_check  # noqa: E402
 
-CHECK_EVERY = 3600              # the check is one git ls-remote, a few hundred bytes
-RETRY_SKIPPED = 15 * 60          # a skipped update (a run open, a test) is tried again this soon
+CHECK_EVERY = 5 * 60            # the check is one git ls-remote, a few hundred bytes, under a second, in the background
+RETRY_SKIPPED = 60               # a skipped update (a run open, a test) is tried again this soon (end of turn, next message)
 # release tags: delegate--v<version> since the rename (0.15.0), workflow-manager--v<version> before it. Both count, so
 # a clone moves on whichever name its newest release has.
 TAG_PREFIXES = ("delegate--v", "workflow-manager--v")

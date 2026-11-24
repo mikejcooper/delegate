@@ -18,7 +18,7 @@ MIGRATION_NOTE=""
 RELOAD_NOTE=$(printf '%s' "$INPUT" | python3 -I "$SCRIPTS/reload_check.py" prompt 2>/dev/null)
 [ -n "$RELOAD_NOTE" ] && MIGRATION_NOTE="${MIGRATION_NOTE:+$MIGRATION_NOTE }$RELOAD_NOTE"
 # A plugin running from a git clone keeps itself current: fetch, and pull a newer release when it's safe (at most
-# every few hours, in the background so the message never waits; git_update.py). The banner above follows.
+# every 5 minutes, in the background so the message never waits; git_update.py). The banner above follows.
 nohup python3 -I "$SCRIPTS/git_update.py" run >/dev/null 2>&1 &
 export MIGRATION_NOTE
 # Start the hidden skill history from the skills as they are, before anything can edit them (does nothing once

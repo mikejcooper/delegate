@@ -4,6 +4,9 @@
 # History panel shows "draft" for a workflow with unsaved edits. Silent, and never blocks the turn.
 HERE="$(cd "$(dirname "$0")" && pwd)"
 cd "$CLAUDE_PROJECT_DIR" 2>/dev/null || true
+# a release found while a run was open installs once the run is over: check again now (at most every 5 minutes, or
+# a minute after it waited for a run; in the background, git_update.py)
+nohup python3 -I "$HERE/git_update.py" run </dev/null >/dev/null 2>&1 &
 python3 -I "$HERE/live.py" stop </dev/null >/dev/null 2>&1   # the top bar: Claude is done, waiting for you
 SETTLED="$(python3 -I "$HERE/new_workflow.py" settle 2>/dev/null)"   # a new draft left "drafting": Claude is done
 # a skill still marked "Claude is updating it" (an edit with no checkpoint after it): Claude is done, stop pulsing
