@@ -57,6 +57,13 @@ PAGE = re.compile(r"^\s*(run\s+workflow\s+manager\s+with\s+these\s+triggers\b|ru
 
 
 def dispatch_match(prompt):
+    try:   # "delegate run …", "delegate skip wf-…", "delegate <a workflow's phrase>" (commands.py)
+        import commands
+        c = commands.parse(prompt)
+        if c:
+            return c.get("skill") == "core-dispatcher" or bool(c.get("trigger"))
+    except Exception:
+        pass
     if PAGE.search(prompt):
         return True
     if len(prompt.split()) > MAX_WORDS:
@@ -390,7 +397,7 @@ def describe(name, inp):
     inp = inp if isinstance(inp, dict) else {}
     if name == "Skill":
         sk = str(inp.get("skill", "")).split(":")[-1]
-        return {"core-architect": "Architect: working on your workflow", "core-dispatcher": "Starting the workflow manager",
+        return {"core-architect": "Architect: working on your workflow", "core-dispatcher": "Starting Delegate",
                 "core-connections": "Connections manager: checking accounts"}.get(sk, "Handing over to " + (sk or "a helper"))
     if name == "AskUserQuestion":
         return "Waiting for your answer"

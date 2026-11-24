@@ -180,7 +180,7 @@ def skill_label(name):
         desc = _words(bits[1:])
         return {"kind": "connection", "category": "", "desc": desc, "label": desc + " connection"}
     if bits[0] == "core":
-        desc = {"dispatcher": "Workflow manager"}.get("-".join(bits[1:]), _words(bits[1:]))
+        desc = {"dispatcher": "Delegate"}.get("-".join(bits[1:]), _words(bits[1:]))
         return {"kind": "core", "category": "", "desc": desc, "label": desc}
     if len(bits) < 3:
         return None

@@ -59,7 +59,7 @@ footer{{margin-top:28px;color:var(--mut);font-size:12.5px}}
 <header><h1>Your morning briefing</h1><p>{e(when)} · {len(stories)} stor{"y" if len(stories) == 1 else "ies"} from the
 New York Times, one sentence each from the free headline and summary · the full articles are on nytimes.com</p></header>
 {cards}
-<footer>Made by the workflow manager's demo workflow. Say “check the new york times” in Claude for the newest stories.</footer>
+<footer>Made by Delegate's demo workflow. Say “check the new york times” in Claude for the newest stories.</footer>
 </main></body></html>
 """
 

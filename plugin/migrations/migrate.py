@@ -413,7 +413,7 @@ def offer_note(report):
     if behind:
         oldest = min((b["is"] for b in behind), key=ver)
         parts.append(f"{len(behind)} of the user's own board files ({', '.join(b['file'] for b in behind)}) were made with "
-                     f"workflow manager {oldest} and can be updated"
+                     f"Delegate {oldest} and can be updated"
                      + (" (this also moves them into .workflow-manager-data/config/board/<skill>.json)" if moving else ""))
     if renames:
         parts.append(f"{len(renames)} of their skills can be renamed to the naming pattern ({'; '.join(renames)})")

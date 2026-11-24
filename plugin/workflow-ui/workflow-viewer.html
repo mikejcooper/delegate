@@ -392,6 +392,40 @@ main.isdraft,main.isrun,main.isview{--scf:#fff}
 main.isdraft,main.isrun,main.isview{background-image:repeating-linear-gradient(-45deg,color-mix(in srgb,var(--sc) 5%,transparent) 0 10px,transparent 10px 20px);box-shadow:inset 2px 0 0 var(--scb)}
 main.isdraft,main.isrun,main.isview{padding-left:16px;margin-left:-16px}
 .stbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:10px 14px;border-radius:12px;background:var(--sct);color:var(--scd);border:1px solid var(--scb)}
+.stbar.dbg{--sc:#a15c07;--sct:#fdf3e1;--scb:#ecc98a;--scd:#6b3a00;--scs:#7d5a2c;--scf:#ffffff}
+.ktag.k-imported{background:var(--k-ib,#e8eefc);color:var(--k-i,#2b55c6)}.ktag.k-debug{background:#fdf0e1;color:#9a4b00}
+.hist.shsec{overflow:visible;container-type:inline-size}
+.shtiles{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;padding:18px}
+@container (min-width:620px){.shtiles{grid-template-columns:repeat(3,minmax(0,1fr))}.shtile{padding:22px 12px}}
+@container (min-width:620px) and (max-width:860px){.shtiles{gap:10px;padding:14px}.shpic{gap:5px}.shpic .dot{width:34px;height:34px;border-radius:11px}.shpic .dot svg{width:18px;height:18px}.shpic .arr{font-size:14px}.shtile h4{font-size:15px}.shtile p{font-size:12.5px}.shtile .pbtn{font-size:13px;padding-left:10px;padding-right:10px}}
+.shtile{display:flex;flex-direction:column;align-items:center;gap:12px;padding:24px 20px;border:1px solid var(--bd);border-radius:14px;background:var(--card);text-align:center}
+.shtile.hot{border-color:var(--fg);box-shadow:inset 0 0 0 1px var(--fg)}
+.shtile h4{margin:0;font-size:17px}.shtile p{margin:0;color:var(--mut);font-size:13.5px;max-width:320px}
+.shtile .when{font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--mut)}
+.shtile .st{font-size:12px;color:var(--mut)}.shtile .pbtn{justify-content:center;min-width:min(200px,100%);max-width:100%;white-space:normal}
+.shpic{display:flex;align-items:center;gap:10px;color:var(--mut)}
+.shpic .dot{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:14px;background:var(--soft);color:var(--fg)}
+.shpic .zip{background:var(--k-ib,#e8eefc);color:var(--k-i,#2b55c6)}.shpic .arr{font-size:18px}
+.shnew{padding:0 8px;border-radius:999px;font-size:11px;font-weight:700;background:var(--okb);color:var(--okt);text-transform:none;letter-spacing:0}
+.shpopw{position:relative;display:inline-flex}
+.shpop{position:absolute;top:calc(100% + 8px);right:0;z-index:30;width:360px;max-width:calc(100vw - 32px);padding:14px 16px;border:1px solid var(--bd);border-radius:12px;background:var(--card);box-shadow:0 12px 32px rgba(0,0,0,.16);text-align:left;display:flex;flex-direction:column;gap:6px}
+.shpop b.ph{font-size:14px}.shpop ul{list-style:none;margin:4px 0 0;padding:0;max-height:260px;overflow:auto}.shpop li{border-top:1px solid var(--bd)}.shpop li:first-child{border-top:0}
+.shpop label{display:flex;gap:10px;align-items:center;padding:7px 0;font-size:13px;cursor:pointer}.shpop input{width:16px;height:16px;accent-color:var(--fg)}.shpop .rn{flex:1;min-width:0}.shpop .rn small{display:block;color:var(--mut);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.shpop label{align-items:flex-start}.shpop input{margin-top:2px}.shpop .rw{color:var(--mut);font-size:12px;white-space:nowrap}
+.shpop .row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px}.shpop .pbtn{min-width:0}
+.shgot{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 18px 18px;padding:12px 16px;border-radius:10px;background:var(--soft);font-size:13.5px}.shgot .s{margin-left:auto;color:var(--mut);font-size:12px}
+.shcols{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;padding:14px 18px}
+@container (min-width:640px){.shcols{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.shcol{display:flex;flex-direction:column;gap:10px;padding:18px;border:1px solid var(--bd);border-radius:14px;background:var(--card)}
+.shcol h4{margin:0;font-size:16px}.shcol>p{margin:0;color:var(--mut);font-size:13.5px}
+.shflow{list-style:none;margin:0;padding:0;border:1px solid var(--bd);border-radius:10px}
+.shflow li{display:flex;gap:10px;align-items:baseline;padding:10px 12px;border-top:1px solid var(--bd);font-size:13.5px}.shflow li:first-child{border-top:0}
+.shflow li small{display:block;color:var(--mut);font-size:12px;margin-top:1px}.shflow li.gone b{text-decoration:line-through;color:var(--mut)}
+.chipx{flex:none;padding:1px 9px;border-radius:999px;font-size:11.5px;font-weight:700;white-space:nowrap}.chipx.ok{background:var(--okb);color:var(--okt)}.chipx.ask{background:var(--needb,#fdf0e1);color:var(--need,#9a4b00)}
+.shneed{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin:0 18px 14px;padding:12px 16px;border-radius:10px;background:var(--soft);font-size:13.5px}
+.shacts{display:flex;gap:12px;align-items:center;padding:0 18px 18px}
+.shpick{margin:10px 0;padding:12px 14px;border:1px solid var(--bd);border-radius:12px;background:var(--card)}.shpick h4{margin:0 0 6px;font-size:14px}
+.shpick .cf{padding:8px 0;border-top:1px solid var(--bd);font-size:13px}.shpick .cf:first-of-type{border-top:0}.shpick pre{white-space:pre-wrap;margin:4px 0;padding:6px 8px;border-radius:6px;background:var(--soft);font-size:12px;max-height:120px;overflow:auto}
+.shpick .cfb{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .stbar .sti{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:var(--card);color:var(--sc);flex:none}
 .stbar .stt{flex:1 1 320px;display:flex;flex-direction:column;gap:2px;min-width:0}
 .stbar .stt b{font-size:14px}
@@ -1041,6 +1075,12 @@ function navHtml(counts,recent,att){
   if(tab==="all")body=kindBlock(KINDS[0],1,true)+kindBlock(KINDS[1],1,true)+kindBlock(KINDS[2],2,false)+kindBlock(KINDS[3],2,false)+kindBlock(KINDS[4],3,false);
   else if(tab==="drafts")body=draftsBody();
   else body=cats(tab,false);
+  /* Debugging: copies brought in from someone's issue zip (share.py debug), apart from your own workflows */
+  var dbg=W.workflows.filter(function(w){return w.debug&&hit(shortOf(w)+" debugging")});
+  if(tab==="all"&&dbg.length){var dfk="kind:debug",dopen=q?true:(dfk in UI.fold?!!UI.fold[dfk]:true);
+    body+='<div class="t2g nsec"><button class="nk sx" data-folder="'+dfk+'" aria-expanded="'+dopen+'"><span class="chv" aria-hidden="true">'+NCHEV+'</span><span>Debugging</span><span class="gc">'+dbg.length+"</span></button>"+
+      (dopen?'<div class="nnote">From shared zips · never run on their own</div>'+dbg.map(function(w){var on=pageOf(UI.view)===w.id,nr=(w.debug.runs||[]).length;
+        return'<button class="nb l1 ncn'+(on?" sel":"")+'" type="button" data-view="'+esc(w.id)+'" title="'+esc(shortOf(w)+": debugging copy from "+(w.debug.from||"a zip"))+'"'+(on?' aria-current="page"':"")+'><span class="nm">'+esc(shortOf(w))+'</span><span class="cnc warn">'+nr+" run"+(nr===1?"":"s")+"</span></button>"}).join(""):"")+"</div>"}
   if(!body)body='<div class="nempty">'+(q?"No workflows match.":"Nothing here yet.")+"</div>";
   return h+body;
 }
@@ -1176,29 +1216,40 @@ function runOutcomeHtml(v,ex,r){var sk=(v.steps||[]).map(function(z){return z.ke
 /* Examples: a few usual journeys in plain words (the architect writes them; the counts come from the runs) */
 /* Helper: everything you can do to this workflow (each copies one line for the chat, like every board button),
    and its examples. Panels follow its state: no Discard without a draft, Pause only with a schedule. */
-function helperActions(v){var n=cmdName(v),e0=(v.entries||[]).filter(function(k){return(W.entries||{})[k]})[0],ph=e0?(entryOf(e0).starts_on||[])[0]:"",sc=schedOf(v),
-    hs=v.history||[],isNew=v.category==="new",A=function(id,t,d,line,x){return Object.assign({id:id,t:t,d:d,line:line},x||{})};
-  var g=[{name:"Run it",items:[ph?A("run","Run it now","Reads what’s new and runs each item. Sends still wait for your yes.",ph):A("run","Run it now","Runs it once. Sends still wait for your yes.","run workflow "+n),
-      A("one","Run it on one item","Runs it on one item from the Inbox. Put the item’s ID after “on”.","run workflow "+n+" on wf-…")]}];
-  if(e0&&!isNew)g.push({name:"Schedule",items:sc?[A("schc","Change the schedule","Now "+RunPath.schedText(sc)+". Edit the line before you send it.","change schedule workflow "+n+": "+sc.text),
-      A("schp",sc.paused?"Resume the schedule":"Pause the schedule",sc.paused?"Runs it on its own again.":"Stops it running on its own until you resume it.",(sc.paused?"resume":"pause")+" schedule workflow "+n),
-      A("schr","Remove the schedule","Takes the schedule off. It runs only when you ask.","remove schedule workflow "+n)]:
-     [A("sch","Add a schedule","Runs it on its own while the Claude app is open. Change the days or time as you like. Anything that needs your yes waits on the Inbox.","schedule workflow "+n+": weekdays 08:00")]});
-  var ch=[A("edit","Edit the workflow","Say what should change after the colon. It becomes a draft you can try before anything is live.","change workflow "+n+": ")];
-  if(v.edited||isNew)ch.push(A("pub",isNew?"Publish it":"Publish a new version",isNew?"Names it and saves v1.":"Checks the draft against earlier runs, shows what may change, then saves "+nextVer(v)+".","publish workflow "+n,{badge:isNew?"":"Draft waiting"}));
-  if((v.iteration||0)>1)ch.push(A("undo","Undo the last change","Puts the draft back as it was before your last change.","undo the last change to workflow "+n));
-  if(v.edited&&!isNew)ch.push(A("disc","Discard the draft","Throws the draft away. The live version stays as it is.","discard the draft of workflow "+n));
-  if(hs.length>1)ch.push(A("rest","Restore an earlier version","Puts back an earlier version, saved as a new one so it can be undone.","restore workflow "+n+" to "+(hs[0].v||"v1")));
+function helperActions(v){var n=cmdName(v),e0=(v.entries||[]).filter(function(k){return(W.entries||{})[k]})[0],sc=schedOf(v),
+    hs=v.history||[],isNew=v.category==="new",A=function(id,t,d,line,x){return Object.assign({id:id,t:t,d:d,line:line},x||{})},D="delegate ";
+  var conns=usesOf(v).filter(function(x){return!x.builtin}).map(function(x){return x.name});
+  var g=[{name:"Run it",items:[A("run","Run it now",e0?"Its trigger reads what’s new and runs each item.":"Runs it once.",D+"run "+n),
+      A("runt","Try it as a test","Reads your real data; saves and sends nothing, and shows what it would do.",D+"run "+n+": as a test"),
+      A("one","Run it on one item","Put the item after the colon: an ID from the Inbox, or describe it.",D+"run workflow "+n+": "),
+      A("again","Run an item again","Runs one earlier item again. Put its ID (wf-…) in.",D+"rerun wf-…")]}];
+  if(e0&&!isNew)g.push({name:"Schedule",items:sc?[A("schc","Change the schedule","Now "+RunPath.schedText(sc)+". Edit the line before you send it.",D+"schedule workflow "+n+": "+sc.text),
+      A("schp",sc.paused?"Resume the schedule":"Pause the schedule",sc.paused?"Runs it on its own again.":"Stops it running on its own until you resume it.",D+(sc.paused?"resume":"pause")+" workflow "+n),
+      A("schr","Remove the schedule","Takes the schedule off. It runs only when you ask.",D+"unschedule workflow "+n)]:
+     [A("sch","Add a schedule","Runs it on its own while the Claude app is open. Change the days or time as you like. Anything that needs your yes waits on the Inbox.",D+"schedule workflow "+n+": weekdays 08:00")]});
+  var ch=[A("edit","Edit the workflow","Say what should change after the colon. It becomes a draft you can try before anything is live.",D+"change workflow "+n+": ")];
+  if((v.iteration||0)>1)ch.push(A("undo","Undo the last change","Puts the draft back as it was before your last change.",D+"undo workflow "+n));
+  if(v.edited&&!isNew){ch.push(A("val","Validate the draft","Checks it against earlier runs and shows what may change, then publishes on your yes.",D+"validate workflow "+n,{badge:"Draft waiting"}));
+    ch.push(A("pubnow","Publish without validating","Saves "+nextVer(v)+" straight away, marked as not validated.",D+"publish workflow "+n+": without validating"));
+    ch.push(A("disc","Discard the draft","Throws the draft away. The live version stays as it is.",D+"discard workflow "+n))}
+  if(isNew)ch.push(A("pub","Publish it","Names it and saves v1.",D+"publish workflow "+n));
+  if(hs.length>1)ch.push(A("rest","Restore an earlier version","Puts back an earlier version, saved as a new one so it can be undone.",D+"restore workflow "+n+": "+(hs[0].v||"v1")));
   g.push({name:"Change it",items:ch});
-  g.push({name:"Tests and examples",items:[A("test","Test it","Replays real recorded runs. Nothing outside is read or sent.","test workflow "+n),
-    A("keep","Keep a run as a test","Saves what a real run read as the test of the path it took.","keep wf-… as a test"),
-    A("ex","Write examples","Writes the usual journeys and what each path ends with, from its steps.","add examples to workflow "+n)]});
-  g.push({name:"Manage",items:[A("ren","Rename it","Changes its name everywhere, keeping its runs and versions.","rename workflow "+n+" to "),
-    A("mv","Move to another category","Puts it under another category; a new one is added if needed.","move workflow "+n+" to "),
-    A("del","Delete it","Removes the workflow. Claude lists what uses it and asks before anything goes.","delete workflow "+n,{danger:true})]});
+  g.push({name:"Tests and examples",items:[A("test","Test it","Replays real recorded runs. Nothing outside is read or sent.",D+"test workflow "+n),
+    A("addt","Add tests","Writes one test per path from the runs recorded so far.",D+"add tests workflow "+n),
+    A("keep","Keep a run as a test","Saves what a real run read as the test of the path it took. Put its ID in.",D+"keep wf-…: test"),
+    A("ex","Write examples","Writes the usual journeys and what each path ends with, from its steps.",D+"add examples workflow "+n)]});
+  if(!isNew)g.push({name:"Share it",items:[A("sh","Share it","A zip in your Downloads, for someone new to import.",D+"share workflow "+n),
+    A("shu","Share the update","For people who already have it. They keep their own changes.",D+"share workflow "+n+": update"),
+    A("shi","Share an issue","The runs that went wrong and what they read, so someone can debug them. Put their IDs in.",D+"share workflow "+n+": issue wf-…")]});
+  if(conns.length)g.push({name:"Connections",items:conns.map(function(c){var cn=connOf(c)||{};return A("cn:"+c,"Check "+(cn.system||c),"Reads one harmless thing to see it still works. Changes nothing.",D+"check connection "+c)}).concat([
+    A("cnfix","Fix a connection","Walks you through setting it up again. Change the name if it’s another one.",D+"fix connection "+conns[0])])});
+  g.push({name:"Manage",items:[A("ren","Rename it","Changes its name everywhere, keeping its runs and versions. Type the new name after the colon.",D+"rename workflow "+n+": "),
+    A("mv","Move to another category","Type the category after the colon; a new one is added if needed.",D+"move workflow "+n+": "),
+    A("del","Delete it","Removes the workflow. Claude lists what uses it and asks before anything goes.",D+"delete workflow "+n,{danger:true})]});
   return g}
 function helperHtml(v){var g=helperActions(v); /* Helper: the actions only (its Examples tab was removed; the examples live on the Overview) */
-  return'<div class="hlp">'+'<p class="hsub">Everything you can do to this workflow. Each one copies a line to paste into the chat with Claude.</p>'+g.map(function(x){
+  return'<div class="hlp">'+'<p class="hsub">Everything you can do to this workflow. Each one copies a line to paste into the chat with Claude. Every command starts with <code>delegate</code>; <code>delegate help</code> lists them all.</p>'+g.map(function(x){
     return'<section class="hgrp" aria-label="'+esc(x.name)+'"><h3>'+esc(x.name)+'</h3><div class="hgrid">'+x.items.map(function(a){var ck="act:"+a.id,done=UI.copied===ck;
       return'<article class="hcard"><div class="ht'+(a.danger?" dng":"")+'">'+esc(a.t)+(a.badge?' <span class="hbdg">'+esc(a.badge)+"</span>":"")+'</div><p>'+esc(a.d)+'</p><div class="hline"><code title="'+esc(a.line)+'">'+esc(a.line)+'</code><button type="button" class="hcp" data-copy="'+esc(a.line)+'" data-ck="'+ck+'" aria-label="Copy: '+esc(a.t)+'">'+(done?"Copied":"Copy")+"</button></div></article>"}).join("")+"</div></section>"}).join("")+"</div>"}
 function runStatus(ex){return Steps.runStatus(B.runs.filter(function(z){return z.id===ex.run})[0])}
@@ -1241,7 +1292,7 @@ var COPYFOOT="";
 function pageMore(noun,n,v){var key="pgmore",open=UI.menu===key,sc=noun==="workflow"&&v?schedOf(v):null,canSch=noun==="workflow"&&v&&(v.entries||[]).length&&v.category!=="new";
   var body=(canSch?(sc?xopt({t:"Change the schedule",s:"Now "+RunPath.schedText(sc)+". Edit the line before you send it",cmd:"change schedule workflow "+n+": "+sc.text,ck:key+":sch"})+
       xopt({t:sc.paused?"Resume the schedule":"Pause the schedule",s:sc.paused?"Runs on its own again":"Stops it running on its own until you resume it",cmd:(sc.paused?"resume":"pause")+" schedule workflow "+n,ck:key+":pause"}):
-      xopt({t:"Schedule it",s:"Runs it on its own while the Claude app is open. Change the days or time before you send it",cmd:"schedule workflow "+n+": weekdays 08:00",ck:key+":sch"})):"")+renameOpts(noun,n,v,key)+xopt({t:"Delete this "+noun,s:"Claude lists what uses it and asks before removing anything",cmd:"delete "+noun+" "+n,ck:key+":del",cls:"xdanger"});
+      xopt({t:"Schedule it",s:"Runs it on its own while the Claude app is open. Change the days or time before you send it",cmd:"schedule workflow "+n+": weekdays 08:00",ck:key+":sch"})):"")+(v&&v.share&&!v.debug?xopt({t:"Share…",s:"Opens the Share tab: share it with a colleague, or share runs to get help with a problem",act:'data-ptab="share" data-ptop="1"'}):"")+renameOpts(noun,n,v,key)+xopt({t:"Delete this "+noun,s:noun==="workflow"?"Claude lists what uses it, and asks whether its past runs go too, before removing anything":"Claude lists what uses it and asks before removing anything",cmd:"delete "+noun+" "+n,ck:key+":del",cls:"xdanger"});
   return'<span class="xm"><button class="pbtn pmore" type="button" data-menu="'+key+'" aria-expanded="'+open+'" aria-haspopup="true" aria-label="More actions">⋯</button>'+
     (open?'<div class="xmenu" role="menu">'+body+"</div>":"")+"</span>"}
 /* the rename options of a ⋯ menu (core-renamer): each copies a line to finish in the chat. A new workflow is named
@@ -1250,15 +1301,12 @@ function renameOpts(noun,n,v,key){
   if(noun==="connection")return xopt({t:"Rename this connection",s:"Changes the name it shows everywhere. Type the new name after “to”",cmd:"rename connection "+n+" to ",ck:key+":ren"});
   if(noun!=="workflow"||!v||v.category==="new")return"";
   var cl=((W.categories||{})[v.category]||{}).name||v.category;
-  return xopt({t:"Rename it",s:"Changes its name everywhere; its runs and versions stay. Type the new name after “to”",cmd:"rename workflow "+n+" to ",ck:key+":ren"})+
-    xopt({t:"Move to another category",s:"Now in "+cl+". Type the category after “to”; a new one is added",cmd:"move workflow "+n+" to ",ck:key+":mv"})+
-    xopt({t:"Rename the "+cl+" category",s:"Renames it, or moves everything in it to another one",cmd:"rename category "+v.category+" to ",ck:key+":rencat"})+
-    xopt({t:"Rename several at once",s:"Swap a word across names, or let Claude suggest tidier names. You see the list first",cmd:"tidy up the names of my workflows",ck:key+":bulk"})}
+  return xopt({t:"Rename it",s:"Type a new name after the colon, or “category <name>” to move it (now in "+cl+"). Claude shows old → new first",cmd:"delegate rename workflow "+n+": ",ck:key+":ren"})}
 /* Run ▾ on a workflow: for real (with a warning), or a test on fake data (this path, or every path) */
 function runMenuWf(v,ex){var n=cmdName(v),k="run",tests=v.tests||[],h='<div class="s xsh real"><span class="xic">'+XI.mi.real+'</span>For real · uses your real accounts</div>';
   /* Run workflow: fire its own trigger, which fetches fresh items and runs each (the trigger's first phrase) */
   var te=(v.entries||[]).filter(function(e){return(W.entries||{})[e]})[0];
-  if(te)h+=xopt({ic:"now",t:"Run workflow",s:"its trigger fetches new items and runs each",cmd:((W.entries[te].starts_on||[])[0])||"run trigger "+te,ck:k+":now"});
+  if(te)h+=xopt({ic:"now",t:"Run workflow",s:"its trigger fetches new items and runs each",cmd:"delegate run "+n,ck:k+":now"});
   if(te)h+=xopt({ic:"latest",t:"Latest item",s:"the newest one from its trigger",cmd:"run workflow "+n+" on the latest item",ck:k+":latest"});
   h+=xopt({ic:"pick",t:"An item you choose",s:"you paste or describe it",cmd:"run workflow "+n+" on ",ck:k+":item"});
   h+='<div class="s xsh fake"><span class="xic">'+XI.mi.fake+'</span>Test · replays recorded real runs, sends nothing</div>';
@@ -1397,9 +1445,9 @@ function draftBar(v){var cur=curVer(v),pr=v.pending_review,n=cmdName(v),N=nounOf
     stCopy("Discard","discard the draft of "+N+" "+n,"disc");
   if(ns>=1&&ns<=3){ /* a new workflow: one main button for its step; the rest in ⋯ */
     var more=[];if(it>1)more.push({t:"Undo this change",s:v.iter_note||"",cmd:"undo the last change to workflow "+n,ck:"nbmore:undo"});
-    var e0=(v.entries||[]).filter(function(k){return(W.entries||{})[k]})[0],tryCmd=e0?((entryOf(e0).starts_on||[])[0]||"run trigger "+entryOf(e0).name.toLowerCase()):"run workflow "+n;
-    if(ns>=2&&v.recordings){more.push({t:"Try it again for real",s:"Another try on real data: every step runs, saves and sends included",cmd:tryCmd+" for real",ck:"nbmore:tryreal"});
-      more.push({t:"Try it again as a test",s:"Another try on real data: nothing saved or sent, more examples recorded",cmd:tryCmd+" as a test",ck:"nbmore:try"})}
+    var e0=(v.entries||[]).filter(function(k){return(W.entries||{})[k]})[0],tryCmd="delegate run "+n;
+    if(ns>=2&&v.recordings){more.push({t:"Try it again for real",s:"Another try on real data: every step runs, saves and sends included",cmd:tryCmd+": for real",ck:"nbmore:tryreal"});
+      more.push({t:"Try it again as a test",s:"Another try on real data: nothing saved or sent, more examples recorded",cmd:tryCmd+": as a test",ck:"nbmore:try"})}
     more.push({t:"Discard",s:"Remove it and its skills",cmd:"discard the draft of workflow "+n,ck:"nbmore:disc"});
     var gaps=(v.test_gaps||[]).length,rec=recTests(v).length,todo=usesOf(v).filter(function(x){if(x.builtin)return false;var c=connOf(x.name);return!c||c.status!=="ok"});
     if(ns===1){var sys=function(x){return(connOf(x.name)||{}).system||x.name},fst=barConn(v),fc=connOf(fst)||{system:fst,status:"unknown"},rest=todo.filter(function(x){return x.name!==fst}).map(sys),
@@ -1408,7 +1456,7 @@ function draftBar(v){var cur=curVer(v),pr=v.pending_review,n=cmdName(v),N=nounOf
         (rest.length?"Start with "+fc.system+", then "+rest.join(", ")+".":okn.length?fc.system+" is the last one.":"Then it can try one real run."),crBtn(fst,fc),more)}
     var us=usesOf(v),sysn=us.filter(function(x){return!x.builtin&&!/send|post|draft|write|create|update|\badd|make|save|build|put|change|remove|delete|label|move/i.test(x.what||"")}).map(function(x){return(connOf(x.name)||{}).system||x.name}).join(" and "); /* only what it reads: a send or a write is held back */
     if(!sysn&&us.some(function(x){return x.builtin||/^web$/i.test(x.name)}))sysn="web pages"; /* a workflow that only reads the web: "Reads your real Notion" named the place it writes to */
-    if(ns===2){var lt=lastTryReq(v);return nbar(2,"Try it on real data",lt?"Last try "+ago(ts(lt.started))+": "+((lt.end||{}).verdict||"nothing came in")+" Try it again when there is something to read.":"Runs once on your real "+(sysn||"data")+". For real sends and saves everything; as a test sends nothing and shows what it would do.",stCopy("Publish now","publish workflow "+n+" without a try","nskip").replace('title="Copies','title="Publish it without trying it first: no tests until a real run takes a path. Copies')+stCopy(lt?"Test again":"Try as a test",tryCmd+" as a test","ntry").replace('title="Copies','title="Reads your real data; saves, writes and sends nothing, and shows what it would do. Copies')+stCopy(lt?"Try again for real":"Try for real",tryCmd+" for real","ntryreal",true).replace('title="Copies','title="Every step runs: saves, writes, creates and sends included. Copies'),more)}
+    if(ns===2){var lt=lastTryReq(v);return nbar(2,"Try it on real data",lt?"Last try "+ago(ts(lt.started))+": "+((lt.end||{}).verdict||"nothing came in")+" Try it again when there is something to read.":"Runs once on your real "+(sysn||"data")+". For real sends and saves everything; as a test sends nothing and shows what it would do.",stCopy("Publish now","publish workflow "+n+" without a try","nskip").replace('title="Copies','title="Publish it without trying it first: no tests until a real run takes a path. Copies')+stCopy(lt?"Test again":"Try as a test",tryCmd+": as a test","ntry").replace('title="Copies','title="Reads your real data; saves, writes and sends nothing, and shows what it would do. Copies')+stCopy(lt?"Try again for real":"Try for real",tryCmd+": for real","ntryreal",true).replace('title="Copies','title="Every step runs: saves, writes, creates and sends included. Copies'),more)}
     return nbar(3,"Ready to publish",triedLine(recTests(v))+(gaps?", "+gaps+" with no real example yet":"")+". "+willBe(v)+" You confirm the names when you publish.",(tryRun(v)?'<button class="stb" type="button" data-showrun="'+esc(tryRun(v))+'" title="Open the try on the flow: what it read, what it worked out, and what it would have sent">View the try'+tryCount(v)+'</button>':"")+stCopy("Publish v1","publish workflow "+n,"draft",true),more)+pathPanel(v)}
   /* a published workflow's draft: three steps, Draft → Validate → Publish. Draft: the title, Claude's one line on
      how it differs from the published version, and Details at its end (the reasons, or the plain list of edits);
@@ -1580,6 +1628,67 @@ function hrow(key,icon,label,items,show,more,kind){
     '<span class="hvv'+(lines?" lines":"")+'">'+(lines?list.map(function(x){return"<span>"+x+"</span>"}).join(""):list.join(", "))+
     (hid>0?' <button class="mlnk" type="button" data-hmore="'+esc(key)+'">'+(open?(lines?"show fewer":"less"):"+ "+hid+" "+(more||"more"))+"</button>":"")+"</span></div>"}
 function summaryOf(x){var s=String(x.summary||"").trim();if(s)return s;var d=String(x.desc||""),m=d.match(/^.+?[.!?](?=\s|$)/);return m?m[0]:d}
+/* ---------- sharing (core-sharer, share.py): the Share tab, a zip's note on its draft, and debugging copies ---------- */
+function shWhen(t){var d=t?new Date(t):null;return d&&!isNaN(d)?d.toLocaleDateString(undefined,{day:"numeric",month:"short"})+" "+d.toLocaleTimeString(undefined,{hour:"2-digit",minute:"2-digit"}):""}
+function shDate(t){var d=t?new Date(t):null;return d&&!isNaN(d)?d.toLocaleDateString(undefined,{day:"numeric",month:"short"}):""}
+var SHI={me:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>',
+  zip:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M11 3v2M11 7v2M11 11v2"/></svg>',
+  them:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17.5" cy="9" r="2.5"/><path d="M16 14.5a5 5 0 0 1 6 5.5"/></svg>',
+  up:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg>',
+  bug:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>',
+  runs:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M9 13h6M9 17h4"/></svg>',
+  fix:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.4 2.4-2.6-.4-.4-2.6z"/></svg>',
+  dl:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>'};
+function shPic(a,b,c){return'<div class="shpic" aria-hidden="true"><span class="dot">'+SHI[a]+'</span><span class="arr">→</span><span class="dot zip">'+SHI[b]+'</span><span class="arr">→</span><span class="dot">'+SHI[c]+"</span></div>"}
+function shCopy(label,cmd,ck,dark){var done=UI.copied===ck;return'<button class="pbtn'+(dark?" dark":"")+'" type="button" data-copy="'+esc(cmd)+'" data-ck="'+esc(ck)+'" title="Copies “'+esc(cmd)+'”">'+(done?"✓ Copied: paste it in the chat":esc(label))+"</button>"}
+function shareHtml(v){var S=v.share||{},n=cmdName(v),ver=S.version||"",last=S.last,runs=S.runs||[],ch=S.changes||[];
+  if(UI.shImp===v.id&&ch.length)return shareImpact(v);
+  UI.shareSel=UI.shareSel||{};var sel=UI.shareSel[v.id];
+  if(!sel){sel=UI.shareSel[v.id]={};runs.slice(0,8).forEach(function(r){if(r.status==="failed"||(r.attention&&r.attention!=="none"))sel[r.run]=true})} /* the runs that look wrong start ticked */
+  var picked=runs.filter(function(r){return sel[r.run]}).map(function(r){return r.run}),newer=!!S.is_new,since=S.update_since||"";
+  var t1='<div class="shtile'+(last||newer?"":" hot")+'"><span class="when">First time</span>'+shPic("me","zip","them")+"<h4>Share it</h4><p>The whole workflow, ready for someone new to use.</p>"+shCopy("Share it","share workflow "+n,"sh:full",!last&&!newer)+
+    '<span class="st">'+(last?"Last shared "+esc(last.version||"")+" on "+esc(shDate(last.t)):ver?"Shares "+esc(ver)+", the published version":"Not published yet: shares the draft")+"</span></div>";
+  var t2='<div class="shtile'+(newer?" hot":"")+'"><span class="when">An update'+(newer?' <span class="shnew">'+esc(ver)+" is new</span>":"")+"</span>"+shPic("me","up","them")+"<h4>Share the update</h4><p>For people who already have it. They keep their own changes.</p>"+
+    shCopy("Share the update"+(ver?" ("+ver+")":""),"share the update of workflow "+n,"sh:update",newer)+
+    (ch.length?'<button class="lnk" type="button" data-shimp="'+esc(v.id)+'">How will this affect people who have it?</button>':"")+
+    '<span class="st">'+(since?(ch.length?ch.length+" step"+(ch.length===1?"":"s")+" changed since "+esc(since):"No step changes since "+esc(since)):"Nothing to compare with yet")+"</span></div>";
+  var open=UI.menu==="sharepop";
+  var pop=open?'<div class="shpop" role="dialog" aria-label="Pick the runs to send"><b class="ph">Which runs went wrong?</b>'+
+      (runs.length?"<ul>"+runs.map(function(r){return'<li><label><input type="checkbox" data-sharerun="'+esc(r.run)+'"'+(sel[r.run]?" checked":"")+'><span class="rn">'+esc(r.label)+(r.summary?'<small title="'+esc(r.summary)+'">'+esc(String(r.summary).replace(/\*\*/g,""))+"</small>":"")+'</span><span class="rw">'+esc(shWhen(r.started))+"</span></label></li>"}).join("")+"</ul>":'<p style="margin:0;color:var(--mut);font-size:13px">No runs yet: run it once first.</p>')+
+      '<div class="row"><span style="color:var(--mut);font-size:12px">'+picked.length+" of "+runs.length+" ticked</span>"+(picked.length?shCopy("Share "+picked.length+" run"+(picked.length>1?"s":""),"share an issue with workflow "+n+": "+picked.join(" "),"sh:issue",true):"")+"</div></div>":"";
+  var t3='<div class="shtile"><span class="when">An issue</span>'+shPic("bug","runs","fix")+"<h4>Share an issue</h4><p>Something not working? Send the runs that show it, and get a fix back.</p>"+
+    '<span class="xm shpopw"><button class="pbtn" type="button" data-menu="sharepop" aria-expanded="'+open+'" aria-haspopup="dialog">Share an issue ▾</button>'+pop+"</span>"+
+    '<span class="st">'+(runs.length?"Claude ticks the runs that look wrong":"No runs to send yet")+"</span></div>";
+  return'<section class="hist shsec" aria-label="Share"><h3>Share</h3><div class="shtiles">'+t1+t2+t3+"</div>"+
+    '<div class="shgot">'+SHI.dl+'<span><b>Got a zip?</b> Upload it into your chat with Claude.</span><span class="s">Never includes your sign-ins or keys</span></div></section>'}
+/* "How will this affect people who have it?": the update's steps, for someone who never changed their copy and for
+   someone who did (the Share tab's own page) */
+function shareImpact(v){var S=v.share||{},n=cmdName(v),ver=S.version||"",since=S.update_since||"",ch=S.changes||[];
+  var lab={"new":"Added",changed:"Changed",removed:"Removed"};
+  var li=function(c,chip,cls,small){return'<li'+(c.k==="removed"?' class="gone"':"")+'><span class="chipx '+cls+'">'+chip+"</span><span><b>"+esc(c.t)+"</b>"+(small?"<small>"+small+"</small>":"")+"</span></li>"};
+  var a=ch.map(function(c){return li(c,lab[c.k],"ok")}).join("");
+  var b=ch.map(function(c){return c.k==="new"?li(c,"Added","ok"):li(c,"May ask","ask",c.k==="changed"?"If they changed this step too, they pick theirs or yours":"If they edited it, they choose to keep it or not")}).join("")+'<li><span class="chipx ok">Kept</span><span><b>Their own changes</b></span></li>';
+  var conns=usesOf(v).filter(function(x){return!x.builtin}).map(function(x){return(connOf(x.name)||{}).system||x.name});
+  return'<section class="hist shsec" aria-label="How the update will affect people"><h3>How '+esc(ver)+" will affect people who have "+esc(since||"an earlier version")+"</h3>"+
+    '<div class="shcols"><div class="shcol"><h4>They update, and never changed it</h4><p>It just becomes '+esc(ver)+'. No questions.</p><ul class="shflow">'+a+"</ul></div>"+
+    '<div class="shcol"><h4>They update, but changed it themselves</h4><p>Your changes come in and theirs stay. Claude asks only where you both changed the same thing.</p><ul class="shflow">'+b+"</ul></div></div>"+
+    (conns.length?'<div class="shneed"><span><b>They\'ll need '+esc(conns.join(" and "))+" connected:</b> Claude helps them set "+(conns.length>1?"them":"it")+" up when they import it</span></div>":"")+
+    '<div class="shacts">'+shCopy("Share the update"+(ver?" ("+ver+")":""),"share the update of workflow "+n,"sh:update",true)+'<button class="lnk" type="button" data-shimp="">Back to Share</button></div></section>'}
+/* a draft brought in from a zip: where it came from, and anything to pick where both sides changed the same thing */
+function sharedNote(v){var S=v.shared;if(!S||!v.edited)return"";var n=cmdName(v),cs=(S.conflicts||[]);
+  var head=S.plan==="new"?"Imported from "+esc(S.from)+" ("+esc(S.their_version||"")+"). Check it, then publish it to start using it.":
+    S.plan==="fresh"?"Took the update from "+esc(S.from)+" as it is. Your earlier version is in Versions.":
+    "The update from "+esc(S.from)+" ("+esc(S.their_version||"")+") is merged in: what's new came in and your changes stayed.";
+  var h='<div class="shpick"><h4>'+(cs.length?cs.length===1?"One thing to pick":cs.length+" things to pick":"From a shared zip")+'</h4><p style="margin:0 0 6px;color:var(--mut);font-size:13px">'+head+(S.note?" Their note: “"+esc(S.note)+"”":"")+"</p>";
+  cs.forEach(function(c){var k="shc:"+c.id,cp=function(l,cmd,ck){return'<button class="'+(ck===c.taking?"pbtn dark":"pbtn")+'" type="button" data-copy="'+esc(cmd)+'" data-ck="'+esc(k+":"+ck)+'">'+(UI.copied===k+":"+ck?"✓ Copied":esc(l))+"</button>"};
+    h+='<div class="cf"><b>'+esc(c.what||c.file)+"</b> · both changed it. Using "+(c.taking==="theirs"?"the update's":"yours")+" now."+
+      "<div style=\"display:grid;grid-template-columns:1fr 1fr;gap:8px\"><div><small>Yours</small><pre>"+esc(c.yours==null?"(removed)":c.yours)+"</pre></div><div><small>The update's</small><pre>"+esc(c.theirs==null?"(removed)":c.theirs)+"</pre></div></div>"+
+      '<div class="cfb">'+cp("Claude's merge","merge both sides of "+c.id+" in workflow "+n,"merge")+cp("The update's","take the update's side of "+c.id+" in workflow "+n,"theirs")+cp("Yours","keep my side of "+c.id+" in workflow "+n,"mine")+"</div></div>"});
+  return h+"</div>"}
+function debugBar(v){var D=v.debug,n=D.slug,ch=(D.changed||[]).length;
+  var btn=function(l,cmd,ck,pub){return'<button class="stb'+(pub?" pub":"")+'" type="button" data-copy="'+esc(cmd)+'" data-ck="'+esc(ck)+'" title="Copies “'+esc(cmd)+'”">'+(UI.copied===ck?"✓ Copied":esc(l))+"</button>"};
+  return stBar(XI.pen14,"Debugging copy, from "+(D.from||"a shared zip"),"Their version: "+(D.version||"?")+". Kept apart from your workflows and never run on its own. Replays use the data in the zip."+(D.note?" Their note: “"+D.note+"”":"")+(ch?" You've changed "+ch+" file"+(ch>1?"s":"")+".":""),
+    btn("Replay a run","replay a run of debug "+n,"dbg:replay")+btn(ch?"Share the fixed version":"Share the fix","share the fixed version of debug "+n,"dbg:fix",true)+btn("Remove","remove debug "+n,"dbg:rm"),null,"","dbg")}
 function headBox(o){ /* o: {cat, tone, kind, title, badge, badgeCls, hist, ver, summary, desc, skill, extra, rows} */
   var dopen=!!UI.descMore,full=o.desc&&o.desc.trim()!==o.summary.trim();
   var h='<div class="hd2"><div class="hrow"><div><div class="eyebrow">'+(o.cat?'<span class="cdot cat-'+esc(o.tone)+'"></span>'+esc(o.cat):"")+(o.kind?'<span class="ktag k-'+esc(o.kind)+'">'+esc(KINDTAG[o.kind]||o.kind)+"</span>":"")+(o.ver||"")+"</div><h2>"+esc(o.title)+'</h2></div><div class="hacts">'+(o.badge?'<span class="vbadge'+(o.badgeCls?" "+o.badgeCls:"")+'">'+esc(o.badge)+"</span>":"")+(o.hist||"")+"</div></div>"+(UI.tabsHtml||"");
@@ -1608,7 +1717,7 @@ function schedOf(v){var e0=v&&(v.entries||[]).filter(function(k){return(W.entrie
 function schedLine(v){var sc=schedOf(v);if(!sc)return"";var nx=RunPath.nextRun(sc);return RunPath.schedText(sc)+(sc.paused?" · paused":nx?" · next "+RunPath.whenNext(nx):"")}
 function examplesOf(v){var ek=dEntry(v.id);return(ek?((W.entries||{})[ek]||{}).examples:v.examples||(v.draft&&v.draft.examples))||[]}
 function tabsHtml(v,runs){var t=UI.tab||"overview",ex=examplesOf(v),b=function(id,l,n){return'<button role="tab" type="button" data-ptab="'+id+'" aria-selected="'+(t===id)+'">'+l+(n!=null?'<span class="ptn">'+n+"</span>":"")+"</button>"};
-  return'<div class="ptabs" role="tablist" aria-label="This page">'+b("overview","Overview")+b("runs","Past runs",runs.length)+(usesOf(v).some(function(u){return!u.builtin})?b("connections","Connections"+(connsOk(v)?"":'<span class="crdot" aria-label="needs you"></span>')):"")+b("helper","Helper")+(t==="versions"&&hasHist(v)?b("versions","Versions",(v.history||[]).length):"")+"</div>"}
+  return'<div class="ptabs" role="tablist" aria-label="This page">'+b("overview","Overview")+b("runs","Past runs",runs.length)+(usesOf(v).some(function(u){return!u.builtin})?b("connections","Connections"+(connsOk(v)?"":'<span class="crdot" aria-label="needs you"></span>')):"")+b("helper","Helper")+(v.share&&!v.debug?b("share","Share"):"")+(t==="versions"&&hasHist(v)?b("versions","Versions",(v.history||[]).length):"")+"</div>"}
 function headHtml(v){
   var ek=dEntry(UI.view);
   if(ek&&(W.entries||{})[ek])return trigHead(ek);
@@ -1631,15 +1740,15 @@ function headHtml(v){
     (next.length?hrow(id+":out","out","Can start next",next,2,"more","lines"):hrow(id+":back","back","Gives back",back,1,"more","lines"));
   /* actions: Run ▾ (a workflow you can run: not a core skill, not a part that only runs inside another),
      Change it ▾ (anything but a core skill), and the version button that opens History */
-  var ns0=newStep(v),acts=(kind!=="core"&&kind!=="shared"&&!v.parent&&!(ns0>=0&&ns0<3)?runMenuWf(v,UI.curEx):"") /* a new workflow runs from its bar's button until it is ready to publish */+(kind!=="core"?chgBtn("workflow",cmdName(v)):"")+(kind!=="core"&&!v.parent?pageMore(kind==="shared"?"shared process":"workflow",String(v.skill||cmdName(v)).replace(/^(workflow|shared)-/,""),v):"");
+  var ns0=newStep(v),acts=v.debug?"":(kind!=="core"&&kind!=="shared"&&!v.parent&&!(ns0>=0&&ns0<3)?runMenuWf(v,UI.curEx):"") /* a new workflow runs from its bar's button until it is ready to publish */+(kind!=="core"?chgBtn("workflow",cmdName(v)):"")+(kind!=="core"&&!v.parent?pageMore(kind==="shared"?"shared process":"workflow",String(v.skill||cmdName(v)).replace(/^(workflow|shared)-/,""),v):"");
   var h=headBox({cat:c==="_none"?"":catPath(c).map(function(k){return cat(k).name}).join(" › "),tone:cat(c).tone,kind:kind,title:shortOf(v),
     badge:kind==="core"?"Built in":"",badgeCls:kind==="core"?"core":"",
-    hist:acts,ver:verLabel(v),
+    hist:acts,ver:(v.debug?'<span class="ktag k-debug">Debugging copy</span>':v.shared&&v.edited?'<span class="ktag k-imported">'+(v.shared.plan==="new"?"Imported":"Update merged")+"</span>":"")+(v.debug?"":verLabel(v)),
     summary:summaryOf(v),skill:v.skill,examples:UI.exCtx?exBlock(v,UI.exCtx,(v.simulated||[]).map(function(x){return Object.assign({kind:"inf"},x)})):"",
     extra:""}); /* "more": its skill name only; the examples explain it (rule 31) */
   if(v.unnamed)h+='<p class="warn">This workflow needs a category and a short name in workflows.json.</p>';
   if(UI.hist&&(hs.length||v.edited)&&!UI.tabsHtml)h+=histHtml(v); /* pages without tabs (core, shared) keep it under the header */
-  if(v.edited||v.updating){h=draftBar(v)+h;if(UI.editWait===v.id)UI.editWait=null}
+  if(v.edited||v.updating){h=draftBar(v)+sharedNote(v)+h;if(UI.editWait===v.id)UI.editWait=null}
   else if(UI.editWait===v.id)h=stBar(XI.pen14,"Editing · "+shortOf(v),"Tell Claude in the chat what to change (the request is copied). The changes show on the steps as a draft.",'<button class="stb" type="button" data-editoff="1">Cancel</button>')+h;
   return h}
 /* a trigger's page: what starts it (its phrases), what each item carries, and the workflows it hands items to */
@@ -1775,7 +1884,7 @@ function trigHead(ek){var e=entryOf(ek),c=catOfSkill(e.skill),id="disp:"+ek,tv=v
   var phrases=(e.starts_on||[]).map(function(x){return"“"+esc(x)+"”"});
   var fields=Object.keys(e.gives||{}).map(esc);
   var to=W.workflows.filter(function(w){return(w.entries||[]).indexOf(ek)>=0}).map(function(w){return hlink(w.id,shortOf(w))});
-  var rows=hrow(id+":in","in","Starts when",phrases.length?phrases.map(function(p,i){return(i?"":"you say ")+p}):["you run the workflow manager"],2,"more","lines")+
+  var rows=hrow(id+":in","in","Starts when",phrases.length?phrases.map(function(p,i){return(i?"":"you say ")+p}):["you run Delegate"],2,"more","lines")+
     hrow(id+":work","work","Each item has",fields.length?fields:[esc(e.item_key||"its items")],4,"more","inline")+
     hrow(id+":out","out","Sends items to",to,2,"more","lines");
   return(tv.edited||tv.updating?draftBar(tv):"")+headBox({cat:c?catLabel(c):"",tone:catTone(c),kind:"trigger",title:e.name,summary:summaryOf(e),desc:e.desc,skill:e.skill,rows:rows,examples:UI.exCtx?exBlock(tv,UI.exCtx,(tv.simulated||[]).map(function(x){return Object.assign({kind:"inf"},x)})):"",
@@ -2077,14 +2186,17 @@ function renderPage(){UI.openRun="";
   var pfx=UI.view+(runMode?":run:":":");UI.pfx=pfx;
   var tabbed=!runMode&&isTabbed(v);
   if(UI.tab==="examples")UI.tab="overview"; /* an old ?tab=examples link: the examples are on the Overview */
+  if(v.debug&&UI.debugSeen!==v.id){UI.debugSeen=v.id;UI.tab="runs"} /* a debugging copy opens on the runs it came with */
   UI.tabsHtml=tabbed?tabsHtml(v,runs):"";if(UI.tab==="versions"&&!hasHist(v))UI.tab="overview";var tab=tabNow();
   UI.exCtx=runMode?null:ex;
   var h=runMode?runHeadHtml(v,ex,rr,paths):headHtml(v);
+  if(v.debug&&!runMode)h=debugBar(v)+h;
   if(!runMode&&v.draft)h=(v.draft.kind==="new"?newBar(v):stBar(XI.pen14,"Draft · importing "+shortOf(v),"Not imported yet. Check the steps below, then answer Claude in the chat.",stCopy("Import it","import it","imp",true)+stCopy("Change something","change the import: ","impchg"))+impSteps(2))+h;
-  if(!runMode&&tab==="runs"){h+=runsHtml(runs,paths,null,true);var p0=pending(UI.view);if(p0)h+='<span class="note">'+p0+" more workflow manager run"+(p0===1?"":"s")+" didn't finish and "+(p0===1?"isn't":"aren't")+" shown.</span>";app.className=isEd(v)?"isdraft":"";app.innerHTML=h;return}
+  if(!runMode&&tab==="runs"){h+=runsHtml(runs,paths,null,true);var p0=pending(UI.view);if(p0)h+='<span class="note">'+p0+" more Delegate run"+(p0===1?"":"s")+" didn't finish and "+(p0===1?"isn't":"aren't")+" shown.</span>";app.className=isEd(v)?"isdraft":"";app.innerHTML=h;return}
   if(!runMode&&tab==="versions"){h+=histHtml(v);if(UI.verRuns&&(v.history||[]).length)h+=verPanel(v,UI.verRuns);app.className=isEd(v)?"isdraft":"";app.innerHTML=h;return}
   if(!runMode&&tab==="connections"){h+=connTab(v);app.className=isEd(v)?"isdraft":"";app.innerHTML=h;return}
   if(!runMode&&tab==="helper"){h+=helperHtml(v,paths,runs);app.className=isEd(v)?"isdraft":"";app.innerHTML=h;return}
+  if(!runMode&&tab==="share"&&v.share){h+=shareHtml(v);app.className=isEd(v)?"isdraft":"";app.innerHTML=h;return}
   h+=runMode?decRunHtml(v,ex,rr):decHtml(v,R,ex,paths);
   var stg=v.stages&&v.stages.length?v.stages:null,stOf=function(k){return(stg||[]).filter(function(x){return x.key===k})[0]||{key:k,title:k,notes:[]}};
   /* a step with "on":{"step":k,"alt":j} belongs to branch j of decision k: hidden when this example took another branch;
@@ -2206,7 +2318,7 @@ function renderPage(){UI.openRun="";
   if(!runMode&&(paths.length||R.rows.length))h+=outcomeHtml(v,ex,items);
   if(runMode&&UI.runInfo)h+=UI.runInfo;
   if(!runMode&&!UI.tabsHtml&&!v.draft)h+=runsHtml(runs,paths,null); /* an open run doesn't list the others: Back or ✕ returns to them */
-  var p=pending(UI.view);if(p&&!UI.tabsHtml)h+='<span class="note">'+p+" more workflow manager run"+(p===1?"":"s")+" didn't finish and "+(p===1?"isn't":"aren't")+" shown.</span>";
+  var p=pending(UI.view);if(p&&!UI.tabsHtml)h+='<span class="note">'+p+" more Delegate run"+(p===1?"":"s")+" didn't finish and "+(p===1?"isn't":"aren't")+" shown.</span>";
   if(UI.verRuns&&(v.history||[]).length)h+=verPanel(v,UI.verRuns);
   app.className=runMode?(runStatus(ex)[2]==="run"?"isrun":"isview"):isEd(v)?"isdraft":"";
   app.innerHTML=h;
@@ -2275,7 +2387,7 @@ function runsHtml(runs,paths,ex,all){
   var dp=isD(UI.view),noun=dp?"Requests":all?"Past runs":"Real runs";
   var h='<section class="runs" aria-label="'+noun+'"><h3>'+noun+' <span class="n">'+(runs.length?runs.length+" so far, newest first":"none yet")+"</span>"+
     (!dp&&runs.nTests?'<span class="rf" role="group" aria-label="Show">'+[["all","All"],["real","Real "+runs.nReal],["tests","Tests "+runs.nTests]].map(function(o){return'<button type="button" data-runf="'+o[0]+'" class="'+((UI.runF||"all")===o[0]?"on":"")+'">'+o[1]+"</button>"}).join("")+"</span>":"")+"</h3>";
-  if(!runs.length)return h+'<span class="note">'+(dp?"Each time the workflow manager runs shows here.":"When this workflow runs, each run shows here.")+"</span></section>";
+  if(!runs.length)return h+'<span class="note">'+(dp?"Each time Delegate runs shows here.":"When this workflow runs, each run shows here.")+"</span></section>";
   var list=UI.allRuns||all?runs:runs.slice(0,10),hs=(viewDef(UI.view)||{}).history||[],cur=hs.length?hs[hs.length-1].v:null;
   if(!dp){ /* a workflow's runs (RUN-TRACE.md, Run names): the run's name and what came of it, its status, how long ago.
        Its kind (test, sample, answered, a draft) is a small tag; when every run here has the same name, the outcome leads */
@@ -2455,7 +2567,7 @@ document.addEventListener("click",function(ev){
   if(ck.dataset.rselact==="del"){TopBar.copy(rselLine(L),ck);return}
 },true);
 document.addEventListener("click",function(ev){
-  var t=ev.target.closest&&ev.target.closest("[data-lmenu],[data-lpick],[data-detail],[data-cfold],[data-ckids],[data-stchtog],[data-stchall],[data-amore],[data-chghl],[data-cdet],[data-cubmore],[data-crun],[data-ctab],[data-view],[data-ex],[data-why],[data-rule],[data-folder],[data-allruns],[data-stage],[data-allstages],[data-hist],[data-restore],[data-verruns],[data-closever],[data-showrun],[data-revopen],[data-q],[data-qmore],[data-qreset],[data-pickpath],[data-runclose],[data-notrun],[data-descmore],[data-navtab],[data-navfold],[data-hmore],[data-menu],[data-copy],[data-newtrig],[data-impcopy],[data-desccopy],[data-nwtab],[data-nwopen],[data-ptab],[data-exgo],[data-extog],[data-xmore],[data-outmore],[data-qtog],[data-allf],[data-odet],[data-details],[data-editoff],[data-itab],[data-dview],[data-iclose],[data-gostep],[data-stepkey],[data-runf],[data-sibf],[data-sibpg],[data-wfstages]");
+  var t=ev.target.closest&&ev.target.closest("[data-sharerun],[data-shimp],[data-lmenu],[data-lpick],[data-detail],[data-cfold],[data-ckids],[data-stchtog],[data-stchall],[data-amore],[data-chghl],[data-cdet],[data-cubmore],[data-crun],[data-ctab],[data-view],[data-ex],[data-why],[data-rule],[data-folder],[data-allruns],[data-stage],[data-allstages],[data-hist],[data-restore],[data-verruns],[data-closever],[data-showrun],[data-revopen],[data-q],[data-qmore],[data-qreset],[data-pickpath],[data-runclose],[data-notrun],[data-descmore],[data-navtab],[data-navfold],[data-hmore],[data-menu],[data-copy],[data-newtrig],[data-impcopy],[data-desccopy],[data-nwtab],[data-nwopen],[data-ptab],[data-exgo],[data-extog],[data-xmore],[data-outmore],[data-qtog],[data-allf],[data-odet],[data-details],[data-editoff],[data-itab],[data-dview],[data-iclose],[data-gostep],[data-stepkey],[data-runf],[data-sibf],[data-sibpg],[data-wfstages]");
   /* a click outside an open menu closes it */
   if(UI.menu&&!(ev.target.closest&&ev.target.closest(".xm,.c-dlb"))){UI.menu=null;if(!t){render();return}}
   if(UI.lmenu&&!(ev.target.closest&&ev.target.closest(".c-lmenu,.c-lpick"))){UI.lmenu=null;if(!t){render();return}} /* a decision's own row toggles it below */
@@ -2479,6 +2591,8 @@ document.addEventListener("click",function(ev){
   if(t.dataset.view==="connections"){UI.connHl=t.dataset.conn||"";go("connections");return}
   if(t.dataset.runf){UI.runF=t.dataset.runf;render();return}
   if(t.dataset.stchtog){UI.stchOpen=!UI.stchOpen;render();return}
+  if(t.dataset.sharerun){var sv=UI.shareSel&&UI.shareSel[UI.view];if(sv){sv[t.dataset.sharerun]=!!t.checked}render();return}
+  if(t.dataset.shimp!=null){UI.shImp=t.dataset.shimp||null;UI.menu=null;render();var sc=document.querySelector(".ptabs");if(sc)sc.scrollIntoView({block:"start",behavior:"smooth"});return}
   if(t.dataset.stchall){UI.stchAll=!UI.stchAll;render();return}
   if(t.dataset.amore){UI.amore=UI.amore||{};UI.amore[t.dataset.amore]=!UI.amore[t.dataset.amore];render();return}
   if(t.dataset.chghl){var ks=t.dataset.chghl.split(","),dv=viewDef(UI.view);UI.tab="overview";((dv&&dv.steps)||[]).forEach(function(x){if(ks.indexOf(x.key)>=0&&x.stage)UI.stage[(UI.pfx||UI.view+":")+x.stage]=true});render();

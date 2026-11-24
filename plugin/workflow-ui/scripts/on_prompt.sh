@@ -34,10 +34,14 @@ URL=$(python3 -I "$SCRIPTS/paths.py" url 2>/dev/null)
 python3 -I "$SCRIPTS/serve_board.py" --ensure-agent >/dev/null 2>&1
 if [ "$CLAUDE_CODE_ENTRYPOINT" = "claude-desktop" ]; then
   python3 -I "$SCRIPTS/serve_board.py" --release >/dev/null 2>&1
-  # the app stops its preview when the computer sleeps and doesn't start it again on wake: when the board doesn't
-  # answer, Claude reopens it first (only Claude can start the app's preview)
+  # the app closes its preview tab when the computer sleeps and doesn't open it again on wake: when the board doesn't
+  # answer, Claude reopens it first (only Claude can start the app's preview). The always-on board keeps answering
+  # through sleep, so a wake since this session's last message counts too (wake_check.py).
+  WOKE=$(printf '%s' "$INPUT" | python3 -I "$SCRIPTS/wake_check.py" prompt 2>/dev/null)
   if ! curl -s -o /dev/null --max-time 1 "$URL"; then
     echo "The workflow board isn't running (the computer slept, or the app stopped its preview). Before anything else, reopen it: preview_start with name workflow-ui, then show_pane with pane preview. Say nothing about it unless it fails."
+  elif [ -n "$WOKE" ]; then
+    echo "The computer woke from sleep since the last message, and the Claude app closes its preview tabs on sleep. Before anything else, call tabs_context: if no tab is on the workflow board ($URL), reopen it with preview_start with name workflow-ui, then show_pane with pane preview. Say nothing about it unless it fails."
   fi
 elif ! curl -s -o /dev/null --max-time 1 "$URL"; then
   nohup python3 -I "$SCRIPTS/serve_board.py" >/dev/null 2>&1 &
@@ -46,7 +50,9 @@ python3 -I "$SCRIPTS/serve_board.py" --register >/dev/null 2>&1   # the board's 
 # A folder never welcomed (the plugin was installed or reloaded mid-session, so SessionStart didn't run for it):
 # the first message gets the first-run welcome instead. Does nothing once welcomed.
 python3 -I "$SCRIPTS/welcome.py" session 2>/dev/null
-# "/workflow-manager:start" (the welcome again), "/dashboard", "open the dashboard": the board, open (no run, no trace)
+# "/workflow-manager:start" (the welcome again), "/dashboard", "delegate dashboard": the board, open (no run, no trace)
 printf '%s' "$INPUT" | python3 -I "$SCRIPTS/welcome.py" prompt 2>/dev/null
+# "delegate <verb> <thing> <name>": one line for Claude naming the command, what it means and the skill that does it
+printf '%s' "$INPUT" | python3 -I "$SCRIPTS/commands.py" prompt 2>/dev/null
 printf '%s' "$INPUT" | python3 -I "$SCRIPTS/live.py" prompt 2>/dev/null
 exit 0

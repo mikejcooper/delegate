@@ -189,7 +189,7 @@ def startup_changed(root, since):
 
 def note(state):
     """One sentence for Claude, the same words the board shows."""
-    return (f"The workflow manager plugin was updated to {state['installed']}, but this session still runs "
+    return (f"Delegate was updated to {state['installed']}, but this session still runs "
             f"{state['running']}, so the update isn't fully in use yet. Claude can't reload plugins. After answering "
             "the user's message, tell them in one short line to type /reload-plugins in this chat to switch (or "
             "start a new session). Say it once; the board shows it too.")

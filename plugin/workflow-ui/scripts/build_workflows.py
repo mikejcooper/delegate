@@ -503,6 +503,74 @@ def merge_user(defs, errs):
             have.add(w["id"])
 
 
+def attach_share(defs):
+    """The Share tab's data (share.py): each user workflow's published version, what was last shared and what an
+    update would change; and "shared" on one brought in from a zip (where from, their version, what to pick)."""
+    try:
+        import share
+    except Exception:
+        return
+    if not share.SHARED:
+        return
+    for w in defs["workflows"]:
+        sk = (w.get("match") or {}).get("skill") or w.get("history_skill")
+        if not sk or w.get("layer") != "user":
+            continue
+        try:
+            w["share"] = share.share_info(sk)
+            w["share"]["skill"] = sk
+            w["share"]["runs"] = [{k: r[k] for k in ("run", "label", "started", "status", "attention", "summary")}
+                                  for r in share.runs_of(sk, w.get("id"))[:12]]
+        except (Exception, SystemExit):
+            pass
+        try:
+            with open(os.path.join(share.SHARED, sk + ".json"), encoding="utf-8") as fh:
+                w["shared"] = json.load(fh)
+        except (OSError, ValueError):
+            pass
+
+
+def merge_debug(defs):
+    """Debugging copies (share.py debug): each one's workflow, under its own id and the Debugging section, apart
+    from the user's own workflows. Added after the checks: a copy is someone else's and is never run on its own."""
+    try:
+        import share
+        copies = share.debug_copies()
+    except Exception:
+        return
+    have = {w["id"] for w in defs["workflows"]}
+    for m in copies:
+        wid = m.get("board_workflow") or ("debug-" + m["slug"])
+        if wid in have:
+            continue
+        sk = m["workflow"]
+        board = {}
+        try:
+            with open(os.path.join(m["root"], "current", "board", sk + ".json"), encoding="utf-8") as fh:
+                board = json.load(fh)
+        except (OSError, ValueError):
+            pass
+        src = (board.get("workflows") or [{}])[0]
+        w = json.loads(json.dumps(src))
+        old = w.get("id")
+        w.update({"id": wid, "category": "debugging", "layer": "debug", "entries": [], "match": {},
+                  "short": src.get("short") or m.get("title") or sk})
+        w["debug"] = {"slug": m["slug"], "skill": sk, "from": m.get("from_zip", ""), "version": m.get("version", ""),
+                      "note": m.get("note", ""), "runs": m.get("runs") or [], "changed": m.get("changed") or [],
+                      "folder": paths.rel(m["root"]), "imported": m.get("imported", "")}
+        for part in ("summaries", "examples", "results"):
+            v = (board.get(part) or {}).get("workflow:" + str(old))
+            if v is not None:
+                defs.setdefault(part, {})["workflow:" + wid] = v
+        for k, v in (board.get("skills") or {}).items():
+            defs.setdefault("skills", {}).setdefault(k, v)
+        defs["workflows"].append(w)
+        have.add(wid)
+    if copies:
+        defs.setdefault("categories", {}).setdefault("debugging", {"name": "Debugging", "tone": "amber",
+                                                                   "section": "workflows"})
+
+
 def iteration_info(w, sk):
     """A draft's iterations (skill_history.py): which one it is, what the last change did (its marks: JUST ADDED,
     JUST CHANGED, JUST REMOVED) and whether Claude is changing it right now."""
@@ -638,7 +706,7 @@ def engine_steps(k, e):
     every trigger, so no trigger writes them."""
     noun = e.get("noun") or "item"
     key = e.get("item_key") or next((x.get("item_key") for x in entries.load() if x.get("id") == k), "") or "own ID in the source"
-    ids = {"key": f"{k}-ids", "sk": "core-dispatcher", "lane": "Workflow manager", "type": "check", "tag": "Check",
+    ids = {"key": f"{k}-ids", "sk": "core-dispatcher", "lane": "Delegate", "type": "check", "tag": "Check",
            "title": f"Give each {noun} an ID", "what": f"Gives each {noun} a workflow ID from its {key} and checks the done list",
            "from": "ids", "continues": "all",
            "why": {"file": "core-dispatcher", "label": "Item IDs + Run a trigger · Step 3",
@@ -646,7 +714,7 @@ def engine_steps(k, e):
                              {"section": "Item IDs", "pick": ["| `action`", "|---", "| `run`", "| `link`"]}],
                    "sum": f"The same {noun} always maps to the same workflow ID. Done before and Run each item once on: link, don't run."},
            "alts": [{"when": "New", "then": "Run it", "k": "next"}, {"when": "Done before", "then": "Link to the earlier run", "k": "info"}]}
-    send = {"key": f"{k}-send", "sk": "core-dispatcher", "lane": "Workflow manager", "type": "act", "tag": "Hand off",
+    send = {"key": f"{k}-send", "sk": "core-dispatcher", "lane": "Delegate", "type": "act", "tag": "Hand off",
             "title": f"Send each new {noun} on", "what": f"Sends each new {noun} to its workflow, one at a time",
             "from": "dispatched", "links": list(e.get("feeds") or []),
             "why": {"file": "core-dispatcher", "label": "Run a trigger · Step 4: Dispatch the work",
@@ -1248,6 +1316,8 @@ def main():
     followups(defs, merge_errs)   # before writing: the page links each follow-up both ways
     contract_errs = contracts(defs)   # before writing: fills in needs / gives for the page
     summaries(defs)
+    attach_share(defs)
+    merge_debug(defs)   # after every check: a debugging copy is someone else's, shown as it came
     defs["built"] = int(time.time())
     cats = defs.get("categories", {})
     unnamed = [w["id"] for w in defs["workflows"] if w.get("category") not in cats or not w.get("short")]

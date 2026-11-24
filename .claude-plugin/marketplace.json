@@ -7,8 +7,8 @@
     {
       "name": "workflow-manager",
       "source": "./plugin",
-      "description": "Automate your work with workflows Claude runs for you, each step shown on a live dashboard. Comes with a demo that needs no accounts. After installing, send \"open the dashboard\": your dashboard opens and shows you the demo.",
-      "displayName": "Workflow manager"
+      "description": "Automate your work with workflows Claude runs for you, each step shown on a live dashboard. Comes with a demo that needs no accounts. After installing, send \"delegate dashboard\": your dashboard opens and shows you the demo.",
+      "displayName": "Delegate"
     }
   ]
 }

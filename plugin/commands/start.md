@@ -1,7 +1,7 @@
 ---
-description: Start the workflow manager here - open its dashboard and show how to run your first workflow
+description: Start Delegate here - open its dashboard and show how to run your first workflow
 ---
-Start the workflow manager.
+Start Delegate.
 
 The plugin's prompt hook has already got the dashboard ready and said, in your context, how to show it (in the
 Claude app: preview_start with {"name": "workflow-ui"}, which opens it in the side pane; elsewhere it is already open

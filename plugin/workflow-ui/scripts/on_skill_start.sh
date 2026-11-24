@@ -15,7 +15,7 @@ try: print(" ".join(str(json.load(sys.stdin).get("tool_input",{}).get("args","")
 except Exception: print("")' 2>/dev/null)
 case "$SKILL" in
   core-dispatcher|*:core-dispatcher|manager-work-dispatcher|*:manager-work-dispatcher) KIND=dispatcher ;;
-  core-architect|*:core-architect|core-connections|*:core-connections|core-run-reviewer|*:core-run-reviewer|core-renamer|*:core-renamer) KIND=core ;;
+  core-architect|*:core-architect|core-connections|*:core-connections|core-run-reviewer|*:core-run-reviewer|core-renamer|*:core-renamer|core-sharer|*:core-sharer) KIND=core ;;
   *) exit 0 ;;
 esac
 python3 -I "$SCRIPTS/build_board.py" >/dev/null 2>&1   # rebuild now, so the board is current before it opens
@@ -37,7 +37,7 @@ try: print(" ".join(str(json.load(sys.stdin).get("tool_input",{}).get("args","")
 except Exception: print("")' 2>/dev/null)
   PAGE=$(python3 -I "$SCRIPTS/board_section.py" "$SKILL" "$WORDS" 2>/dev/null)
   [ -n "$PAGE" ] || PAGE="$URL"
-  CTX="Before this skill's work, open the workflow manager's board on its page for this request: $PAGE $OPEN If the skill later works on another workflow, draft or connection, navigate the same tab to that page (its own steps say which); never leave the board closed while it works."
+  CTX="Before this skill's work, open Delegate's board on its page for this request: $PAGE $OPEN If the skill later works on another workflow, draft or connection, navigate the same tab to that page (its own steps say which); never leave the board closed while it works."
   python3 -I -c 'import json,sys; print(json.dumps({"hookSpecificOutput":{"hookEventName":"PreToolUse","additionalContext":sys.argv[1]}}))' "$CTX"
   exit 0
 fi

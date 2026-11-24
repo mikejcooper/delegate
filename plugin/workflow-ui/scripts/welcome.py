@@ -7,11 +7,11 @@
                          and tells Claude to suggest the demo. Once per folder; later sessions print nothing.
     welcome.py start     the welcome again, whether or not this folder had it (the start command)
     welcome.py installed install.sh's last step: gets the board ready; in the app, asks on a card to pin this chat
-                         and name it "🔗 Workflow Manager", then says to send "open the dashboard" (in a terminal:
-                         `claude "open the dashboard"`)
-    welcome.py open      "/dashboard", "open the dashboard" (the prompt hook): the board, up to date and open.
+                         and name it "🔀 Delegate Dashboard", then says to send "delegate dashboard" (in a terminal:
+                         `claude "delegate dashboard"`)
+    welcome.py open      "/dashboard", "delegate dashboard" (the prompt hook): the board, up to date and open.
     welcome.py prompt    the prompt hook (JSON on stdin): "/workflow-manager:start" gives the welcome again and opens
-                         the board; "/dashboard", "open the dashboard" open the board; anything else, nothing
+                         the board; "/dashboard", "delegate dashboard" open the board; anything else, nothing
     welcome.py is-dashboard   reads the prompt hook's JSON on stdin: exit 0 when the request is only to see the board
 
 Whatever it prints is added to Claude's context. It never runs a workflow and never writes a trace.
@@ -29,10 +29,10 @@ import paths  # noqa: E402
 
 IN_APP = os.environ.get("CLAUDE_CODE_ENTRYPOINT") == "claude-desktop"
 DEMO = "check the new york times"
-# The one formatted next step every welcome ends with: open the dashboard (its first-look popover takes it from
+# The one formatted next step every welcome ends with: delegate dashboard (its first-look popover takes it from
 # there). Plain words, not /dashboard: in the session that ran the install the plugin's commands aren't loaded yet.
-OPEN = "open the dashboard"
-HOME = "🔗 Workflow Manager"   # the name the install chat gets when the user pins it
+OPEN = "delegate dashboard"
+HOME = "🔀 Delegate Dashboard"   # the name the install chat gets when the user pins it
 NEXT_STEP = ("---\n\n**Installed. Run this next to open your dashboard:**\n\n```\n" + OPEN + "\n```")
 
 
@@ -96,14 +96,14 @@ def how_to_show():
 
 def session(again=False):
     """The first-run welcome: gets the board ready (it isn't opened yet) and tells Claude to end its reply with the one
-    next step, "open the dashboard", and how to open it when the user sends that."""
+    next step, "delegate dashboard", and how to open it when the user sends that."""
     if not paths.PLUGIN or (os.path.exists(paths.WELCOMED) and not again):
         return
     os.makedirs(paths.SYSTEM, exist_ok=True)
     ready()
     with open(paths.WELCOMED, "w", encoding="utf-8") as fh:
         json.dump({"t": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "in_app": IN_APP}, fh)
-    print("Workflow manager, first session in this folder: the user has just installed the plugin. Don't open the "
+    print("Delegate, first session in this folder: the user has just installed the plugin. Don't open the "
           "dashboard yet. Whatever they ask first, answer it in a line or two, then end the reply with this block "
           "exactly as written (markdown), with nothing after it:\n\n" + NEXT_STEP + "\n\n"
           "When they then send \"" + OPEN + "\": " + how_to_show() + " Its first-look screen shows them the demo; "
@@ -111,7 +111,7 @@ def session(again=False):
 
 
 def installed():
-    """The end of install.sh: the board is ready, and the next step is "open the dashboard", in this same chat (in the
+    """The end of install.sh: the board is ready, and the next step is "delegate dashboard", in this same chat (in the
     Claude app the plugin's hooks and skills work in the chat that installed it). The welcome is marked as given, so
     that open goes straight to the board, whose first-look screen shows the demo."""
     if not paths.PLUGIN:
@@ -140,22 +140,22 @@ def open_board():
     served = ready()
     if not IN_APP and served:
         browser(paths.URL)
-    print(f"Workflow manager: the user asked to see the dashboard. {how_to_show()} Say only that it's open, in one "
+    print(f"Delegate: the user asked to see the dashboard. {how_to_show()} Say only that it's open, in one "
           "line (its own first-look screen shows anything new users need); run nothing, start no dispatcher run and "
           "write no trace.")
 
 
 ASKS = __import__("re").compile(
-    r"^\s*(/(workflow-manager:)?dashboard|dashboard|board|open the workflow manager dashboard\.?"
-    r"|(open|show|see|view)( me)?( the| my)? (workflow manager |workflow )?(dashboard|board))\s*[.!?]*\s*$", 2)
+    r"^\s*(/(workflow-manager:)?dashboard|dashboard|board|delegate(\s+(open\s+)?(the\s+)?dashboard)?"
+    r"|(open|show|see|view)( me)?( the| my)? (delegate |workflow manager |workflow )?(dashboard|board))\s*[.!?]*\s*$", 2)
 
 
-START = __import__("re").compile(r"^\s*(/(workflow-manager:)?start|start the workflow manager\.?)\s*$", 2)
+START = __import__("re").compile(r"^\s*(/(workflow-manager:)?start|start (delegate|the workflow manager)|delegate start\.?)\s*$", 2)
 
 
 def on_prompt():
     """The prompt hook: "/workflow-manager:start" gives the welcome again and opens the board; "/dashboard" and
-    plain "open the dashboard" open the board. Anything else: nothing."""
+    plain "delegate dashboard" open the board. Anything else: nothing."""
     try:
         prompt = (json.load(sys.stdin).get("prompt") or "").strip()
     except ValueError:
@@ -186,7 +186,7 @@ if __name__ == "__main__":
         try:
             on_prompt()
         except Exception as err:
-            print(f"(workflow manager: couldn't open the dashboard: {err})", file=sys.stderr)
+            print(f"(Delegate: couldn't open the dashboard: {err})", file=sys.stderr)
         sys.exit(0)
     try:
         if cmd == "installed":
@@ -194,5 +194,5 @@ if __name__ == "__main__":
         else:
             session(again=cmd == "start") if cmd in ("session", "start") else open_board() if cmd == "open" else print(__doc__)
     except Exception as err:   # a hook must never block the session
-        print(f"(workflow manager: couldn't open the dashboard: {err})", file=sys.stderr)
+        print(f"(Delegate: couldn't open the dashboard: {err})", file=sys.stderr)
     sys.exit(0)

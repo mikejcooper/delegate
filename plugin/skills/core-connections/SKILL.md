@@ -1,6 +1,6 @@
 ---
 name: core-connections
-description: Connections manager of the workflow manager. Sets up, checks and fixes the user's external accounts (Gmail, Outlook, Slack, …) that triggers and workflows reach through their connection- skills. Asks how to reach each one (the recommended way first: a connector, Claude's built-in browser, the user's own Chrome, or an API), walks the user through it step by step with the progress live on the board's Connections tab, then checks it with one harmless read. Never types a password or key. Use when the user says "set up connection <name>", "connect <system>", "check connection <name>", "fix connection <name>", "what needs setting up?", or presses Set up or Check on the board.
+description: Connections manager of Delegate. Sets up, checks and fixes the user's external accounts (Gmail, Outlook, Slack, …) that triggers and workflows reach through their connection- skills. Asks how to reach each one (the recommended way first: a connector, Claude's built-in browser, the user's own Chrome, or an API), walks the user through it step by step with the progress live on the board's Connections tab, then checks it with one harmless read. Never types a password or key. Use when the user says "delegate set up connection <name>", "delegate check connection <name>", "delegate fix connection <name>" or "delegate check connections" (or the older "set up connection …", "connect <system>", "what needs setting up?"), or presses Set up or Check on the board.
 ---
 
 # Connections manager

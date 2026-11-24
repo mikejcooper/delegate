@@ -1,6 +1,6 @@
 ---
 name: workflow-news-nyt-briefing
-description: A morning news briefing from the New York Times. For each of the newest stories in the NYT Top Stories feed, given as plain details (headline, link, and the summary, published time and author if known), writes one plain sentence on what happened, from the headline and summary only (never opens the paid article). Then puts the sentences together and makes today's briefing page, a local HTML page of every story, and opens it. Sends nothing. Use when given New York Times stories to brief, or the user says "nyt briefing". Starts on "check the new york times": reads the NYT Top Stories feed and keeps its 5 newest stories, all in one run. The workflow manager's demo: needs no accounts.
+description: A morning news briefing from the New York Times. For each of the newest stories in the NYT Top Stories feed, given as plain details (headline, link, and the summary, published time and author if known), writes one plain sentence on what happened, from the headline and summary only (never opens the paid article). Then puts the sentences together and makes today's briefing page, a local HTML page of every story, and opens it. Sends nothing. Use when given New York Times stories to brief, or the user says "nyt briefing". Starts on "check the new york times": reads the NYT Top Stories feed and keeps its 5 newest stories, all in one run. Delegate's demo: needs no accounts.
 ---
 
 # NY Times morning briefing

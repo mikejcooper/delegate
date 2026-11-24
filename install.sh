@@ -4,22 +4,22 @@
 # In the Claude app, open a session on the folder you want it in and send:
 #     Run <path to this repo>/install.sh
 # From GitHub, the same from anywhere:
-#     Run curl -fsSL https://raw.githubusercontent.com/mikejcooper/workflow-manager/main/install.sh | sh
+#     Run curl -fsSL https://raw.githubusercontent.com/mikejcooper/delegate/main/install.sh | sh
 #
 # The steps:
 #   1. Without --yes it installs nothing: it says which folder it would install into, so Claude can ask the user
-#      first ("Install the workflow manager in <folder>?"). On their yes Claude runs it again with --yes. In a
+#      first ("Install Delegate in <folder>?"). On their yes Claude runs it again with --yes. In a
 #      terminal it asks the question itself.
 #   2. It installs the plugin into that folder (project scope). From GitHub it first clones the repo, once per
 #      computer, to ~/.workflow-manager/workflow-manager (WM_CLONE to change it); the plugin runs from that clone
 #      and keeps it up to date itself.
-#   3. In the Claude app, Claude asks on a card to pin this chat and name it "🔗 Workflow Manager".
-#   4. Then it says to send "open the dashboard", in the same chat.
+#   3. In the Claude app, Claude asks on a card to pin this chat and name it "🔀 Delegate Dashboard".
+#   4. Then it says to send "delegate dashboard", in the same chat.
 #
 # Where the plugin comes from, first that applies: an argument (a folder or owner/repo), $WM_SOURCE, the repo this
 # script sits in, else GITHUB. Safe to run again: what is already installed is kept.
 set -e
-GITHUB="mikejcooper/workflow-manager"   # the public repo
+GITHUB="mikejcooper/delegate"   # the public repo
 MARKETPLACE="workflow-manager" # the "name" in .claude-plugin/marketplace.json
 
 YES=""
@@ -60,7 +60,7 @@ need() { MISSING="$MISSING
 - $1"; }
 OS=$(uname -s)
 if [ "$OS" != "Darwin" ]; then
-  need "A Mac. The workflow manager runs on macOS only for now (this computer runs $OS)."
+  need "A Mac. Delegate runs on macOS only for now (this computer runs $OS)."
 fi
 if ! command -v claude >/dev/null 2>&1; then
   need "Claude Code's \`claude\` command (the Claude app has Claude Code built in, but this command is a separate
@@ -81,14 +81,14 @@ elif usable python3 && ! python3 -c 'import sys; sys.exit(0 if sys.version_info 
   System Settings > General > Software Update."
 fi
 if [ -n "$MISSING" ]; then
-  echo "Nothing installed. The workflow manager needs:$MISSING"
+  echo "Nothing installed. Delegate needs:$MISSING"
   echo
   echo "Once that's done, run the same install again."
   exit 1
 fi
 
 # --new-folder [--in=<folder>]: the user chose a folder of its own, made inside the folder they picked (their home
-# folder when none is given): "Workflow Manager", or "… 2", "… 3" when that is taken and not empty. Then it says how
+# folder when none is given): "Delegate", or "… 2", "… 3" when that is taken and not empty. Then it says how
 # to start a chat in it. Nothing is installed here.
 if [ -n "$NEWFOLDER" ]; then
   WHERE=${WHERE:-$HOME}
@@ -99,8 +99,8 @@ if [ -n "$NEWFOLDER" ]; then
     exit 1
   fi
   WHERE=$(cd "$WHERE" && pwd)
-  NEW="$WHERE/Workflow Manager"; n=2
-  while [ -e "$NEW" ] && [ -n "$(ls -A "$NEW" 2>/dev/null | grep -v -x .DS_Store)" ]; do NEW="$WHERE/Workflow Manager $n"; n=$((n + 1)); done
+  NEW="$WHERE/Delegate"; n=2
+  while [ -e "$NEW" ] && [ -n "$(ls -A "$NEW" 2>/dev/null | grep -v -x .DS_Store)" ]; do NEW="$WHERE/Delegate $n"; n=$((n + 1)); done
   mkdir -p "$NEW"
   NAME=$(basename "$NEW")
   IN=$(printf '%s' "$WHERE" | sed "s|^$HOME\$|your home folder|; s|^$HOME/|~/|")
@@ -145,10 +145,10 @@ else AGAIN="the same command with --yes added (piped from curl: ... | sh -s -- -
 
 if [ -n "$INSTALLED" ] && [ -z "$YES" ]; then
   if [ -t 0 ]; then
-    echo "The workflow manager is already installed in $FOLDER. To use it, start Claude here and send: open the dashboard"
+    echo "Delegate is already installed in $FOLDER. To use it, start Claude here and send: delegate dashboard"
   else
-    echo "Nothing to do: the workflow manager is already installed in $FOLDER."
-    echo "Tell the user in one line: send \"open the dashboard\" to open it."
+    echo "Nothing to do: Delegate is already installed in $FOLDER."
+    echo "Tell the user in one line: send \"delegate dashboard\" to open it."
   fi
   exit 0
 fi
@@ -157,29 +157,28 @@ if [ -z "$YES" ]; then
   if [ -t 0 ]; then   # a terminal: ask here
     if [ "$COUNT" -gt 0 ]; then
       echo "This folder isn't empty: $COUNT other item(s) ($SOME)."
-      echo "The workflow manager works best in a folder of its own. To use a new one: mkdir ~/\"Workflow Manager\" && cd ~/\"Workflow Manager\", then run this again."
+      echo "Delegate works best in a folder of its own. To use a new one: mkdir ~/\"Delegate\" && cd ~/\"Delegate\", then run this again."
       printf 'Install it in %s anyway? [y/N] ' "$FOLDER"
     else
-      printf 'Install the workflow manager in %s (an empty folder, good)? [y/N] ' "$FOLDER"
+      printf 'Install Delegate in %s (an empty folder, good)? [y/N] ' "$FOLDER"
     fi
     read -r answer
     case "$answer" in y|Y|yes|Yes) ;; *) echo "Nothing installed."; exit 0 ;; esac
   elif [ "$COUNT" -gt 0 ]; then   # Claude ran it, in a folder with other things in it
     if [ -f "$here/install.sh" ]; then MAKE="sh \"$here/install.sh\" --new-folder$GIVEN"
     else MAKE="the same command with --new-folder added"; fi
-    echo "Nothing installed. This folder isn't empty: $COUNT other item(s) ($SOME). The workflow manager works best in"
+    echo "Nothing installed. This folder isn't empty: $COUNT other item(s) ($SOME). Delegate works best in"
     echo "a folder of its own: it keeps its settings, runs and history there."
     echo
     PARENT=$(dirname "$FOLDER" | sed "s|^$HOME\$|your home folder|; s|^$HOME/|~/|")
     echo "Say nothing else; ask with the AskUserQuestion tool (cards the user clicks, never a question in your text)."
-    echo "Card 1: question \"This folder already has other things in it ($SOME). The workflow manager works best in"
+    echo "Card 1: question \"This folder already has other things in it ($SOME). Delegate works best in"
     echo "a folder of its own. Make a new one?\", header \"Folder\", options \"Make a new folder (Recommended)\""
-    echo "(\"Pick where, and it makes an empty Workflow Manager folder there\") and \"Install here anyway\" (\"Puts it"
+    echo "(\"Pick where, and it makes an empty Delegate folder there\") and \"Install here anyway\" (\"Puts it"
     echo "in this folder, alongside what's already here\")."
     echo "On Install here anyway, run: $AGAIN."
-    echo "On Make a new folder, card 2: question \"Where should the Workflow Manager folder go?\", header \"Where\","
-    echo "options \"Your home folder (Recommended)\" (\"~/Workflow Manager\"), \"Documents\" (\"~/Documents/Workflow"
-    echo "Manager\") and \"Next to this folder\" (\"In $PARENT\"); the card's own Other box takes any other folder."
+    echo "On Make a new folder, card 2: question \"Where should the Delegate folder go?\", header \"Where\","
+    echo "options \"Your home folder (Recommended)\" (\"~/Delegate\"), \"Documents\" (\"~/Documents/Delegate\") and \"Next to this folder\" (\"In $PARENT\"); the card's own Other box takes any other folder."
     echo "Then run: $MAKE --in=<the folder they picked: $HOME, $HOME/Documents, $(dirname "$FOLDER"), or the one they"
     echo "typed> and do what it says."
     exit 0
@@ -188,7 +187,7 @@ if [ -z "$YES" ]; then
     echo
     echo "Your whole reply to the user is this one line, word for word, with nothing before or after it:"
     echo
-    echo "Install the workflow manager in $FOLDER?"
+    echo "Install Delegate in $FOLDER?"
     echo
     echo "On their yes, run: $AGAIN. On a no, install nothing."
     exit 0
@@ -196,7 +195,7 @@ if [ -z "$YES" ]; then
 fi
 
 # 2. Install
-echo "Installing the workflow manager into $FOLDER"
+echo "Installing Delegate into $FOLDER"
 # From GitHub: a git clone, one per computer, outside every project folder, which Claude Code reads in place. The
 # plugin keeps it current itself (workflow-ui/scripts/git_update.py: it checks the repo over HTTPS and pulls each
 # new release), and a pulled release runs from the next message. Without git, Claude Code's own copy instead.
@@ -242,5 +241,5 @@ if [ ! -f "$ROOT/workflow-ui/scripts/welcome.py" ]; then
   exit 1
 fi
 
-# 3. What to do next: open the dashboard
+# 3. What to do next: delegate dashboard
 CLAUDE_PROJECT_DIR="$FOLDER" python3 -I "$ROOT/workflow-ui/scripts/welcome.py" installed

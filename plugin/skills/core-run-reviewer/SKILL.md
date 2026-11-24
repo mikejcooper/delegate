@@ -1,6 +1,6 @@
 ---
 name: core-run-reviewer
-description: Run reviewer of the workflow manager. After a workflow run has finished, checks it followed its workflow's path (every step on the path done, in order, nothing from another path, each connection reached by its set method and each write confirmed, the path named as the workflow names it) and what it left behind (a page, message or draft that an earlier try of the same item had already made, so there are now two), and notes each problem as a warning on the run's outcome (its Warnings tab). Never changes the run, its status or any skill. Use when the dispatcher hands over a finished run to review ("review run wf-…-a1"), or the user says "dismiss warning sg-…".
+description: Run reviewer of Delegate. After a workflow run has finished, checks it followed its workflow's path (every step on the path done, in order, nothing from another path, each connection reached by its set method and each write confirmed, the path named as the workflow names it) and what it left behind (a page, message or draft that an earlier try of the same item had already made, so there are now two), and notes each problem as a warning on the run's outcome (its Warnings tab). Never changes the run, its status or any skill. Use when the dispatcher hands over a finished run to review ("delegate review wf-…-a1"), or the user says "delegate dismiss sg-…" (or "dismiss warning sg-…").
 ---
 
 # Run reviewer

@@ -173,6 +173,7 @@ def load_run(path, now, open_id=None):
         "parent": header.get("parent", ""),        # an inner loop's item: the outer item's run
         "flow": header.get("flow", ""),            # a loop workflow's run: the board workflow it is a run of
         "skill": header.get("skill", ""),
+        "debug": bool(header.get("debug")),        # a run from a shared zip, on its debugging copy: never in the Inbox
         "skip_done": header.get("skip_done"),      # the switch as the run read it at its start
         "auto_approve": header.get("auto_approve"),  # "Approve automatically" as the run read it at its start
         "request": header.get("request", ""),
@@ -264,7 +265,8 @@ def plugin_version():
 def _build():
     now = time.time()
     open_id = open_run()
-    runs = [load_run(p, now, open_id) for d in TRACE_DIRS for p in sorted(glob.glob(os.path.join(d, "*.jsonl")))]
+    dirs = list(TRACE_DIRS) + (sorted(glob.glob(os.path.join(paths.HOME, "debug", "*", "runs"))) if paths.HOME else [])
+    runs = [load_run(p, now, open_id) for d in dirs for p in sorted(glob.glob(os.path.join(d, "*.jsonl")))]
     # a workflow run left without an end line by a trigger that has ended stopped there too
     ended = {r["group"] for r in runs if r.get("kind") != "run" and r.get("state") == "done"}
     for r in runs:
@@ -285,7 +287,7 @@ def _build():
     data = {"built": now, "version": plugin_version(), "entries": load_entries(), "runs": runs,
             "settings": load_settings(), "ledger": load_ledger(), "views_file": paths.rel(paths.VIEWS),
             "suggestions": load_suggestions(), "demo": load_demo(), "pages": load_pages()}
-    tmp = OUT + ".tmp"
+    tmp = f"{OUT}.{os.getpid()}.tmp"   # one per process: two watchers never trip over each other's file
     with open(tmp, "w", encoding="utf-8") as fh:
         fh.write("window.BOARD=" + json.dumps(data) + ";")
     os.replace(tmp, OUT)  # atomic: the page never reads a half-written file

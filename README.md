@@ -1,4 +1,4 @@
-# Workflow manager
+# Delegate
 
 A Claude Code plugin that turns plain-words requests into workflows Claude runs for you, each step shown on a live
 dashboard. Describe what you want ("every morning, email me the top BBC story"), and Claude drafts the workflow on
@@ -13,18 +13,18 @@ Open the Claude app on the folder you want it in, start a session, and send:
 Run <path to this repo>/install.sh
 ```
 
-1. Claude checks the folder. An empty one gets "Install the workflow manager in <folder>?"; one with other things in
+1. Claude checks the folder. An empty one gets "Install Delegate in <folder>?"; one with other things in
    it gets the choice of a new folder (you pick where) or installing there anyway.
 2. It installs the plugin there.
-3. Claude asks, on a card to click, to pin this chat and name it "🔗 Workflow Manager".
-4. Send `open the dashboard`, in the same chat. The dashboard opens with a demo to run (`check the new york times`).
+3. Claude asks, on a card to click, to pin this chat and name it "🔀 Delegate Dashboard".
+4. Send `delegate dashboard`, in the same chat. The dashboard opens with a demo to run (`check the new york times`).
 
 From then on it loads in every chat in that folder; `/workflow-manager:start` shows the welcome again.
 In a terminal, `sh install.sh` asks the same questions, installs it and says how to start Claude there
-(`claude "open the dashboard"`).
+(`claude "delegate dashboard"`).
 
 From GitHub, the one message is
-`Run curl -fsSL https://raw.githubusercontent.com/mikejcooper/workflow-manager/main/install.sh | sh`.
+`Run curl -fsSL https://raw.githubusercontent.com/mikejcooper/delegate/main/install.sh | sh`.
 
 On a Mac the dashboard stays on by itself: a small login item (one per folder, in `~/Library/LaunchAgents/`,
 named `local.workflow-board.…`) keeps its server running through sleep and app restarts. To turn that off for a
@@ -59,19 +59,28 @@ dashboard, and nothing that reaches other people is sent without your yes.
 | `core-connections` | Sets up, checks and fixes your accounts: a connector, Claude's browser, your Chrome or an API. Never types a password. |
 | `core-renamer` | Renames workflows, connections and categories, one or many at once, everywhere they are written. |
 | `core-run-reviewer` | After each real run, checks it followed its workflow's path and notes anything off on the run. |
+| `core-sharer` | Shares a workflow as a zip (for someone new, an update, or an issue with the runs that went wrong) and brings one in: a draft, an update that keeps your changes, or a debugging copy. |
 | `workflow-news-nyt-briefing` | The demo: "check the new york times" writes a one-page briefing of the newest NY Times stories. |
 
 ## Running it
 
-| Say | Runs |
+Every command starts with `delegate`: `delegate <verb> <thing> <name>`, with any detail after a colon. A workflow's
+own phrases ("check my email") work as they are, or with `delegate` in front. `delegate help` lists them all in the
+chat, and the dashboard's buttons copy them for you. The older phrasings ("run workflow manager") still work.
+
+| Group | Commands |
 |---|---|
-| a workflow's phrase ("check my email") | its trigger and the work it finds |
-| "run workflow manager" | tick boxes of your triggers; the ticked ones run one after another |
-| "run workflow <name> on <item>" | one workflow on one item |
-| "test workflow <name>" | replays recorded real runs, with every outside read and write refused |
-| "rerun workflow wf-…" | one earlier item again |
-| "Add a workflow: <what you want>" | drafts a new workflow on the dashboard |
-| "open the dashboard" | the dashboard |
+| Dashboard | `delegate dashboard` · `delegate start` · `delegate help` |
+| Run | `delegate run` · `delegate run all` · `delegate run trigger <name>` · `delegate run workflow <name>: <item>` · `delegate run <workflow>: for real/as a test` · `delegate rerun <wf-…>: for real/as a test` · `delegate test workflow <name>: end to end` · `delegate test trigger <name>` |
+| Inbox | `delegate answer <wf-…>: yes/no` · `delegate skip <wf-…>` · `delegate done <wf-…>` · `delegate mark <wf-…>: needs you/not run` · `delegate delete <wf-…>` · `delegate delete request <dispatch-…>` · `delegate turn on/off <setting>` · `delegate keep <wf-…>: test` |
+| Build | `delegate add workflow: <what you want>` · `delegate create workflow <name>` · `delegate change workflow <name>: <what to change>` · `delegate undo workflow <name>` · `delegate discard workflow <name>` · `delegate add examples workflow <name>` · `delegate add tests workflow <name>` · `delegate import <path>` |
+| Publish | `delegate validate workflow <name>` · `delegate publish workflow <name>: without validating` · `delegate restore workflow <name>: v2` · `delegate delete workflow <name>` |
+| Names | `delegate rename workflow <name>: <new name>` · `delegate move workflow <name>: <category>` · `delegate tidy names` |
+| Schedules | `delegate schedule workflow <name>: weekdays 08:00` · `delegate pause workflow <name>` · `delegate resume workflow <name>` · `delegate unschedule workflow <name>` |
+| Connections | `delegate set up connection <name>` · `delegate check connection <name>` · `delegate fix connection <name>` · `delegate check connections` |
+| Reviews | `delegate review <wf-…>` · `delegate dismiss <sg-…>` · `delegate fix <sg-…>` |
+| Share | `delegate share workflow <name>` · `delegate share workflow <name>: update` · `delegate share workflow <name>: issue <wf-…> <wf-…>` · `delegate pick workflow <name>: c1 mine/theirs/merge` · `delegate replay debug <name>: <wf-…>` · `delegate share debug <name>: fix` · `delegate delete debug <name>` |
+| Your workflows | their own phrases, e.g. `check my email` (or `delegate check my email`) |
 
 ## Your data
 
@@ -81,13 +90,30 @@ Everything it keeps goes in your folder's `.workflow-manager-data/`:
 - `history/`: requests, runs, screenshots, versions, and what workflows made (`pages/`) or worked with (`work/`).
   Private; don't commit.
 - `system/`: generated files.
+- `debug/`: debugging copies brought in from someone's issue zip, with their runs. Private; don't commit.
 
-Suggested `.gitignore`: `.workflow-manager-data/history/` and `.workflow-manager-data/system/`.
+Suggested `.gitignore`: `.workflow-manager-data/history/`, `.workflow-manager-data/system/` and
+`.workflow-manager-data/debug/`.
+
+## Sharing
+
+A workflow's **Share** tab (or **Share…** in its ⋯ menu) makes a zip in your Downloads folder, to pass on
+yourself by Slack, email or a drive:
+
+- **Share it**: the whole workflow, for someone new.
+- **Share the update**: a newer version for people who have it. **How will this affect people who have it?** shows
+  what changes for someone who never changed their copy, and for someone who did.
+- **Share an issue**: the runs that went wrong and what they read, so someone can debug them.
+
+Drop a zip into your chat and Claude says what it is. A new workflow comes in as a draft to check and publish. An
+update keeps your own changes and asks only where you both changed the same thing. An issue comes in as a debugging
+copy under **Debugging** in the Builder, with its runs, never run on its own and never in your Inbox; fix it there
+and send the fixed version back. A share never carries a sign-in, key or token, and never says who made it.
 
 ## Repo layout
 
 - `plugin/`: the plugin (engine skills, the demo, the dashboard in `workflow-ui/`, hooks, commands, migrations).
-- `.claude-plugin/marketplace.json`: makes this repo a marketplace, so `claude plugin marketplace add mikejcooper/workflow-manager`
+- `.claude-plugin/marketplace.json`: makes this repo a marketplace, so `claude plugin marketplace add mikejcooper/delegate`
   works.
 - `install.sh`: the one-message installer.
 

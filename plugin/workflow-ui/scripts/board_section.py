@@ -9,6 +9,8 @@ Prints one URL, or nothing for a skill that has no board page of its own (the di
   core-connections    the Connections page
   core-run-reviewer   the Inbox on the run it reviews (wf-…)
   core-renamer        the Builder on the workflow its words name; a connection: the Connections page; else Home
+  core-sharer         the Builder on the workflow its words name (its Share tab when sharing); a debugging copy
+                      ("debug <slug>"): its page; else Home
 Changes nothing.
 """
 import os
@@ -56,6 +58,14 @@ def section(skill, words):
     if skill == "core-run-reviewer":
         m = re.search(r"\bwf-[a-z0-9-]+", low)
         return base + ("?item=" + re.sub(r"-a\d+$", "", m.group(0)) if m else "")
+    if skill == "core-sharer":
+        m = re.search(r"\bdebug ([a-z0-9][a-z0-9-]*)", low)
+        if m:
+            return viewer + "debug-" + m.group(1)
+        wid = named_workflow(words)
+        if wid:
+            return viewer + wid + ("&tab=share" if re.search(r"\bshare\b", low) else "")
+        return viewer + "home"
     if skill in ("core-architect", "core-renamer"):
         wid = named_workflow(words)
         if wid:

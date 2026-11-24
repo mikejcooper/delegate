@@ -90,22 +90,26 @@ var NOTPULL=/^\s*["“]?\s*(rerun\b|test\b|run\s+(the\s+)?workflow\s+(?!manager\
 /* the "Pulling in" panel is for a run of several triggers ("run workflow manager", "run all triggers", "… with these
    triggers", a scheduled run): a run of one workflow has its own row on the Inbox, which already says what it is doing */
 function isPull(r){var q=String(r.request||"");if(!q||q==="dispatcher request"||NOTPULL.test(q))return false;
-  if(/workflow manager|run all triggers|these triggers|\(scheduled:/i.test(q))return true;
+  if(/workflow manager|^\s*delegate run\b|run all triggers|these triggers|\(scheduled:/i.test(q))return true;
   return(r.matches||[]).filter(function(m){return m.entry}).length>1}
 function liveReq(B){if(!B||!B.runs)return null;return B.runs.filter(function(r){return r.kind!=="run"&&(r.state==="running"||r.state==="scanning"||r.state==="waiting")&&isPull(r)}).sort(function(a,b){return b.started-a.started})[0]||null}
 /* "2/5": the trigger it's on, of the ones it chose to run; just "Running" until it has chosen */
 function progress(L){var on=(L.matches||[]).filter(function(m){return m.entry}).length,of=(L.candidates||[]).length;return on&&of>=on?on+"/"+of:""}
 
 var el,page,open=false,SIG="";
+/* the version beside the name: the last one seen stays until a new one loads, so it never blinks out while
+   board-data.js (re)loads */
+var VER="";try{VER=localStorage.getItem("delegate.version")||""}catch(e){}
+function verNow(B){var v=B&&B.version;if(v&&v!==VER){VER=v;try{localStorage.setItem("delegate.version",v)}catch(e){}}return VER}
 function ago(t){var s=Math.max(0,Math.round(Date.now()/1000-t));return s<60?s+" s ago":s<3600?Math.round(s/60)+" min ago":Math.round(s/3600)+" h ago"}
 function render(){
   if(!el)return;var B=window.BOARD,L=liveReq(B),last=page==="inbox"?"run":"add", /* the face follows the page: Run triggers on the Inbox, Add a workflow on the Builder */fresh=!!B&&Date.now()/1000-B.built<15,pg=progress(L||{});
-  var sig=[B&&B.version,!!L,pg,last,open,fresh,badBuild(),B?Math.floor((Date.now()/1000-B.built)/60):-1].join("|");if(sig===SIG)return;SIG=sig;
+  var ver=verNow(B),sig=[ver,!!L,pg,last,open,fresh,badBuild(),B?Math.floor((Date.now()/1000-B.built)/60):-1].join("|");if(sig===SIG)return;SIG=sig;
   var a=ACTS[last];
   var main=L?'<button class="tb-main" type="button" data-tb="panel" title="Pulling in'+(pg?" · "+esc(pg.replace("/"," of "))+" triggers":"")+'. Open the Run workflows panel"><span class="tb-pulse" aria-hidden="true"></span>Running'+(pg?" "+esc(pg):"…")+"</button>"
     :'<button class="tb-main" type="button" data-tb="'+last+'" aria-label="'+esc(a.t)+'">'+svg(IC[a.i])+'<span class="tb-lbl">'+esc(a.t)+"</span></button>";
   var menu=open?'<div class="tb-menu" role="menu">'+["run","add"].map(function(k){var x=ACTS[k];return'<button type="button" role="menuitem" data-tb="'+k+'">'+svg(IC[x.i],15)+"<span><b>"+esc(x.t)+"</b><small>"+esc(x.d)+"</small></span>"+""+"</button>"}).join("")+"</div>":"";
-  el.innerHTML='<a class="tb-brand" href="workflows.html"><span class="tb-logo">'+svg(IC.logo,16)+'</span><span class="tb-name">Workflow manager</span>'+(B&&B.version?'<span class="tb-ver" title="Workflow manager version">v'+esc(B.version)+"</span>":"")+'</a><span class="tb-div" aria-hidden="true"></span>'+
+  el.innerHTML='<a class="tb-brand" href="workflows.html"><span class="tb-logo">'+svg(IC.logo,16)+'</span><span class="tb-name">Delegate</span>'+(ver?'<span class="tb-ver" title="Delegate version">v'+esc(ver)+"</span>":"")+'</a><span class="tb-div" aria-hidden="true"></span>'+
     '<div class="tb-seg" role="navigation" aria-label="Board pages"><a href="workflows.html"'+(page==="inbox"?' aria-current="page"':"")+">"+svg(IC.inbox)+'Inbox</a><a href="workflow-viewer.html"'+(page==="library"?' aria-current="page"':"")+">"+svg(IC.lib)+"Builder</a></div>"+
     '<div class="tb-r"><span class="tb-dot'+(badBuild()?" bad":fresh?" on":"")+'" role="img" aria-label="'+(badBuild()?"Board not updating":fresh?"Live":"Not live")+'" title="'+(badBuild()?"The board couldn't update: see the red line":B?(fresh?"Live":"Not live")+" · updated "+ago(B.built):"Loading…")+'"></span>'+
     '<span class="tb-split'+(L?" run":"")+'">'+main+'<button class="tb-more" type="button" data-tb="menu" aria-haspopup="menu" aria-expanded="'+open+'" aria-label="More actions">'+svg(IC.chev,13)+"</button></span>"+menu+"</div>"}
@@ -137,8 +141,8 @@ function drawReload(){if(!el)return;var r=RL,on=!!(r&&r.needed&&r.installed),
     rlEl.addEventListener("click",function(ev){var b=ev.target.closest("button");if(!b)return;var t="/reload-plugins",ok=function(){flash(b);toast(t,true,"Copied")},no=function(){toast(t,false)};
       try{navigator.clipboard.writeText(t).then(ok,no)}catch(x){no()}})}
   rlEl.hidden=!sig;
-  rlEl.innerHTML=on?'<span class="tx"><b>Workflow manager '+esc(r.installed)+' is installed.</b> This chat is still on '+esc(r.running)+'. Type <code>/reload-plugins</code> in the Claude chat to switch.</span><button type="button">Copy /reload-plugins</button>'
-    :u?'<span class="tx"><b>Workflow manager '+esc(u.available)+' is out, but this folder is still on '+esc(u.current)+'.</b> It couldn’t update by itself: '+esc(u.message||"git couldn’t apply it")+'.</span>':""}
+  rlEl.innerHTML=on?'<span class="tx"><b>Delegate '+esc(r.installed)+' is installed.</b> This chat is still on '+esc(r.running)+'. Type <code>/reload-plugins</code> in the Claude chat to switch.</span><button type="button">Copy /reload-plugins</button>'
+    :u?'<span class="tx"><b>Delegate '+esc(u.available)+' is out, but this folder is still on '+esc(u.current)+'.</b> It couldn’t update by itself: '+esc(u.message||"git couldn’t apply it")+'.</span>':""}
 function pollLive(){var q="?ts="+Date.now();
   fetch("reload.json"+q,{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(j){RL=j;drawReload()}).catch(function(){});
   fetch("update.json"+q,{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(j){UP=j;drawReload()}).catch(function(){});
@@ -165,7 +169,54 @@ function toast(cmd,ok,label){cmd=String(cmd==null?"":cmd);
   void toastEl.offsetWidth;toastEl.classList.add("on");
   if(!ok){var i=toastEl.querySelector("input");i.focus();i.select()}
   armToast(ok?4000:15000)}
-function copy(text,btn,label){text=String(text==null?"":text);launch(text);
+/* Delegate's commands (scripts/commands.py): every request is "delegate <verb> <thing> <name>", detail after a colon.
+   The board's buttons are written in the older phrasing; cmd() turns a copied line into its delegate form, and
+   fixCmds() shows that form on the page (each button's data-copy and title, and a command shown in a <code>).
+   A line that isn't one of Delegate's commands (a workflow's own phrase, a reply to Claude) is left as it is. */
+var KD="(workflow|trigger|connection)",CMDS=[
+  [/^run workflow manager(?: with these| no question)|^run these \d+ items|^(?:skip|mark|delete) these (?:items|requests)/i,function(t){return"delegate "+t}],
+  [/^run (?:the )?workflow manager\s*$/i,"delegate run"],[/^run all triggers\s*$/i,"delegate run all"],
+  [/^run trigger (\S+)\s*$/i,"delegate run trigger $1"],
+  [/^run workflow (\S+) on (.+)$/i,"delegate run workflow $1: $2"],[/^run workflow (\S+) (for real|as a test)\s*$/i,"delegate run workflow $1: $2"],
+  [/^run workflow (\S+)\s*$/i,"delegate run workflow $1"],
+  [/^rerun workflow (wf-\S+)(?:\s+(for real|as a test))?\s*$/i,function(t,id,m){return"delegate rerun "+id+(m?": "+m:"")}],
+  [/^test workflow (\S+) (.+)$/i,"delegate test workflow $1: $2"],[/^test workflow (\S+)\s*$/i,"delegate test workflow $1"],[/^test trigger (\S+)\s*$/i,"delegate test trigger $1"],
+  [new RegExp("^discard the draft of "+KD+" (\\S+)\\s*$","i"),"delegate discard $1 $2"],
+  [new RegExp("^undo the last change to "+KD+" (\\S+)\\s*$","i"),"delegate undo $1 $2"],
+  [new RegExp("^validate "+KD+" (\\S+)\\s*$","i"),"delegate validate $1 $2"],
+  [new RegExp("^publish "+KD+" (\\S+) (.+)$","i"),"delegate publish $1 $2: $3"],[new RegExp("^publish "+KD+" (\\S+)\\s*$","i"),"delegate publish $1 $2"],
+  [new RegExp("^restore "+KD+" (\\S+) to (v\\d+)\\s*$","i"),"delegate restore $1 $2: $3"],
+  [new RegExp("^change "+KD+" (\\S+):\\s*(.*)$","i"),function(t,k,n,d){return"delegate change "+k+" "+n+": "+d}],
+  [new RegExp("^delete "+KD+" (\\S+)\\s*$","i"),"delegate delete $1 $2"],
+  [/^rename (workflow|connection|category) (\S+) to\s*(.*)$/i,function(t,k,n,d){return"delegate rename "+k+" "+n+": "+d}],
+  [/^move workflow (\S+) to\s*(.*)$/i,function(t,n,d){return"delegate move workflow "+n+": "+d}],
+  [/^tidy up the names\b.*$/i,"delegate tidy names"],
+  [/^(?:change )?schedule workflow (\S+):\s*(.*)$/i,"delegate schedule workflow $1: $2"],
+  [/^(pause|resume) schedule workflow (\S+)\s*$/i,"delegate $1 workflow $2"],[/^remove schedule workflow (\S+)\s*$/i,"delegate unschedule workflow $1"],
+  [/^(set up|check|fix) connection (\S+)\s*$/i,"delegate $1 connection $2"],[/^carry on setting up connection (\S+)\s*$/i,"delegate set up connection $1"],
+  [/^what needs setting up\??\s*$/i,"delegate check connections"],
+  [/^create the new workflow (\S+)\s*$/i,"delegate create workflow $1"],
+  [/^add examples to workflow (\S+)\s*$/i,"delegate add examples workflow $1"],[/^add tests for workflow (\S+)\s*$/i,"delegate add tests workflow $1"],
+  [/^add a workflow:\s*(.*)$/i,"delegate add workflow: $1"],
+  [/^answer (wf-\S+):\s*(.*)$/i,"delegate answer $1: $2"],[/^skip (wf-\S+)\b.*$/i,"delegate skip $1"],
+  [/^mark (wf-\S+) done\b.*$/i,"delegate done $1"],[/^mark (wf-\S+) (needs you|not run)\b.*$/i,"delegate mark $1: $2"],
+  [/^delete (wf-\S+)\b.*$/i,"delegate delete $1"],[/^delete requests? (dispatch-[\w-]+)\b.*$/i,"delegate delete request $1"],
+  [/^turn (.+?) (on|off)\s*$/i,"delegate turn $2 $1"],[/^keep (wf-\S+) as a test\s*$/i,"delegate keep $1: test"],
+  [/^review run (wf-\S+)\s*$/i,"delegate review $1"],[/^dismiss warning (sg-\S+)\s*$/i,"delegate dismiss $1"],[/^fix warning (sg-\S+)\s*$/i,"delegate fix $1"],
+  [/^share the update of workflow (\S+)\s*$/i,"delegate share workflow $1: update"],
+  [/^share an issue with workflow (\S+):\s*(.*)$/i,"delegate share workflow $1: issue $2"],[/^share workflow (\S+)\s*$/i,"delegate share workflow $1"],
+  [/^keep my side of (c\d+) in workflow (\S+)\s*$/i,"delegate pick workflow $2: $1 mine"],[/^take the update's side of (c\d+) in workflow (\S+)\s*$/i,"delegate pick workflow $2: $1 theirs"],
+  [/^merge both sides of (c\d+) in workflow (\S+)\s*$/i,"delegate pick workflow $2: $1 merge"],
+  [/^replay a run of debug (\S+)\s*$/i,"delegate replay debug $1"],[/^share the fixed version of debug (\S+)\s*$/i,"delegate share debug $1: fix"],
+  [/^remove debug (\S+)\s*$/i,"delegate delete debug $1"]];
+function cmd(text){text=String(text==null?"":text);if(/^\s*delegate\b/i.test(text))return text;var t=text.replace(/^\s+/,"");
+  for(var i=0;i<CMDS.length;i++){var r=CMDS[i];if(r[0].test(t))return typeof r[1]==="function"?(r[0].lastIndex=0,t.replace(r[0],r[1])):t.replace(r[0],r[1])}
+  return text}
+function fixCmds(){Array.prototype.forEach.call(document.querySelectorAll("[data-copy]"),function(el){var o=el.getAttribute("data-copy"),n=cmd(o);if(n===o)return;
+  el.setAttribute("data-copy",n);if(el.title)el.title=el.title.split(o).join(n);
+  var box=el.closest(".hcard,.xo,.stbar,.shpick,.cf")||el;Array.prototype.forEach.call(box.querySelectorAll("code"),function(c){if(c.textContent===o)c.textContent=n})})}
+var fixQ=false;try{new MutationObserver(function(){if(fixQ)return;fixQ=true;Promise.resolve().then(function(){fixQ=false;fixCmds()})}).observe(document.documentElement,{childList:true,subtree:true})}catch(e){}
+function copy(text,btn,label){text=cmd(String(text==null?"":text));launch(text);
   var b=btn||(Date.now()-lastAt<1500?lastBtn:null);
   var done=function(ok){if(ok)flash(b);toast(text,ok,label)};
   var byHand=function(){var a=document.createElement("textarea"),ok=false;a.value=text;a.setAttribute("readonly","");a.style.position="fixed";a.style.opacity="0";document.body.appendChild(a);a.select();try{ok=document.execCommand("copy")}catch(x){}a.remove();done(ok)};
@@ -194,6 +245,6 @@ function init(){
   strip=document.createElement("div");strip.className="tb-act";strip.hidden=true;document.body.appendChild(strip);
   pollLive();setInterval(pollLive,1500);setInterval(drawStrip,1000);
   render();setInterval(render,1000)}
-window.TopBar={onRun:null,render:function(){SIG="";render()},liveReq:liveReq,isPull:isPull,toast:toast,copy:copy};
+window.TopBar={onRun:null,render:function(){SIG="";render()},liveReq:liveReq,isPull:isPull,toast:toast,copy:copy,cmd:cmd};
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();
 })();

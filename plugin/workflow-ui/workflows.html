@@ -347,7 +347,7 @@ body.tb-has-act .selbar{bottom:60px}body.tb-has-act .panel{bottom:56px} /* above
 <script src="runpath.js"></script>
 <script src="steps.js"></script>
 <script>
-/* Items: every item the workflow manager has seen, run or not, in one table.
+/* Items: every item Delegate has seen, run or not, in one table.
    Data: board-data.js (traces + done list), workflows-data.js (workflow names), views.json (views Claude writes).
    The page never runs anything itself: every button copies a line for the Claude chat. See README.md, "Inbox page". */
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
@@ -470,7 +470,8 @@ function build(){
     var tp=String(entryLabel(ek)).split(" · "),cat=W&&W.categories?Object.keys(W.categories).map(function(c){return W.categories[c]}).filter(function(c){return c.name===(nm.area||tp[0])&&!c.parent})[0]:null;
     var st=b.state==="running"||b.state==="scanning"?"running":b.state==="waiting"?"needs":b.state==="stalled"?"stopped":(b.steps||[]).some(function(x){return x.status==="failed"})?"failed":e.attention==="action"?"needs":e.attention==="review"?"check":"done";
     var its=B.runs.filter(function(x){return x.batch===b.id}).length,vd=String(e.verdict||"").replace(/\*\*/g,"");
-    out.push({key:"run:"+b.id,isBatch:true,run:b,wf:"",name:b.label||nm.name,label2:(vd||b.label||"")+(its&&!vd?" · "+its+" items":""),nameTags:[],attempts:[b],events:[{t:t,group:b.group,kind:"run"}],ledger:[],entry:ek,skill:b.skill||"",input:null,
+    var subs=B.runs.filter(function(x){return x.batch===b.id&&x.wf}).map(function(x){return{wf:x.wf,name:x.label||x.wf}}); /* its items' IDs: ticking the run ticks them */
+    out.push({key:"run:"+b.id,isBatch:true,subs:subs,run:b,wf:"",name:b.label||nm.name,label2:(vd||b.label||"")+(its&&!vd?" · "+its+" items":""),nameTags:[],attempts:[b],events:[{t:t,group:b.group,kind:"run"}],ledger:[],entry:ek,skill:b.skill||"",input:null,
       time:b.last||t,first:t,group:b.group,st:st,sugg:((B.suggestions||{}).items||[]).filter(function(s){return s.run===b.id&&s.status==="open"}),wfName:nm.name,path:"",route:"",area:nm.area,trigger:entryLabel(ek),from:tp.length>1?tp.slice(1).join(" · "):entryLabel(ek),
       category:nm.area||(tp.length>1?tp[0]:"")||"Other",tone:cat?cat.tone:"none",isTry:!!b.try,isTest:!!(b.try||b.test),testSrc:b.try?"real data":"recorded",testRes:"",expect:"",isNew:false})});
   /* a name every run of a workflow shares (a status page is the same page each time) tells them apart by nothing: such a
@@ -673,7 +674,7 @@ function nextSchedHtml(){var list=[];(W&&W.workflows||[]).forEach(function(w){va
     '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;margin-right:4px"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'+"Next scheduled run: "+esc(RunPath.whenNext(f.t))+", "+esc(f.w.short||f.w.id)+(more.length?' <span class="nxm">· '+more.length+" more</span>":"")+"</a>"}
 function reqTitle(r){var q=String(r.request||"").toLowerCase(),ms=(r.matches||[]).map(function(m){return m.entry}).filter(Boolean);
   if(r.schedule)return'SCHED:'+"Scheduled, "+r.schedule+(ms.length?" · "+ms.map(entryLabel).join(", "):"")+(r.due?" · ran late, when the app opened"+(r.since?" · looked back to "+r.since:""):"");
-  if(/workflow manager|run all triggers|dispatcher/.test(q))return"Run your triggers"+(ms.length?" · "+ms.length+" trigger"+(ms.length>1?"s":""):"");
+  if(/workflow manager|^\s*delegate run\b|run all triggers|dispatcher/i.test(q))return"Run your triggers"+(ms.length?" · "+ms.length+" trigger"+(ms.length>1?"s":""):"");
   if(r.try||ms.some(function(m){return/^New · /.test(entryLabel(m))}))return"Try · "+(ms.length?ms.map(function(m){return entryLabel(m).replace(/^New · /,"")}).join(", "):String(r.label||"new workflow").replace(/^Try:\s*/,"")); /* a new workflow's try */
   if(/^\s*rerun/.test(q))return"Rerun";if(/^\s*test\b/.test(q))return/end to end/.test(q)?"Test end to end":/^\s*test trigger/.test(q)?"Test trigger":"Test workflow";if(/^\s*run workflow/.test(q))return"Run one workflow";
   return ms.length?ms.map(entryLabel).join(", "):(r.request?"“"+r.request+"”":"Request")}
@@ -720,7 +721,7 @@ function runRowsHtml(g,t,opts){
   var r=g.req,its=opts.byRun?runOrder(g.items):g.items,one=its.length===1&&!live(r),f=its[0],ro=one?!!UI.open[f.key]||(UI.ropen[g.key]===true):runOpen(g),h="";
   var wfs={};its.forEach(function(i){wfs[i.category+" · "+wfShort(i)]=i});var wk=Object.keys(wfs),lead=wfs[wk[0]];
   var sub=one?f.label2||f.name:its.length+" items: "+its.map(function(i){return i.label2||i.name}).join(" · ");
-  var ks=its.filter(function(i){return i.wf||i.isReq}).map(function(i){return i.key}),ns=ks.filter(function(k){return UI.sel[k]}).length;SGRP[g.key]=ks;
+  var ks=its.filter(function(i){return i.wf||i.isReq||(i.subs&&i.subs.length)}).map(function(i){return i.key}),ns=ks.filter(function(k){return UI.sel[k]}).length;SGRP[g.key]=ks;
   var rcb=ks.length?'<input type="checkbox" class="scb" data-selrun="'+esc(g.key)+'"'+(ns&&ns===ks.length?" checked":"")+(ns&&ns<ks.length?' data-part="1"':"")+' aria-label="Select '+esc(one?f.name:"this run’s "+ks.length+" items")+'">':"<span></span>";
   h+='<div class="srow srun'+(ro?" open":"")+(ns?" sel":"")+'" data-rrow="'+esc(g.key)+'"'+(one?' data-one="'+esc(f.key)+'"':"")+'>'+rcb+'<button class="schev" type="button" data-rtog="'+esc(g.key)+'"'+(one?' data-one="'+esc(f.key)+'"':"")+' aria-expanded="'+ro+'" aria-label="'+(ro?"Close":"Open")+'">'+CHEV+"</button>"+
     '<span class="sname"><span class="sl1"><span class="cdot tone-'+esc(lead.tone)+'" aria-hidden="true"></span><span class="scat">'+esc(lead.category)+'</span><span class="ssep">·</span><b>'+esc(wfShort(lead))+"</b>"+(wk.length>1?'<span class="scat">+ '+(wk.length-1)+" more</span>":"")+(its.some(function(i){return i.isTest})?'<span class="stag" title="A test: nothing was sent. Its data: '+esc(its.filter(function(i){return i.isTest})[0].testSrc)+'">Test</span>':"")+"</span>"+
@@ -729,7 +730,7 @@ function runRowsHtml(g,t,opts){
   if(one)return h+briefHtml(f,"s2");
   var lim=UI.more[g.key]?1e9:12,n=Math.min(its.length,lim);
   its.slice(0,lim).forEach(function(it,ix){var o=!!UI.open[it.key],last=ix===n-1&&its.length<=lim;
-    h+='<div class="srow sitem'+(last?" last":"")+(o?" open":"")+(UI.sel[it.key]?" sel":"")+'" data-row="'+esc(it.key)+'"><span class="stree" aria-hidden="true"></span>'+(it.wf||it.isReq?'<input type="checkbox" class="scb sub" data-sel="'+esc(it.key)+'"'+(UI.sel[it.key]?" checked":"")+' aria-label="Select '+esc(it.name)+'">':"<span></span>")+'<span></span><span class="sname"><span class="sl1"><button class="schev" type="button" data-tog="'+esc(it.key)+'" aria-expanded="'+o+'" aria-label="'+(o?"Close ":"Open ")+esc(it.name)+'">'+CHEV+'</button><span class="sitn">'+esc(it.name)+"</span>"+(it.nameTags||[]).map(function(t){return'<span class="tag2">&nbsp;· '+esc(t)+"</span>"}).join("")+suggWarn(it)+(it.isNew?'<span class="new">New</span>':"")+"</span></span>"+itemPill(it)+'<span class="sw"></span>'+menuBtn(it)+"</div>";
+    h+='<div class="srow sitem'+(last?" last":"")+(o?" open":"")+(UI.sel[it.key]?" sel":"")+'" data-row="'+esc(it.key)+'"><span class="stree" aria-hidden="true"></span>'+(it.wf||it.isReq||(it.subs&&it.subs.length)?'<input type="checkbox" class="scb sub" data-sel="'+esc(it.key)+'"'+(UI.sel[it.key]?" checked":"")+' aria-label="Select '+esc(it.name)+'">':"<span></span>")+'<span></span><span class="sname"><span class="sl1"><button class="schev" type="button" data-tog="'+esc(it.key)+'" aria-expanded="'+o+'" aria-label="'+(o?"Close ":"Open ")+esc(it.name)+'">'+CHEV+'</button><span class="sitn">'+esc(it.name)+"</span>"+(it.nameTags||[]).map(function(t){return'<span class="tag2">&nbsp;· '+esc(t)+"</span>"}).join("")+suggWarn(it)+(it.isNew?'<span class="new">New</span>':"")+"</span></span>"+itemPill(it)+'<span class="sw"></span>'+menuBtn(it)+"</div>";
     if(o)h+=briefHtml(it,"s3"+(last?" last":""))});
   if(its.length>lim)h+='<div class="more"><button class="lnk" type="button" data-more="'+esc(g.key)+'">Show the other '+(its.length-lim)+"</button></div>";
   var nr=its.filter(function(i){return i.st==="notrun"&&!i.isTest});
@@ -763,7 +764,7 @@ function simpleHtml(v,order,shown,phs){
   var h='<div class="vh"><h2>'+esc(v.name)+"</h2>"+(v.custom?'<span class="sm mut"'+(v.asked?' title="You asked: '+esc(v.asked)+'"':"")+'>custom view</span>':"")+(v.adhoc?'<button class="qlink" type="button" data-act="clearlink">Back to '+esc(v.name)+"</button>":"")+'<span style="flex:1"></span>'+nx+(v.custom?'<button class="qlink" type="button" data-act="changeview" title="Copies a request to change this view, to paste into the Claude chat">Change view</button>':"")+(v.custom?'<button class="qlink sdelv" type="button" data-act="deleteview" title="Copies a request to delete this view, to paste into the Claude chat">Delete view</button>':"")+"</div>";
   return h+simpleBody(v,order,shown,phs)}
 function simpleBody(v,order,shown,phs){var h="";
-  var allK=[];order.forEach(function(g){g.items.forEach(function(i){if(i.wf||i.isReq)allK.push(i.key)})});SGRP={};
+  var allK=[];order.forEach(function(g){g.items.forEach(function(i){if(i.wf||i.isReq||(i.subs&&i.subs.length))allK.push(i.key)})});SGRP={};
   if(v.id==="scheduled")schedItems().forEach(function(i){allK.push(i.key);BYKEY[i.key]=i});
   h+='<section class="slist" aria-label="'+esc(v.name)+'"><div class="srow shd"><input type="checkbox" class="scb" data-selall="1" aria-label="Select all shown"'+(allK.length&&allK.every(function(k){return UI.sel[k]})?" checked":"")+'><span></span><span>Workflow</span><span>Status</span><span class="sw">When</span><span></span></div>';
   if(v.id==="scheduled")h+=schedSimpleHtml();
@@ -1081,6 +1082,8 @@ document.addEventListener("click",function(ev){
   if(a==="autoapprove"){say("turn Approve automatically "+t.dataset.to);return}
   if(a==="rungroup"){var gk=t.dataset.g,its=ITEMS.filter(function(i){return matches(i,v.filter)&&groupOf(i,v.group).key===gk&&i.st==="notrun"&&i.wf});if(its.length)say(runText(its));return}
   var sel=Object.keys(UI.sel).filter(function(k){return UI.sel[k]&&BYKEY[k]}).map(function(k){return BYKEY[k]});
+  /* a loop's run as a whole stands for its items: each acts by its own ID */
+  sel=[].concat.apply([],sel.map(function(i){return i.subs&&i.subs.length?i.subs.map(function(x){return Object.assign({},i,{wf:x.wf,name:x.name,subs:null,isBatch:false})}):[i]}));
   var sch=sel.filter(function(i){return i.sched});sel=sel.filter(function(i){return!i.sched});
   /* "Nothing new" requests: only Copy and Delete apply ("delete request dispatch-…", RunPath.reqDeleteLine) */
   var rqs=sel.filter(function(i){return i.isReq}).map(function(i){return{id:i.group,name:"Nothing new, "+(String(i.req.request||"").trim()||"a trigger check")+", "+RunPath.relTime(i.time)}});sel=sel.filter(function(i){return!i.isReq});
@@ -1127,7 +1130,7 @@ document.addEventListener("change",function(ev){var t=ev.target;
   if(t.dataset.selrun){(SGRP[t.dataset.selrun]||[]).forEach(function(k){UI.sel[k]=t.checked});render();return}
   if(t.dataset.sel&&isSimple(curView())){UI.sel[t.dataset.sel]=t.checked;render();return}
   if(t.dataset.sel){UI.sel[t.dataset.sel]=t.checked;renderFloat();var hd=document.querySelector("[data-selall]");if(hd&&!t.checked)hd.checked=false;return}
-  if(t.dataset.selall){var v=curView();ITEMS.filter(function(i){return matches(i,v.filter)&&i.wf}).forEach(function(i){UI.sel[i.key]=t.checked});if(v.id==="scheduled")schedItems().forEach(function(i){UI.sel[i.key]=t.checked});render();return}
+  if(t.dataset.selall){var v=curView();ITEMS.filter(function(i){return matches(i,v.filter)&&(i.wf||(i.subs&&i.subs.length))}).forEach(function(i){UI.sel[i.key]=t.checked});if(v.id==="scheduled")schedItems().forEach(function(i){UI.sel[i.key]=t.checked});render();return}
   if(t.dataset.pick){UI.pick[t.dataset.pick]=t.checked;renderFloat();return}
   if(t.dataset.pickcat){(B.entries||[]).filter(function(e){return areaOf(e)===t.dataset.pickcat}).forEach(function(e){UI.pick[e.id]=t.checked});renderFloat();return}
   if(t.dataset.pickall){(B.entries||[]).forEach(function(e){UI.pick[e.id]=t.checked});renderFloat();return}
@@ -1151,7 +1154,7 @@ function load(src,cb){var s=document.createElement("script");s.src=src+"?ts="+Da
 function loadViews(cb){fetch("views.json?ts="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():{views:[]}}).then(function(j){var nv=j&&Array.isArray(j.views)?j:{views:[]},ch=JSON.stringify(nv)!==JSON.stringify(V);V=nv;cb(ch)}).catch(function(){cb(false)})}
 function poll(){
   load("board-data.js",function(ok){
-    if(ok&&window.BOARD){B=window.BOARD;
+    if(ok&&window.BOARD){B=window.BOARD;B.runs=(B.runs||[]).filter(function(r){return!r.debug}); /* a debugging copy's runs live on its Builder page, never in the Inbox */
       var sig=(W?W.built:0)+"|"+(B.ledger||[]).length+"|"+B.runs.map(function(r){return r.id+r.state+(r.last||0)+(r.steps||[]).length+((r.now||{}).t||"")}).join(",");
       if(sig!==SIG&&W){SIG=sig;build();render();goToItem()}
       if(UI.wantPanel&&W){UI.wantPanel=0;var Q=new URLSearchParams(location.search);Q.delete("panel");history.replaceState(null,"",location.pathname+(Q.toString()?"?"+Q:""));openPanel()}}

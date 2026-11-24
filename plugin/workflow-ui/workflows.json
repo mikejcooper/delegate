@@ -2,7 +2,7 @@
   "_about": "Workflow definitions for the Workflow Viewer (workflow-viewer.html): sections, category folders, trigger tags and workflows. Field reference, branch rules and what the build checks: README.md in this folder. After editing, run scripts/build_workflows.py: it must exit with no ERROR lines.",
   "skills": {
     "core-dispatcher": {
-      "short": "Workflow manager",
+      "short": "Delegate",
       "code": "d"
     },
     "core-architect": {
@@ -10,7 +10,7 @@
       "code": "a"
     },
     "manager-work-dispatcher": {
-      "short": "Workflow manager",
+      "short": "Delegate",
       "code": "d",
       "alias_of": "core-dispatcher"
     },
@@ -56,7 +56,7 @@
     {
       "key": "core",
       "name": "Core",
-      "desc": "The engine: the workflow manager and the architect"
+      "desc": "The engine: Delegate and the architect"
     }
   ],
   "entries": {
@@ -261,8 +261,8 @@
     }
   },
   "dispatcher": {
-    "name": "Workflow manager",
-    "desc": "Every request starts here. The workflow manager picks a trigger, gathers its items, gives each a repeatable workflow ID, and sends new ones on to the workflow that fits. It never does the checking itself.",
+    "name": "Delegate",
+    "desc": "Every request starts here. Delegate picks a trigger, gathers its items, gives each a repeatable workflow ID, and sends new ones on to the workflow that fits. It never does the checking itself.",
     "steps": [
       {
         "key": "d1",
@@ -976,7 +976,7 @@
           "res": {
             "q1": "Add a trigger",
             "q2": "Source, triggers and what to do given",
-            "qp": "Picture: new trigger → workflow manager → new workflow",
+            "qp": "Picture: new trigger → Delegate → new workflow",
             "q4": "Skills made, board added, checks pass"
           },
           "taken": {

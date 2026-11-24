@@ -27,7 +27,7 @@ the first stops.
 | **Inbox** `workflows.html` (the board's home) | What happened: every item, run or not, grouped by the request that pulled it in, with each run's steps and path; views; Run triggers | `board-data.js` + `workflows-data.js` + `views.json` | `scripts/build_board.py` (from `traces/*.jsonl`; `--watch` keeps it live) |
 | **Builder** `workflow-viewer.html` (was the Workflow Viewer; old `workflows.html?w=…` links land here) | What can happen: each workflow, with real runs and "If…" examples | `workflows-data.js` + `board-data.js` | `scripts/build_workflows.py` (from `workflows.json` + each skill's SKILL.md) |
 
-**The top bar** (`topbar.js`) is the same on all three pages: **Workflow manager** on the left, the
+**The top bar** (`topbar.js`) is the same on all three pages: **Delegate** on the left, the
 **Inbox · Builder** switch in the middle, then a live dot (its tooltip says when the board last updated) and one
 split button. Its face follows the page: **Run** (run your triggers) on the Inbox, **Build** (add a workflow) on the
 Builder; ▾ opens both. While a trigger run is pulling
@@ -270,7 +270,7 @@ page, tab or run adds a history entry, so the browser's Back and Forward work; p
 
 ## Inbox page (`workflows.html`)
 
-One table of every item the workflow manager has seen, whether it has run or not. An item is one workflow ID:
+One table of every item Delegate has seen, whether it has run or not. An item is one workflow ID:
 its runs (the `<wf>-a<n>` traces), the times a trigger found it again (`link_wf` steps), and its done-list rows.
 
 - **Statuses:** Not run (done-list status `pulled`: pulled in, nothing run yet), Running, Needs you (end
@@ -445,7 +445,7 @@ before struck through, and decisions whose answer flipped. A run on an older ite
 has changed since this run", with Run again on this item.
 
 **Where items come from.** A trigger made for one workflow only is drawn as that workflow's first stage, "Where
-items come from": the trigger's own get and sort steps (the workflow manager's ID and hand-off steps are left out).
+items come from": the trigger's own get and sort steps (Delegate's ID and hand-off steps are left out).
 A workflow without stages then gets a second one, "What it does". A trigger shared by several workflows keeps its
 own page and is not repeated.
 
@@ -578,7 +578,7 @@ skill lands in the right place with nothing to add here:
 
 - Every skill in `skills` (aliases left out) shows once: a trigger inside its workflow (no row of its own), a
   `workflow-` skill as its workflows, a `shared-`/`core-` skill as a row with its workflows (modes) under it,
-  and `core-dispatcher` as the workflow manager (`?w=disp`).
+  and `core-dispatcher` as Delegate (`?w=disp`).
 - Tabs **All · Triggers · Workflows** sit under the search. **All** shows every kind, with each Trigger and
   Workflow category folded to one line (its count, and the dot if something in it needs a look) except the one
   holding the open page; Shared and Core are folded at the bottom. **Triggers** and **Workflows** list just
@@ -600,7 +600,7 @@ skill lands in the right place with nothing to add here:
   run on it). A request (`&run=<request>`) shows on the workflow's page with its trigger stage holding what the
   trigger read and kept, and the workflow's steps below as what each item goes through; a try or a run of one
   workflow is watched there and the page moves to each item's run as it starts. Searching a trigger's name finds its workflow. A trigger that
-  feeds several workflows (or none) keeps its own page. The workflow manager as a whole stays at `?w=disp`.
+  feeds several workflows (or none) keeps its own page. Delegate as a whole stays at `?w=disp`.
   A trigger's board definition lives in its entry (core-architect rule 17): `when` (its line on the routing
   step, e.g. "Mentions email"), `noun` (what one item is: "alert"), `feeds` (the workflows its items go to),
   `steps` (its own get and sort steps) and `simulated` (its paths). The build puts the dispatcher's definition
