@@ -364,7 +364,7 @@
 .oflow .efn.quiet .efd{border-style:dashed;color:var(--ok);font-size:10px}.oflow .efn.quiet small{color:var(--faint,var(--mut))}
 .oflow .efn.end .efd{background:var(--soft);font-size:8px}.oflow .tally{font-size:13.5px;color:var(--fg)}.oflow .t-need{color:var(--need)}.oflow .t-fail{color:var(--fl-fail,#b42318)}
 .oflow .efa{margin-top:6px}.oflow .efa .ohint{display:block;margin-top:4px}
-.oflow .olk{align-self:center;font-size:12.5px;color:var(--acc);text-decoration:none;border:1px solid var(--bd);border-radius:999px;padding:3px 10px;white-space:nowrap}.oflow .olk:hover{border-color:var(--acc)}
+.oflow .olk{align-self:center;font:inherit;font-size:12.5px;font-weight:500;color:var(--acc);background:transparent;text-decoration:none;border:1px solid var(--bd2);border-radius:999px;padding:3px 11px;white-space:nowrap;cursor:pointer}.oflow .olk:hover{border-color:var(--acc);background:var(--selb)}
 .oflow .ores>.oacts,.oflow .ores>.ohint{margin:0 18px 14px}
 .oflow .efn.haspv{align-items:center}.oflow .efn>.efm{display:flex;flex-direction:row;align-items:center;gap:14px;min-width:0}.oflow .efm>div{display:flex;flex-direction:column;gap:2px;font-size:13.5px;line-height:19px;min-width:0}
 .oflow .opv{flex:none;width:96px;height:64px;border-radius:6px;border:1px solid var(--bd);background:var(--card);overflow:hidden;display:block}
