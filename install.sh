@@ -10,7 +10,9 @@
 #   1. Without --yes it installs nothing: it says which folder it would install into, so Claude can ask the user
 #      first ("Install the workflow manager in <folder>?"). On their yes Claude runs it again with --yes. In a
 #      terminal it asks the question itself.
-#   2. It installs the plugin into that folder (project scope).
+#   2. It installs the plugin into that folder (project scope). From GitHub it first clones the repo, once per
+#      computer, to ~/.workflow-manager/workflow-manager (WM_CLONE to change it); the plugin runs from that clone
+#      and keeps it up to date itself.
 #   3. In the Claude app, Claude asks on a card to pin this chat and name it "🔗 Workflow Manager".
 #   4. Then it says to send "open the dashboard", in the same chat.
 #
@@ -159,6 +161,28 @@ fi
 
 # 2. Install
 echo "Installing the workflow manager into $FOLDER"
+# From GitHub: a git clone, one per computer, outside every project folder, which Claude Code reads in place. The
+# plugin keeps it current itself (workflow-ui/scripts/git_update.py: it checks the repo over HTTPS and pulls each
+# new release), and a pulled release runs from the next message. Without git, Claude Code's own copy instead.
+if [ ! -d "$SOURCE" ] && command -v git >/dev/null 2>&1; then
+  case "$SOURCE" in http://*|https://*) URL=$SOURCE ;; *) URL="https://github.com/$SOURCE.git" ;; esac
+  CLONE=${WM_CLONE:-$HOME/.workflow-manager/workflow-manager}
+  if [ -d "$CLONE/.git" ]; then
+    HAVE=$(git -C "$CLONE" remote get-url origin 2>/dev/null || true)
+    if [ "${HAVE%.git}" != "${URL%.git}" ]; then
+      echo "$CLONE is a clone of $HAVE, not $URL. Move it away, or set WM_CLONE to another folder, and run this again." >&2
+      exit 1
+    fi
+    echo "Using the clone already at $CLONE (it keeps itself up to date)"
+  else
+    mkdir -p "$(dirname "$CLONE")"
+    if ! GIT_TERMINAL_PROMPT=0 git clone --quiet "$URL" "$CLONE"; then
+      echo "Couldn't download the plugin from $URL." >&2
+      exit 1
+    fi
+  fi
+  SOURCE=$CLONE
+fi
 claude plugin marketplace add "$SOURCE" --scope project >/dev/null 2>&1 || true
 claude plugin install "$PLUGIN" --scope project >/dev/null 2>&1 || true
 

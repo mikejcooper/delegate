@@ -117,7 +117,74 @@ def check(project=paths.PROJECT, root=paths.ROOT, started=None):
                       and os.path.isfile(os.path.join(inst["installPath"], ".claude-plugin", "plugin.json")))
         return {"needed": needed, "running": disk, "installed": inst["version"] if inst else None}
     run = started or disk
-    return {"needed": run != disk, "running": run, "installed": disk}
+    changed = startup_changed(root, run) if run != disk else []
+    return {"needed": bool(changed), "running": run, "installed": disk, **({"changed": changed} if changed else {})}
+
+
+TAG = "workflow-manager--v"
+
+
+def _git(repo, *args):
+    import subprocess
+    try:
+        p = subprocess.run(["git", "-C", repo, *args], capture_output=True, text=True, timeout=10)
+        return p.stdout if p.returncode == 0 else None
+    except (OSError, subprocess.SubprocessError):
+        return None
+
+
+def _frontmatter(text):
+    """A SKILL.md's frontmatter (name, description, …): what Claude Code reads when a chat starts."""
+    if not text or not text.startswith("---"):
+        return ""
+    end = text.find("\n---", 3)
+    return text[:end] if end > 0 else ""
+
+
+def startup_changed(root, since):
+    """What a chat that started on version `since` would still have old, now that the clone at root is newer:
+    the parts Claude Code reads only when a chat starts (or on /reload-plugins). [] when nothing such changed, or
+    when it can't tell (not a git clone, no release tag for that version): then no banner, as everything else
+    (hook scripts, migrations, the board) runs from disk on the next message anyway.
+      "hooks"     hooks.json, apart from its WM_HOOKS_VERSION, which moves on every release
+      "skills"    a skill added, removed, or its name or description changed
+      "commands"  a slash command added, removed or changed"""
+    import re
+    top = (_git(root, "rev-parse", "--show-toplevel") or "").strip()
+    if not top:
+        return []
+    ref = f"refs/tags/{TAG}{since}"
+    if _git(top, "rev-parse", "--verify", "--quiet", ref) is None:
+        return []
+    rel = os.path.relpath(os.path.realpath(root), os.path.realpath(top))
+    pre = "" if rel == "." else rel + "/"
+
+    def old(path):
+        return _git(top, "show", f"{ref}:{pre}{path}")
+
+    def new(path):
+        try:
+            with open(os.path.join(root, path), encoding="utf-8") as fh:
+                return fh.read()
+        except OSError:
+            return None
+
+    def files(folder, pattern):
+        was = {f[len(pre):] for f in (_git(top, "ls-tree", "-r", "--name-only", ref, "--", pre + folder) or "").split()}
+        now = set()
+        for d, _, fs in os.walk(os.path.join(root, folder)):
+            now |= {os.path.relpath(os.path.join(d, f), root) for f in fs}
+        return {f for f in was | now if re.search(pattern, f)}
+
+    out = []
+    strip = lambda t: re.sub(r"WM_HOOKS_VERSION=\S+ ", "", t or "")
+    if strip(old("hooks/hooks.json")) != strip(new("hooks/hooks.json")):
+        out.append("hooks")
+    if any(_frontmatter(old(f)) != _frontmatter(new(f)) for f in files("skills", r"(^|/)SKILL\.md$")):
+        out.append("skills")
+    if any(old(f) != new(f) for f in files("commands", r"\.md$")):
+        out.append("commands")
+    return out
 
 
 def note(state):

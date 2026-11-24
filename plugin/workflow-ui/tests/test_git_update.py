@@ -14,7 +14,8 @@ Then checks, in order:
   6  commits of its own in the clone: skipped as diverged
   7  release tags: the newest tag wins over a newer untagged branch tip
   8  "auto_update": false in settings.json: never checks
-  9  reload_check: a session whose hooks.json is older than plugin.json on disk is told to reload
+  9  reload_check: a chat started on an older release is told to reload only when the release changed what a chat
+     reads at its start (here a skill's description), not for one that only changes scripts
 
     python3 -I test_git_update.py      (optional: --keep to leave the temp folder for a look)
 """
@@ -149,21 +150,37 @@ def main():
     st = run("--now")
     ok(st.get("checked") == before and disk_version(inst) == "0.94.0", "8 auto_update off: never checks")
 
-    # 9 the reload banner for a clone: hooks.json read at 0.94.0, but the folder moved on
+    # 9 the reload banner for a clone: only when a release changes what a chat reads at its start
     os.remove(os.path.join(project, ".workflow-manager-data", "config", "settings.json"))
     run("--now")
-    p = subprocess.run([sys.executable, "-I", os.path.join(scripts, "reload_check.py"), "prompt"],
-                       input=json.dumps({"session_id": "s1"}), capture_output=True, text=True,
-                       env=dict(env, WM_HOOKS_VERSION="0.94.0"))
-    with open(os.path.join(live, "reload.json")) as fh:
-        r = json.load(fh)
-    ok(disk_version(inst) == "0.95.0" and r.get("needed") and r.get("running") == "0.94.0" and r.get("installed") == "0.95.0"
-       and "/reload-plugins" in p.stdout, "9 hooks older than the folder: reload banner and note")
-    p = subprocess.run([sys.executable, "-I", os.path.join(scripts, "reload_check.py"), "prompt"],
-                       input=json.dumps({"session_id": "s1"}), capture_output=True, text=True,
-                       env=dict(env, WM_HOOKS_VERSION="0.95.0"))
-    with open(os.path.join(live, "reload.json")) as fh:
-        ok(json.load(fh).get("needed") is False and not p.stdout.strip(), "9 after /reload-plugins: cleared")
+
+    def prompt(hooks_version):
+        p = subprocess.run([sys.executable, "-I", os.path.join(scripts, "reload_check.py"), "prompt"],
+                           input=json.dumps({"session_id": "s1"}), capture_output=True, text=True,
+                           env=dict(env, WM_HOOKS_VERSION=hooks_version))
+        with open(os.path.join(live, "reload.json")) as fh:
+            return json.load(fh), p.stdout.strip()
+
+    r, out = prompt("0.94.0")
+    ok(disk_version(inst) == "0.95.0" and r.get("needed") is False and not out,
+       "9 a release that only changes scripts: no banner, no note (it runs from the next message)")
+
+    skill = os.path.join(dev, "plugin", "skills", "core-renamer", "SKILL.md")
+    with open(skill) as fh:
+        text = fh.read()
+    with open(skill, "w") as fh:
+        fh.write(text.replace("description: ", "description: (Changed.) ", 1))
+    git(dev, "commit", "-qam", "a skill's description")
+    set_version(dev, "0.96.0")
+    git(dev, "tag", "workflow-manager--v0.96.0")
+    git(dev, "push", "-q", "--tags", "origin", "main")
+    run("--now")
+    r, out = prompt("0.95.0")
+    ok(disk_version(inst) == "0.96.0" and r.get("needed") and r.get("changed") == ["skills"]
+       and r.get("running") == "0.95.0" and "/reload-plugins" in out,
+       "9 a release that changes a skill's description: banner and note")
+    r, out = prompt("0.96.0")
+    ok(r.get("needed") is False and not out, "9 after /reload-plugins: cleared")
 
     if "--keep" not in sys.argv:
         shutil.rmtree(tmp, ignore_errors=True)

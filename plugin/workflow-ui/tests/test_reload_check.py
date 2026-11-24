@@ -7,7 +7,7 @@ checks, for a project:
   2  a newer copy installed for this project: reload needed, with both versions
   3  the record names a copy that isn't on disk: not needed (nothing to switch to)
   4  another project's install is ignored; a user-wide install is used when this project has none
-  5  a copy loaded in place (a git clone): needed only when its hooks were read at an older version
+  5  a copy loaded in place: no banner when it can't tell what changed (test_git_update.py covers a real clone)
   7  this release: hooks.json's WM_HOOKS_VERSION is plugin.json's version
   6  the hook: banner state written every message, the note for Claude printed once per session and version
 
@@ -81,7 +81,8 @@ def main():
         json.dump({"version": "0.13.6"}, fh)
     ok(rc.check(project, inplace)["needed"] is False, "5 in place, session on the version on disk: not needed")
     r = rc.check(project, inplace, started="0.13.5")
-    ok(r == {"needed": True, "running": "0.13.5", "installed": "0.13.6"}, "5 in place, hooks read at an older version: needed")
+    ok(r == {"needed": False, "running": "0.13.5", "installed": "0.13.6"},
+       "5 in place, not a git clone (can't tell what changed): no banner")
 
     # 7 the release itself: hooks.json's WM_HOOKS_VERSION must be plugin.json's version, or the banner never clears
     plugin = os.path.dirname(os.path.dirname(HERE))

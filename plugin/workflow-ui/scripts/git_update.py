@@ -43,7 +43,6 @@ CHECK_EVERY = 6 * 3600
 RETRY_SKIPPED = 15 * 60          # a skipped update (a run open, a test) is tried again this soon
 TAG_PREFIX = "workflow-manager--v"
 STATE = paths.UPDATE
-LOCK = STATE + ".lock"
 LOG = os.path.join(paths.SYSTEM, "updates.log")
 GIT_ENV = dict(os.environ, GIT_TERMINAL_PROMPT="0", GIT_ASKPASS="true",
                GIT_SSH_COMMAND="ssh -o BatchMode=yes -o ConnectTimeout=15")
@@ -182,16 +181,22 @@ def due(now):
     return now - float(st.get("checked") or 0) >= wait
 
 
-def lock():
-    """One update at a time per folder (two messages close together start two). A lock older than 10 min is stale."""
-    os.makedirs(os.path.dirname(LOCK), exist_ok=True)
+def lock_path(repo):
+    """The update lock lives in the clone, not in a project folder: one clone can serve every folder on the
+    computer (install.sh clones once), and only one of them may pull at a time."""
+    return os.path.join(repo, ".git", "workflow-manager-update.lock")
+
+
+def lock(path):
+    """One update at a time per clone (two messages close together, or two folders, start two). A lock older than
+    10 min is stale."""
     try:
-        if time.time() - os.path.getmtime(LOCK) > 600:
-            os.remove(LOCK)
+        if time.time() - os.path.getmtime(path) > 600:
+            os.remove(path)
     except OSError:
         pass
     try:
-        os.close(os.open(LOCK, os.O_CREAT | os.O_EXCL))
+        os.close(os.open(path, os.O_CREAT | os.O_EXCL))
         return True
     except OSError:
         return False
@@ -225,13 +230,14 @@ def update(now=None, force=False):
         return None
     if not force and not due(now):
         return None
-    if not lock():
+    held = lock_path(repo)
+    if not lock(held):
         return None
     try:
         return _update(repo, rel, now)
     finally:
         try:
-            os.remove(LOCK)
+            os.remove(held)
         except OSError:
             pass
 
