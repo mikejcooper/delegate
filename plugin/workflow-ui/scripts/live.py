@@ -279,17 +279,23 @@ def start(request):
         write_json(CURRENT, {"run": run, "t": time.time()})
         return run, False
     request = clean(request)
+    try:   # "delegate run nyt-briefing": what it means ("check the new york times") names its trigger and workflow
+        import commands
+        c = commands.parse(request)
+        meant = c.get("means") or c.get("trigger") or request
+    except Exception:
+        meant = request
     base = "dispatch-" + time.strftime("%H%M")
     run, n = base, 2
     while os.path.exists(trace_path(run)):
         run, n = f"{base}-{n}", n + 1
     sets = read_json(SETTINGS) or {}
     skip, auto = sets.get("skip_done", True), sets.get("auto_approve", True)
-    e = trigger_of(request)
+    e = trigger_of(meant)
     header = {"header": True, "run": run, "label": ("Try: " + (e.get("desc") or e["id"])) if is_try(e) else
               "Dispatcher run", "request": request, "started": now_iso(), "kind": "trigger", "skip_done": bool(skip),
               "auto_approve": bool(auto)}
-    named = workflow_of(request)
+    named = workflow_of(meant)
     if named:   # "test workflow …", "run workflow …", "rerun workflow wf-…": watched on the Builder
         header["workflow"], header["watch"] = named[0], True
         if named[1] and not e:

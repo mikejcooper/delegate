@@ -308,6 +308,10 @@ def cmd_end(a):
     if a.path:
         end["path"] = a.path
     append(a.run, end, rebuild=False)
+    if not hdr.get("wf"):   # a request (its trigger ran nothing, or only linked): no item to record
+        subprocess.run([sys.executable, "-I", os.path.join(HERE, "build_board.py")], capture_output=True)
+        print(json.dumps({"ended": a.run, "status": a.status}, ensure_ascii=False))
+        return
     flags = tryflags(hdr.get("try"), hdr.get("try_real"), hdr.get("test"))
     if a.result:
         flags += ["--result", a.result]

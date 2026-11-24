@@ -746,7 +746,10 @@ function phRowHtml(r){var t=r.started||0,ek=(r.matches||[]).map(function(m){retu
   else title="<b>"+esc(reqTitle(r).replace(/^SCHED:/,""))+"</b>";
   return'<div class="srow srun"><span></span><span></span><span class="sname"><span class="sl1">'+title+'</span><span class="sl2">'+esc(nowText(r))+"</span></span>"+sPill("running","Running")+'<span class="sw" title="'+esc(exact(t))+'">'+esc(sWhen(t))+'</span><span class="sact"></span></div>'+(r.first&&def?firstNudge(def.id,r.id):"")}
 /* the first run, started from the welcome: its row says how to watch it step by step */
-function firstNudge(wid,run){return'<div class="fnudge"><span><b>Your first run.</b> Watch each step happen in the Builder.</span><a class="btn sb pri" href="workflow-viewer.html?w='+encodeURIComponent(wid)+"&run="+encodeURIComponent(run)+'">View in Builder ↗</a></div>'}
+/* the first run's nudge to the Builder: shown until its button is clicked once, then never again in this folder */
+function firstSeen(){try{return localStorage.getItem("delegate.firstRunSeen")==="1"}catch(e){return false}}
+function firstNudge(wid,run){if(firstSeen())return"";return'<div class="fnudge"><span><b>Your first run.</b> Watch each step happen in the Builder.</span><a class="btn sb pri" data-firstseen="1" href="workflow-viewer.html?w='+encodeURIComponent(wid)+"&run="+encodeURIComponent(run)+'">View in Builder ↗</a></div>'}
+document.addEventListener("click",function(ev){var a=ev.target.closest&&ev.target.closest("[data-firstseen]");if(a){try{localStorage.setItem("delegate.firstRunSeen","1")}catch(e){}}},true);
 /* the Scheduled view's "Coming up": one row per schedule; open it for when it runs and the lines to change it */
 function schedSimpleHtml(){var its=schedItems();if(!its.length)return"";
   var h='<div class="sday">Coming up</div><div class="sgrp">';

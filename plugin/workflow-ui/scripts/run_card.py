@@ -84,7 +84,14 @@ def facts(run):
     end = next((x for x in tl if x.get("end")), None)
     steps = [x for x in tl if x.get("id") and not x.get("header") and not x.get("end")]
     W = path_check.load_defs()
-    d = path_check.find_def(W, hdr.get("skill", "")) if W else None
+    sk = hdr.get("skill", "")
+    if not sk:   # a request: its trigger's workflow (the header's trigger, or the dispatcher's match line)
+        trig = hdr.get("trigger") or next((x.get("entry_match") for x in tl if x.get("entry_match")), "")
+        sk = ((W or {}).get("entries", {}).get(trig) or {}).get("skill", "") if trig else ""
+        if trig and not sk.startswith("workflow-"):   # a trigger inside its workflow: the workflow that lists it
+            sk = next((w.get("match", {}).get("skill", "") for w in (W or {}).get("workflows", [])
+                       if trig in (w.get("entries") or [])), sk)
+    d = path_check.find_def(W, sk) if W and sk else None
     name = (d or {}).get("short") or (d or {}).get("name") or hdr.get("skill") or "Workflow"
     return tl, hdr, end, steps, d, name
 
@@ -148,7 +155,7 @@ def card(run):
     elif not_yes:
         rows.append(("Sent", "Not sent: you didn’t say yes"))
     elif end and not made and not waits and not held:
-        rows.append(("Made", "Nothing made or sent"))
+        rows.append(("Made", "Nothing made or sent" if hdr.get("kind") != "trigger" else "Nothing new to run"))
     if held:
         rows.append(("Not sent", f"{held} send{'s' if held > 1 else ''} or write{'s' if held > 1 else ''}: a try sends nothing"))
     # a loop workflow's run: its items, added up
@@ -177,7 +184,8 @@ def card(run):
         p = ((end or {}).get("problems") or [{}])[0]
         what = md(p.get("what") or (failed[0].get("title") or failed[0].get("step")) + ": " + str(failed[0].get("result", "")))
         rows.append(("What went wrong", what + (f" · fix: {md(p['fix'])}" if p.get("fix") else "")))
-    if end and not hdr.get("test") and (not hdr.get("try") or hdr.get("try_real")):   # a try for real is reviewed too
+    ran = hdr.get("kind") != "trigger" or any(str(x.get("step", "")).startswith("forked") for x in steps)
+    if end and ran and not hdr.get("test") and (not hdr.get("try") or hdr.get("try_real")):   # a try for real is reviewed too; a request that ran nothing isn't
         reviewed, open_ = check_state(run)
         rows.append(("Check", ("No warnings" if not open_ else f"⚠ {len(open_)} warning{'s' if len(open_) > 1 else ''}: {md(open_[0].get('title'))}")
                      if reviewed else "running…"))
