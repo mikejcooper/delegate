@@ -119,7 +119,7 @@ def crons(sc):
 def plan(trig, wf, sc):
     short = wf.replace("workflow-", "", 1)
     when = entries_text(sc)
-    req = f"run workflow manager with these triggers, no question: {trig['id']}. (scheduled: {when})"
+    req = f"delegate run triggers {trig['id']}: (scheduled: {when})"
     prompt = (f"Scheduled run of Delegate, set up from the board's schedule for the workflow {short}.\n\n"
               f"Work in the project folder {paths.PROJECT}. Take this request exactly as if the user had typed it, and "
               f"follow that folder's CLAUDE.md for it (it is a dispatcher run):\n\n{req}\n\n"

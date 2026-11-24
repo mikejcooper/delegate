@@ -289,7 +289,7 @@ its runs (the `<wf>-a<n>` traces), the times a trigger found it again (`link_wf`
 
   | Button | Copies |
   |---|---|
-  | Run, Run again, Run N, Run selected, Start (Run triggers) | `run workflow …` / `rerun workflow wf-…` / `run these N items …` / `run workflow manager with these triggers …` |
+  | Run, Run again, Run N, Run selected, Start (Run triggers) | `run workflow …` / `rerun workflow wf-…` / `run these N items …` / `delegate run triggers …` |
   | Answer, Discuss | a line that opens the question about that workflow ID |
   | Skip, Skip selected, ⋯ › Skipped | `skip wf-…` (or "Skip these items" with a list) |
   | ⋯ › Done / Needs you / Not run | `mark wf-… done` / `needs you` / `not run` (or "mark these items …") |

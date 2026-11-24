@@ -35,6 +35,8 @@ TABLE = [
     ("Run", "delegate run", r"run", "core-dispatcher", "run workflow manager"),
     ("Run", "delegate run all", r"run\s+all(?:\s+triggers)?", "core-dispatcher", "run all triggers"),
     ("Run", "delegate run trigger <name>", r"run\s+trigger\s+" + N, "core-dispatcher", "run trigger {name}"),
+    ("Run", "delegate run triggers <name>, <name>", r"run\s+triggers\s+(?P<name>[\w.-]+(?:\s*,\s*[\w.-]+)*)" + D,
+     "core-dispatcher", "run workflow manager with these triggers, no question: {name}.{ detail}"),
     ("Run", "delegate run workflow <name>: <item>", r"run\s+workflow\s+" + N + D, "core-dispatcher",
      "run workflow {name}{ on detail}"),
     ("Run", "delegate run <workflow>: for real/as a test", r"run\s+(?!(?:all|trigger|workflow)(?:\s|$))" + N + D,

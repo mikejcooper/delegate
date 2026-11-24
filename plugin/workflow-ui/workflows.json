@@ -290,7 +290,7 @@
             "entry": "rerun"
           },
           {
-            "when": "Says run workflow manager, or names triggers",
+            "when": "Says delegate run, or names triggers",
             "then": "Tick boxes, or the named triggers; each runs as above",
             "k": "ask",
             "ends": true,

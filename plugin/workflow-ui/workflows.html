@@ -1144,7 +1144,7 @@ document.addEventListener("click",function(ev){
   if(a==="newwf"){say("Add a workflow: "+(UI.rq||""));return}
   if(a==="start"){var ids=rIds();if(!ids.length)return;try{localStorage.setItem(RUNLAST,JSON.stringify({toks:UI.rtok,t:Date.now()/1000}))}catch(e){}UI.rFromLast=true;
     var cx=String(UI.rctx||"").replace(/\s+/g," ").trim();
-    say("run workflow manager with these triggers, no question: "+ids.join(", ")+"."+(cx?" Context: "+cx:""),"Copied for the Claude chat");UI.rctx="";UI.panel="closed";renderFloat();return}
+    say("delegate run triggers "+ids.join(", ")+(cx?": Context: "+cx:""),"Copied for the Claude chat");UI.rctx="";UI.panel="closed";renderFloat();return}
 });
 document.addEventListener("input",function(ev){if(ev.target&&ev.target.id==="rpctx")UI.rctx=ev.target.value});
 document.addEventListener("change",function(ev){var t=ev.target;

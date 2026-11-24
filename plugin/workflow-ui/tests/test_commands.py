@@ -33,6 +33,11 @@ def ok(cond, what):
 CASES = [
     ("delegate run", "core-dispatcher", "run workflow manager"),
     ("delegate run all", "core-dispatcher", "run all triggers"),
+    ("delegate run triggers email, news", "core-dispatcher", "run workflow manager with these triggers, no question: email, news."),
+    ("delegate run triggers email: Context: only today's", "core-dispatcher",
+     "run workflow manager with these triggers, no question: email. Context: only today's"),
+    ("delegate run triggers news: (scheduled: weekdays 08:00)", "core-dispatcher",
+     "run workflow manager with these triggers, no question: news. (scheduled: weekdays 08:00)"),
     ("delegate run workflow wework-invoices: the newest invoice", "core-dispatcher",
      "run workflow wework-invoices on the newest invoice"),
     ("delegate run workflow wework-invoices: as a test", "core-dispatcher", "run workflow wework-invoices as a test"),
