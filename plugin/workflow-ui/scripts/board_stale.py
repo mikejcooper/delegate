@@ -23,12 +23,21 @@ def inputs():
         os.path.join(paths.CODE, "dispatcher-data", "skill-history")
     base = os.path.dirname(hist)
     out = [paths.SKILLS, paths.USER_SKILLS, os.path.join(paths.CODE, "workflows.json"),
-           hist, os.path.join(base, "pending-reviews"), os.path.join(base, "iterations")]
+           *history_marks(hist), os.path.join(base, "pending-reviews"), os.path.join(base, "iterations")]
     if paths.PLUGIN:
         out.append(paths.CONFIG)
     else:
         out.append(paths.DRAFTS)
     return list(dict.fromkeys(out))
+
+
+def history_marks(hist):
+    """The skill history's files that change only when a version is saved (its refs and HEAD). Not the whole folder:
+    it is a git repository, and any git command there (a status, a diff, which the hooks run on every message)
+    creates and removes a lock file and refreshes the index, which made every turn look changed and rebuild."""
+    if not os.path.isfile(os.path.join(hist, "HEAD")):   # not a git folder of its own: watch it whole
+        return [hist]
+    return [os.path.join(hist, x) for x in ("HEAD", "packed-refs", "refs", os.path.join("logs", "HEAD"))]
 
 
 def newer(path, since):

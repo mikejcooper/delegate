@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "WM_HOOKS_VERSION=0.15.6 \"${CLAUDE_PLUGIN_ROOT}\"/workflow-ui/scripts/on_prompt.sh"
+            "command": "WM_HOOKS_VERSION=0.15.7 \"${CLAUDE_PLUGIN_ROOT}\"/workflow-ui/scripts/on_prompt.sh"
           }
         ]
       }
