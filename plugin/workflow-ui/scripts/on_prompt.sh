@@ -25,7 +25,10 @@ export MIGRATION_NOTE
 # started), so a folder's first edit is a draft the board can show and compare.
 python3 -I "$SCRIPTS/skill_history.py" start --quiet >/dev/null 2>&1
 python3 -I "$SCRIPTS/build_board.py" >/dev/null 2>&1      # rebuild now, so the board is current before it opens
-python3 -I "$SCRIPTS/build_workflows.py" >/dev/null 2>&1  # refresh the Workflow Viewer: rule text quoted live from each SKILL.md
+# refresh the Builder (rule text quoted live from each SKILL.md) in the background: it reads the skill history with
+# hundreds of git calls (~25s), and the app cancels this hook at 30s, which used to kill live.py below before it could
+# start the run's trace and brief. The page picks the new data up when it lands.
+nohup python3 -I "$SCRIPTS/build_workflows.py" >/dev/null 2>&1 &
 nohup python3 -I "$SCRIPTS/build_board.py" --watch >/dev/null 2>&1 &
 URL=$(python3 -I "$SCRIPTS/paths.py" url 2>/dev/null)
 # In the Claude app the board is the app's preview (launch.json "workflow-ui", opened with preview_start), so the app
@@ -50,7 +53,7 @@ python3 -I "$SCRIPTS/serve_board.py" --register >/dev/null 2>&1   # the board's 
 # A folder never welcomed (the plugin was installed or reloaded mid-session, so SessionStart didn't run for it):
 # the first message gets the first-run welcome instead. Does nothing once welcomed.
 python3 -I "$SCRIPTS/welcome.py" session 2>/dev/null
-# "/workflow-manager:start" (the welcome again), "/dashboard", "delegate dashboard": the board, open (no run, no trace)
+# "/delegate:start" (the welcome again), "/dashboard", "delegate dashboard": the board, open (no run, no trace)
 printf '%s' "$INPUT" | python3 -I "$SCRIPTS/welcome.py" prompt 2>/dev/null
 # "delegate <verb> <thing> <name>": one line for Claude naming the command, what it means and the skill that does it
 printf '%s' "$INPUT" | python3 -I "$SCRIPTS/commands.py" prompt 2>/dev/null

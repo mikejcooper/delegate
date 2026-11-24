@@ -50,7 +50,9 @@ gives:
 ```
 
 ## Review a run ("review run <run id>")
-Runs in the background after the run has ended; nobody is waiting on it.
+Runs in the background after the run has ended; nobody is waiting on it. A run done from a brief (`run_brief.py`) reviews itself
+straight after, from a short copy of Steps 2 to 4 in its brief and the facts `review_gate.py` prints, in one call:
+change that copy (`REVIEW` in `run_brief.py`) whenever these steps change.
 
 **Step 1: Gather.** `python3 -I <paths.py folder>/suggestions.py context <run id>`. It gives the run's trace, the
 path it says it took, the workflow's paths (each with its steps) and steps, its skill file, each connection's set
@@ -70,7 +72,8 @@ confirm each against the trace and the workflow's skill file, and judge what it 
 | a write not confirmed | an email sent with nothing saying it reached Sent |
 | the path not named, or named as no path of the workflow | "Yes, all up → Sent" for "If: Airtable is up, you say yes" |
 
-Drop a fact that is only a matter of record when the trace shows the step was plainly done as written (a step
+Drop a step that shows the user something (opens a page or a file) when a run with no screen (Delegate's runner)
+left it for the chat, its result saying so: the chat opens it once the run reports. Drop a fact that is only a matter of record when the trace shows the step was plainly done as written (a step
 logged under another type, say).
 
 **Step 3: Check what it left behind.** Compare each of the run's `writes` with the writes of its `earlier_tries`.

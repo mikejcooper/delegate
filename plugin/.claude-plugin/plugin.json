@@ -1,6 +1,6 @@
 {
-  "name": "workflow-manager",
+  "name": "delegate",
   "version": "0.14.1",
-  "description": "Automate your work with workflows Claude runs for you, each step shown on a live dashboard. Comes with a demo that needs no accounts. After installing, start a new Claude session in this folder (or run /reload-plugins), then run /workflow-manager:start: your dashboard opens and shows you the demo.",
+  "description": "Automate your work with workflows Claude runs for you, each step shown on a live dashboard. Comes with a demo that needs no accounts. After installing, start a new Claude session in this folder (or run /reload-plugins), then run /delegate:start: your dashboard opens and shows you the demo.",
   "displayName": "Delegate"
 }

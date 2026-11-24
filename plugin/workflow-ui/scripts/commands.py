@@ -28,7 +28,7 @@ D = r"(?:\s*:\s*(?P<detail>.+))?"              # ": anything after"
 # (group, form shown to people, regex on the words after "delegate", skill, meaning in the older phrasing)
 TABLE = [
     ("Dashboard", "delegate dashboard", r"(?:open\s+)?(?:the\s+)?dashboard", "", "open the dashboard"),
-    ("Dashboard", "delegate start", r"start", "", "/workflow-manager:start"),
+    ("Dashboard", "delegate start", r"start", "", "/delegate:start"),
     ("Dashboard", "delegate help", r"help|commands", "", "list Delegate's commands"),
 
     ("Run", "delegate run", r"run", "core-dispatcher", "run workflow manager"),

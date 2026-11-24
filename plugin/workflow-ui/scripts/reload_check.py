@@ -32,7 +32,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import paths  # noqa: E402
 
-NAME = "workflow-manager"
+NAME = "delegate"
+OLD_NAMES = ("workflow-manager",)                      # names it had before, for copies installed under them
 STATE = paths.RELOAD
 NOTED = os.path.join(paths.LIVE, "reload-noted.json")      # session -> the version Claude was already told of
 KEEP = 50                                                    # sessions remembered
@@ -81,7 +82,7 @@ def where_cached(root=paths.ROOT):
     """(plugins folder, marketplace) when root is a cached copy (<plugins>/cache/<marketplace>/<name>/<version>),
     else (None, None)."""
     parts = _real(root).split(os.sep)
-    if len(parts) >= 5 and parts[-4] == "cache" and parts[-2] == NAME:
+    if len(parts) >= 5 and parts[-4] == "cache" and parts[-2] in (NAME,) + OLD_NAMES:
         return os.sep.join(parts[:-4]), parts[-3]
     return None, None
 
@@ -93,7 +94,7 @@ def installed(project, root=paths.ROOT):
     if not plugins:
         return None
     data = _read(os.path.join(plugins, "installed_plugins.json")) or {}
-    entries = (data.get("plugins") if isinstance(data.get("plugins"), dict) else data).get(f"{NAME}@{market}") or []
+    entries = (data.get("plugins") if isinstance(data.get("plugins"), dict) else data).get(f"{_real(root).split(os.sep)[-2]}@{market}") or []
     if isinstance(entries, dict):
         entries = [entries]
     mine = [e for e in entries if isinstance(e, dict) and e.get("projectPath")

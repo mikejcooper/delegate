@@ -1,0 +1,22 @@
+{
+ "kind": "workflow",
+ "from_run": "wf-e3dac219-a1",
+ "recorded": "2026-11-24T18:50:46Z",
+ "path": "If: a story",
+ "item": {
+  "headline": "Army’s Iowa Ammunition Plant Explosion on Schedule for Wednesday Morning",
+  "link": "https://www.nytimes.com/2026/11/24/climate/iowa-army-ammunition-plant-explostion.html",
+  "summary": "Freezing temperatures threaten to make the degrading explosives even more unstable, while winds could carry a toxic lead plume up to 100 miles away.",
+  "published": "Tue, 24 Nov 2026 18:45:17 +0000",
+  "author": "Quinn Glabicki and Hiroko Tabuchi"
+ },
+ "reads": [
+  {
+   "type": "Written",
+   "result": "The Army still plans to blow up degrading explosives at its Iowa ammunition plant on Wednesday morning, though freezing temperatures could make them more unstable and winds could carry a toxic lead plume up to 100 miles.",
+   "status": "done"
+  }
+ ],
+ "writes": [],
+ "systems": {}
+}

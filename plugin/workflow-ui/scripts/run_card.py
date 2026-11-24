@@ -4,6 +4,11 @@
     run_card.py <run id>            the card, as markdown: status and time, the run's summary, then a few rows
                                     (what it made, what it sent, its items, what waits on you, what went wrong,
                                     the check), and a link to the run on the board
+    run_card.py <run id> --widget   the same card as HTML for the chat's card tool (show_widget), kept simple: the
+                                    summary, only the steps that failed or wait on you, what it made with Copy
+                                    link, and a check warning if any (no View in Builder: the chat's card
+                                    can't open a page)
+    run_card.py <run id> --url      the run's page on the board (the Builder)
     run_card.py <run id> --check    one line, once the run's check (core-run-reviewer) has reported:
                                     "**<workflow> · Check:** No warnings ✓" or "… ⚠ 2 warnings · <first> · see them ↗"
 
@@ -195,6 +200,83 @@ def card(run):
     return "\n".join(out)
 
 
+
+CSS = ("<style>.rc{background:var(--surface-2);border:.5px solid var(--border);border-radius:12px;padding:1rem 1.25rem;"
+       "font-size:13px;margin:.5rem 0}.rh{display:flex;align-items:center;gap:10px}.rn{font-weight:500;font-size:15px}"
+       ".rb{margin-left:auto;font-size:12px;padding:2px 10px;border-radius:var(--radius)}.ok{background:var(--bg-success);"
+       "color:var(--text-success)}.bad{background:var(--bg-danger);color:var(--text-danger)}.wait{background:var(--bg-warning);"
+       "color:var(--text-warning)}.rs{color:var(--text-secondary);font-size:14px;line-height:1.6;margin:6px 0 10px}"
+       ".rl{border-top:.5px solid var(--border);padding-top:8px;margin-top:8px;line-height:1.9}.rl i{margin-right:6px}"
+       ".rr{display:flex;gap:8px;align-items:center}.rr span{color:var(--text-secondary);min-width:64px}"
+       ".rf{display:flex;gap:8px;align-items:center;border-top:.5px solid var(--border);margin-top:8px;padding-top:10px}"
+       ".rf span{color:var(--text-secondary);flex:1}</style>")
+JS = ("<script>function cp(b,u){var d=function(){b.textContent='Link copied'};try{navigator.clipboard.writeText(u)"
+      ".then(d,function(){prompt('Copy the link',u)})}catch(e){prompt('Copy the link',u)}}</script>")
+
+
+def esc(t):
+    return (str(t or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
+            .replace("'", "&#39;"))
+
+
+def widget(run):
+    tl, hdr, end, steps, d, name = facts(run)
+    if not hdr:
+        return f"No run {run} on the board."
+    md_card = card(run).split("\n")
+    head = md_card[0]   # "**✓ Name** · Done · 51s"
+    word = head.split("**")[-1].strip(" ·").split(" · ")[0] if "** · " in head else ""
+    cls = {"Done": "ok", "Failed": "bad", "Needs you": "wait", "Check this": "wait"}.get(word, "")
+    badge = esc(" · ".join(x for x in head.split("**")[-1].strip(" ·").split(" · ") if x))
+    summ = (end or {}).get("summary") or (end or {}).get("verdict") or ""
+    icon = {"ok": "ti-circle-check", "bad": "ti-circle-x", "wait": "ti-alert-circle"}.get(cls, "ti-loader")
+    col = {"ok": "success", "bad": "danger", "wait": "warning"}.get(cls, "secondary")
+    h = [CSS, f'<h2 class="sr-only">{esc(name)}: {esc(word)}. {esc(summ)}</h2><div class="rc">',
+         f'<div class="rh"><i class="ti {icon}" style="font-size:20px;color:var(--text-{col})" aria-hidden="true"></i>'
+         f'<span class="rn">{esc(name)}</span><span class="rb {cls}">{badge}</span></div>']
+    if summ:
+        h.append(f'<p class="rs">{esc(summ)}</p>')
+    # kept simple: the summary says what happened; only a step that failed or waits on the user gets a line
+    # (every step stays on the board, one click away)
+    rows = []
+    for x in steps:
+        st = x.get("status")
+        if st not in ("failed", "needs_user"):
+            continue
+        ic, c = ("ti-x", "danger") if st == "failed" else ("ti-hand-stop", "warning")
+        t = x.get("title") or x.get("step") or x.get("type") or ""
+        r = str(x.get("result") or "")
+        rows.append(f'<div><i class="ti {ic}" style="color:var(--text-{c})" aria-hidden="true"></i>{esc(t)}'
+                    + (f' <span style="color:var(--text-secondary)">· {esc(r[:90] + ("…" if len(r) > 90 else ""))}</span>' if r else "")
+                    + "</div>")
+    if rows:
+        h.append('<div class="rl">' + "".join(rows[:5]) + "</div>")
+    # the card's rows (Made, Sent, items, waiting, what went wrong): links become Copy link buttons;
+    # "nothing made" and the check while it runs say nothing the summary doesn't, so they're left out
+    extra = []
+    for line in md_card:
+        m = re.match(r"^\| \*\*(.+?)\*\* \| (.*) \|$", line)
+        if not m or m.group(1) == "Check":
+            continue
+        k, v = m.group(1), m.group(2)
+        if k == "Made" and v.startswith("Nothing"):
+            continue
+        btns = "".join(f'<button onclick="cp(this,\'{esc(u)}\')"><i class="ti ti-copy" aria-hidden="true"></i> '
+                       f'{esc(t)}: Copy link</button>' for t, u in re.findall(r"\[(.+?) ↗\]\((.+?)\)", v))
+        text = re.sub(r"\[(.+?) ↗\]\((.+?)\)", "", v).strip(" ·`")
+        text = re.sub(r"`([^`]*)`", r"\1", text)
+        extra.append(f'<div class="rr"><span>{esc(k)}</span>{esc(text)}{btns}</div>')
+    if extra:
+        h.append('<div class="rl">' + "".join(extra) + "</div>")
+    chk = next((re.match(r"^\| \*\*Check\*\* \| (.*) \|$", x).group(1) for x in md_card
+                if re.match(r"^\| \*\*Check\*\* \|", x)), "")
+    chk = chk if chk.startswith("⚠") else ""   # only a warning earns a line
+    # no View in Builder: the chat's card can't open a page (links, window.open and sendPrompt all go nowhere)
+    if chk:
+        h.append(f'<div class="rf"><span>Check: {esc(chk)}</span></div>')
+    h.append("</div>" + JS)
+    return "".join(h)
+
 def check_line(run):
     _, hdr, _, _, d, name = facts(run)
     reviewed, open_ = check_state(run)
@@ -211,4 +293,9 @@ if __name__ == "__main__":
     if not args:
         print(__doc__)
         sys.exit(1)
-    print(check_line(args[0]) if "--check" in sys.argv else card(args[0]))
+    if "--url" in sys.argv:
+        print(board_url((facts(args[0])[4] or {}).get("id"), args[0]))
+    elif "--widget" in sys.argv:
+        print(widget(args[0]))
+    else:
+        print(check_line(args[0]) if "--check" in sys.argv else card(args[0]))

@@ -9,9 +9,11 @@ SETTLED="$(python3 -I "$HERE/new_workflow.py" settle 2>/dev/null)"   # a new dra
 # a skill still marked "Claude is updating it" (an edit with no checkpoint after it): Claude is done, stop pulsing
 UPD="$(python3 -I "$HERE/skill_history.py" settle-updating 2>/dev/null)"
 case "$UPD" in *'"settled": []'*|'') UPD="" ;; esac
-OUT="$(python3 -I "$HERE/skill_history.py" status 2>/dev/null)"
-case "$OUT$SETTLED" in
-  *'"changed": []'*'"settled": []'*) [ -n "$UPD" ] && python3 -I "$HERE/build_workflows.py" >/dev/null 2>&1 ;;
-  *) python3 -I "$HERE/build_workflows.py" >/dev/null 2>&1 ;;
-esac
+case "$SETTLED" in *'"settled": []'*|'') SETTLED="" ;; esac
+# rebuild the board only when this turn left something for it to show: a pulse cleared above, or a skill, board
+# definition, draft, setting or saved version newer than the last build. Unpublished drafts alone never rebuild:
+# the last build already shows them, and a full build takes half a minute.
+if [ -n "$SETTLED$UPD" ] || python3 -I "$HERE/board_stale.py" >/dev/null 2>&1; then
+  python3 -I "$HERE/build_workflows.py" >/dev/null 2>&1
+fi
 exit 0

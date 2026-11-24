@@ -1,11 +1,11 @@
 {
-  "name": "workflow-manager",
+  "name": "delegate",
   "owner": {
-    "name": "workflow-manager"
+    "name": "delegate"
   },
   "plugins": [
     {
-      "name": "workflow-manager",
+      "name": "delegate",
       "source": "./plugin",
       "description": "Automate your work with workflows Claude runs for you, each step shown on a live dashboard. Comes with a demo that needs no accounts. After installing, send \"delegate dashboard\": your dashboard opens and shows you the demo.",
       "displayName": "Delegate"

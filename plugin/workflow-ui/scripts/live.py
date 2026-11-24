@@ -272,9 +272,52 @@ def builder_url(run, e=None, wf=None):
     return f"{base}/workflow-viewer.html?w={wf}&run={run}"
 
 
-def start(request):
-    """Reuse the open trigger, or write a new trigger trace with its header line. Returns (run ID, created)."""
+def header_request(run):
+    try:
+        with open(trace_path(run), encoding="utf-8") as fh:
+            return str(json.loads(fh.readline() or "{}").get("request") or "")
+    except (OSError, ValueError):
+        return ""
+
+
+def meant_trigger(request):
+    """The trigger id a request means ("delegate run nyt-briefing" and "check the new york times" both: nyt), or ""."""
+    try:
+        import commands
+        c = commands.parse(request) or {}
+        meant = c.get("means") or c.get("trigger") or request
+    except Exception:
+        meant = request
+    e = trigger_of(meant)
+    return (e or {}).get("id") or ""
+
+
+def same_request(run, request):
+    """Whether the dispatcher's call (the user's words, or the trigger's phrase) is the request this trace was made
+    for: the same words, or the same trigger."""
+    if not request or request == "dispatcher request":
+        return True   # the dispatcher called with no words: nothing to tell it apart by
+    if header_request(run) == clean(request):
+        return True
+    try:
+        with open(trace_path(run), encoding="utf-8") as fh:
+            hdr = json.loads(fh.readline() or "{}")
+    except (OSError, ValueError):
+        return False
+    want = meant_trigger(clean(request))
+    return bool(want) and want == (hdr.get("trigger") or meant_trigger(str(hdr.get("request") or "")))
+
+
+def start(request, fresh=False):
+    """Reuse the open trigger, or write a new trigger trace with its header line. Returns (run ID, created).
+    fresh (a request the user just typed): an open request is reused only when it is this same request, started
+    moments ago; another command typed while a run is still going gets a request of its own, so two runs never
+    share a trace or a brief."""
     run = open_run() or recent_open()
+    if run and fresh and header_request(run) != clean(request):
+        run = None
+    if run and not fresh and not same_request(run, request):
+        run = None   # an open or unclaimed trace from another request (another session's, say) is never this one's
     if run:
         write_json(CURRENT, {"run": run, "t": time.time()})
         return run, False
@@ -351,9 +394,59 @@ def note(run, text):
 
 def context(run, created, request=""):
     how = "The hook just created" if created else "This run's trace is already open:"
-    return (f"{how} the dispatcher trigger trace {paths.rel(trace_path(run))} with its header line "
+    head = (f"{how} the dispatcher trigger trace {paths.rel(trace_path(run))} with its header line "
             f"(kind trigger, skip_done as the switch reads now). Use run ID {run}: don't create another trace "
-            f"or rewrite the header. " + try_note(run, request) + rules_note())
+            f"or rewrite the header. " + try_note(run, request))
+    try:   # a plain run of one workflow by its trigger's phrase: a short brief instead of the whole rulebook
+        import run_brief
+        b = run_brief.brief(request, run)
+    except Exception:
+        b = ""
+    if b:
+        bf = os.path.join(paths.LIVE, "briefs", f"{run}.md")
+        if not created and os.path.exists(bf):
+            b = ""   # this request's brief is already written (and a runner may be reading it): never rewrite it
+        try:
+            os.makedirs(os.path.dirname(bf), exist_ok=True)
+            if b:
+                with open(bf, "w", encoding="utf-8") as fh:
+                    fh.write(b + "\n")
+        except OSError:
+            return head + f"Show the board first (RUN-TRACE.md, Start: board {paths.URL}), then:\n" + b
+        m = re.match(r"Plain run of the workflow (.+?) \(trigger", b or "")
+        name = m.group(1) if m else "Your workflow"
+        if not m and os.path.exists(bf):
+            try:
+                with open(bf, encoding="utf-8") as fh:
+                    m2 = re.match(r"Plain run of the workflow (.+?) \(trigger", fh.read())
+                name = m2.group(1) if m2 else name
+            except OSError:
+                pass
+        slug = run.replace('-', '_')
+        # a plain run is one workflow: the board opens on its run page (the Builder follows the steps as the runner
+        # logs them); the chat shows one line while it runs and one card when it ends, no other text, no script call
+        tm = re.search(r"\(trigger `([^`]+)`", b or "")
+        if not tm and os.path.exists(bf):
+            try:
+                with open(bf, encoding="utf-8") as fh:
+                    tm = re.search(r"\(trigger `([^`]+)`", fh.read())
+            except OSError:
+                tm = None
+        url = builder_url(run, e={"id": tm.group(1)}) if tm else paths.URL
+        return (
+            f"Plain run {run}: Delegate's workflow runner does it in a session of its own. The chat shows one line and "
+            f"one card, nothing else. Now, in one message: open the board on this run's page, {url} (front the "
+            f"board's tab in the built-in browser pane with tabs_select and navigate it there; no board tab: "
+            f"preview_start name workflow-ui, then navigate; then mcp__ccd_view__show_pane pane preview), the line "
+            f"\"Running {name}.\" and the runner (Agent tool, description \"{name}\", subagent_type "
+            f"\"delegate:workflow-runner\", prompt exactly: \"Folder: {paths.PROJECT}. Brief: {paths.rel(bf)}.\"). "
+            f"Keep the board on that page while it runs. Don't invoke core-dispatcher or read the brief yourself, "
+            f"whatever a Delegate command note says. When it reports: open each page on its OPEN line in a new board "
+            f"tab (tabs_create, then navigate), so the run page stays, then show its CARD block as the card "
+            f"(show_widget, title \"run_done_{slug}\", loading_messages [\"{name}\"], widget_code exactly the CARD "
+            f"block) and write nothing. No CARD (stopped or failed): say its SAID line only, and invoke core-dispatcher "
+            f"only when the user asks to carry on.")
+    return head + rules_note()
 
 
 def try_note(run, request):
@@ -497,7 +590,7 @@ def main():
                                                          "additionalContext": note}}))
             return
         request = " ".join(prompt.split())[:60]
-        run, created = start(request)
+        run, created = start(request, fresh=True)
         ctx = context(run, created, request) + (" " + note if note else "")
         print(json.dumps({"hookSpecificOutput": {"hookEventName": "UserPromptSubmit",
                                                  "additionalContext": ctx}}))

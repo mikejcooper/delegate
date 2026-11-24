@@ -1,0 +1,22 @@
+{
+ "kind": "workflow",
+ "from_run": "wf-7a4f1e80-a1",
+ "recorded": "2026-11-24T18:50:53Z",
+ "path": "If: a story",
+ "item": {
+  "headline": "What to Know About the Planned Explosion in Middletown, Iowa",
+  "link": "https://www.nytimes.com/2026/11/21/climate/what-to-know-about-the-planned-explosion-in-iowa.html",
+  "summary": "The Army plans to blow up a stockpile of dangerously degrading explosives at a facility in southeastern Iowa on Wednesday morning, Army officials said Tuesday.",
+  "published": "Tue, 24 Nov 2026 18:08:00 +0000",
+  "author": "Quinn Glabicki"
+ },
+ "reads": [
+  {
+   "type": "Written",
+   "result": "Army officials said on Tuesday that they plan to blow up a stockpile of dangerously degrading explosives at a facility in Middletown, in southeastern Iowa, on Wednesday morning.",
+   "status": "done"
+  }
+ ],
+ "writes": [],
+ "systems": {}
+}

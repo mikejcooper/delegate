@@ -120,6 +120,8 @@ def fill(step, cache):
     if not why or why.get("code") or why.get("draft"):   # code and draft steps carry their own rule text
         return
     path = entries.skill_file(why["file"])[1] or os.path.join(SKILLS, why["file"], "SKILL.md")
+    if why.get("ref"):   # a section kept in one of the skill's reference files ("references/one-item.md")
+        path = os.path.join(os.path.dirname(path), why["ref"])
     if path not in cache:
         cache[path] = sections(path)
     secs = cache[path]

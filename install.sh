@@ -20,7 +20,7 @@
 # script sits in, else GITHUB. Safe to run again: what is already installed is kept.
 set -e
 GITHUB="mikejcooper/delegate"   # the public repo
-MARKETPLACE="workflow-manager" # the "name" in .claude-plugin/marketplace.json
+MARKETPLACE="delegate"         # the "name" in .claude-plugin/marketplace.json
 
 YES=""
 NEWFOLDER=""
@@ -43,7 +43,7 @@ if [ -z "$SOURCE" ]; then
   echo "Where is the plugin? Give a folder or owner/repo: sh install.sh <folder or owner/repo>" >&2
   exit 1
 fi
-PLUGIN="workflow-manager@$MARKETPLACE"
+PLUGIN="delegate@$MARKETPLACE"
 FOLDER=$(pwd)
 
 # The install message the user sends, as they'd type it (~ for the home folder)
@@ -125,7 +125,7 @@ fi
 
 # 1. The folder, confirmed before anything is installed. It works best in a folder of its own: it keeps its
 #    settings, runs and history there, and a folder with other work in it mixes the two.
-if [ -f "$FOLDER/.workflow-manager-data/system/version.json" ] || grep -qs "workflow-manager@" "$FOLDER/.claude/settings.json"; then
+if [ -f "$FOLDER/.workflow-manager-data/system/version.json" ] || grep -qsE "(delegate|workflow-manager)@" "$FOLDER/.claude/settings.json"; then
   INSTALLED=1
 else
   INSTALLED=""

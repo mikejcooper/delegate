@@ -19,7 +19,7 @@ Run <path to this repo>/install.sh
 3. Claude asks, on a card to click, to pin this chat and name it "🔀 Delegate Dashboard".
 4. Send `delegate dashboard`, in the same chat. The dashboard opens with a demo to run (`check the new york times`).
 
-From then on it loads in every chat in that folder; `/workflow-manager:start` shows the welcome again.
+From then on it loads in every chat in that folder; `/delegate:start` shows the welcome again.
 In a terminal, `sh install.sh` asks the same questions, installs it and says how to start Claude there
 (`claude "delegate dashboard"`).
 

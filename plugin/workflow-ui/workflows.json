@@ -335,6 +335,7 @@
         "why": {
           "file": "core-dispatcher",
           "label": "Rerun a workflow",
+          "ref": "references/one-item.md",
           "sum": "A rerun is a new attempt of the same run, never a new workflow.",
           "parts": [
             {

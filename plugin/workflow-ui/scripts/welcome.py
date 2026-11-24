@@ -10,7 +10,7 @@
                          and name it "🔀 Delegate Dashboard", then says to send "delegate dashboard" (in a terminal:
                          `claude "delegate dashboard"`)
     welcome.py open      "/dashboard", "delegate dashboard" (the prompt hook): the board, up to date and open.
-    welcome.py prompt    the prompt hook (JSON on stdin): "/workflow-manager:start" gives the welcome again and opens
+    welcome.py prompt    the prompt hook (JSON on stdin): "/delegate:start" gives the welcome again and opens
                          the board; "/dashboard", "delegate dashboard" open the board; anything else, nothing
     welcome.py is-dashboard   reads the prompt hook's JSON on stdin: exit 0 when the request is only to see the board
 
@@ -146,15 +146,15 @@ def open_board():
 
 
 ASKS = __import__("re").compile(
-    r"^\s*(/(workflow-manager:)?dashboard|dashboard|board|delegate(\s+(open\s+)?(the\s+)?dashboard)?"
+    r"^\s*(/(delegate:|workflow-manager:)?dashboard|dashboard|board|delegate(\s+(open\s+)?(the\s+)?dashboard)?"
     r"|(open|show|see|view)( me)?( the| my)? (delegate |workflow manager |workflow )?(dashboard|board))\s*[.!?]*\s*$", 2)
 
 
-START = __import__("re").compile(r"^\s*(/(workflow-manager:)?start|start (delegate|the workflow manager)|delegate start\.?)\s*$", 2)
+START = __import__("re").compile(r"^\s*(/(delegate:|workflow-manager:)?start|start (delegate|the workflow manager)|delegate start\.?)\s*$", 2)
 
 
 def on_prompt():
-    """The prompt hook: "/workflow-manager:start" gives the welcome again and opens the board; "/dashboard" and
+    """The prompt hook: "/delegate:start" gives the welcome again and opens the board; "/dashboard" and
     plain "delegate dashboard" open the board. Anything else: nothing."""
     try:
         prompt = (json.load(sys.stdin).get("prompt") or "").strip()
