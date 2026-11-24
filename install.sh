@@ -1,5 +1,5 @@
 #!/bin/sh
-# Install the workflow-manager plugin into the current folder.
+# Install the Delegate plugin into the current folder.
 #
 # In the Claude app, open a session on the folder you want it in and send:
 #     Run <path to this repo>/install.sh
@@ -208,7 +208,12 @@ if [ ! -d "$SOURCE" ] && command -v git >/dev/null 2>&1; then
       echo "$CLONE is a clone of $HAVE, not $URL. Move it away, or set WM_CLONE to another folder, and run this again." >&2
       exit 1
     fi
-    echo "Using the clone already at $CLONE (it keeps itself up to date)"
+    # an older install's clone may be several releases behind: bring it up to date now, not on the plugin's first run
+    if GIT_TERMINAL_PROMPT=0 git -C "$CLONE" pull --ff-only --quiet 2>/dev/null; then
+      echo "Using the clone already at $CLONE, brought up to date"
+    else
+      echo "Using the clone already at $CLONE (couldn't update it now; the plugin updates it itself)"
+    fi
   else
     mkdir -p "$(dirname "$CLONE")"
     if ! GIT_TERMINAL_PROMPT=0 git clone --quiet "$URL" "$CLONE"; then
@@ -217,6 +222,31 @@ if [ ! -d "$SOURCE" ] && command -v git >/dev/null 2>&1; then
     fi
   fi
   SOURCE=$CLONE
+fi
+# A marketplace name is one per computer. If "$MARKETPLACE" already points at another folder (another copy of
+# Delegate, such as a developer's checkout), adding this one fails quietly and the install would turn on that other
+# copy: stop and say so instead.
+if [ -d "$SOURCE" ]; then
+  TAKEN=$(claude plugin marketplace list --json 2>/dev/null | WM_NAME="$MARKETPLACE" WM_SOURCE="$SOURCE" python3 -I -c '
+import json, os, sys
+try:
+    items = json.load(sys.stdin)
+except ValueError:
+    items = []
+for m in items:
+    if isinstance(m, dict) and m.get("name") == os.environ["WM_NAME"]:
+        where = m.get("path") or m.get("repo") or m.get("url") or ""
+        if not m.get("path") or os.path.realpath(where) != os.path.realpath(os.environ["WM_SOURCE"]):
+            print(where)
+')
+  if [ -n "$TAKEN" ]; then
+    echo "Nothing installed. On this computer the name \"$MARKETPLACE\" already belongs to another copy of Delegate:" >&2
+    echo "  $TAKEN" >&2
+    echo "Installing now would turn on that copy, not $SOURCE." >&2
+    echo "To use $SOURCE instead, run: claude plugin marketplace remove $MARKETPLACE" >&2
+    echo "then run this install again. Other folders that used that copy will then use this one." >&2
+    exit 1
+  fi
 fi
 claude plugin marketplace add "$SOURCE" --scope project >/dev/null 2>&1 || true
 claude plugin install "$PLUGIN" --scope project >/dev/null 2>&1 || true
