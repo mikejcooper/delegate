@@ -5,10 +5,10 @@ For a plugin loaded in place from a clone of its public repo (a local folder mar
 installed from a marketplace's cache is Claude Code's to update (reload_check.py tells the user when it has), and
 the plugin's own source repo (paths.SOURCE) is never pulled.
 
-On a message, at most every CHECK_EVERY (the prompt hook starts it in the background, so it never slows a message):
+On a message, at most every CHECK_EVERY (an hour) (the prompt hook starts it in the background, so it never slows a message):
   1. The check, over HTTPS: `git ls-remote` of the public repo (the clone's remote, as an https:// address even when
      the clone was made over SSH) lists its release tags and branch tips, a few hundred bytes, no sign-in. The
-     newest release tag (workflow-manager--v<version>, as `claude plugin tag` makes them) is the version on offer;
+     newest release tag (delegate--v<version>, or workflow-manager--v<version> from before the rename) is the version on offer;
      a repo with no tags offers the tracked branch's tip, whose plugin.json is read over HTTPS from
      raw.githubusercontent.com (other hosts: fetched first). Nothing newer: done, nothing fetched.
   2. Newer: git fetch that tag (or branch) over the same HTTPS address. No password prompt: a fetch that needs one
@@ -39,9 +39,11 @@ sys.path.insert(0, HERE)
 import paths  # noqa: E402
 import reload_check  # noqa: E402
 
-CHECK_EVERY = 6 * 3600
+CHECK_EVERY = 3600              # the check is one git ls-remote, a few hundred bytes
 RETRY_SKIPPED = 15 * 60          # a skipped update (a run open, a test) is tried again this soon
-TAG_PREFIX = "workflow-manager--v"
+# release tags: delegate--v<version> since the rename (0.15.0), workflow-manager--v<version> before it. Both count, so
+# a clone moves on whichever name its newest release has.
+TAG_PREFIXES = ("delegate--v", "workflow-manager--v")
 STATE = paths.UPDATE
 LOG = os.path.join(paths.SYSTEM, "updates.log")
 GIT_ENV = dict(os.environ, GIT_TERMINAL_PROMPT="0", GIT_ASKPASS="true",
@@ -134,7 +136,7 @@ def raw_version(url, sha, rel):
 
 def offered(refs, branch):
     """(ref, version or None, sha) on offer: the newest release tag, else the tracked branch's tip; or None."""
-    tags = [(ver(r[len("refs/tags/" + TAG_PREFIX):]), r) for r in refs if r.startswith("refs/tags/" + TAG_PREFIX)]
+    tags = [(ver(r[len("refs/tags/" + p):]), r) for r in refs for p in TAG_PREFIXES if r.startswith("refs/tags/" + p)]
     tags = [(v, r) for v, r in tags if v]
     if tags:
         v, r = max(tags)

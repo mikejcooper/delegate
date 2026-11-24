@@ -7,7 +7,7 @@ Two setups:
   source       the plugin's source repo: the plugin sits in a folder of the project (skills-test/plugin/) and the
                project uses it like any install (its own skills in .claude/skills/, its data in
                .workflow-manager-data/), except that the plugin's own files may be changed here. Port 8765.
-  plugin       installed as the workflow-manager plugin (code in the plugin cache or a marketplace folder,
+  plugin       installed as the delegate plugin (workflow-manager before 0.15.0) (code in the plugin cache or a marketplace folder,
                replaced on every update). The project's own .workflow-manager-data/ folder holds:
                  config/    YOURS: settings.json (your switches) and board/<skill>.json (how your skills
                             show on the board). The only part to edit, review or commit.

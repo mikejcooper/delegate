@@ -121,9 +121,9 @@ and send the fixed version back. A share never carries a sign-in, key or token, 
 
 - **Installed with the install script from GitHub** (the usual way): the script clones this repo once per
   computer, to `~/.workflow-manager/workflow-manager` (set `WM_CLONE` to choose another folder), and Claude Code
-  runs the plugin from that clone. The plugin keeps it current itself: on a message, at most every 6 hours, it
-  checks this repo over HTTPS and fast-forwards to the newest release tag (`workflow-manager--v<version>`, made by
-  `claude plugin tag`), or the branch tip when there are no tags. The new release, its migrations included, runs
+  runs the plugin from that clone. The plugin keeps it current itself: on a message, at most every hour, it
+  checks this repo over HTTPS and fast-forwards to the newest release tag (`delegate--v<version>`, made by
+  `claude plugin tag`; `workflow-manager--v<version>` before the rename), or the branch tip when there are no tags. The new release, its migrations included, runs
   from the next message, in every folder that uses the clone. It waits while a run or test is open, and skips
   (saying why on the dashboard) when the clone has changes or commits of its own. Turn it off with
   `"auto_update": false` in `.workflow-manager-data/config/settings.json`.
@@ -133,8 +133,9 @@ and send the fixed version back. A share never carries a sign-in, key or token, 
 - **Installed from a marketplace's copy** (`claude plugin install`, or the install script without git): Claude Code
   updates it (turn on auto-update in `/plugin` → Marketplaces). Each version sits in its own folder, so an open
   chat keeps the old one until `/reload-plugins`; the dashboard says so.
-- **One clone per computer:** Claude Code knows a marketplace by its name (`workflow-manager`), so every folder on
-  the computer uses the same one. Keep the clone outside the folders you use it in: a plugin inside its own working
+- **One clone per computer:** Claude Code knows a marketplace by its name (`delegate`), so every folder on
+  the computer uses the same one. If that name already points at another copy (a developer's checkout), the
+  install script stops and says how to switch. Keep the clone outside the folders you use it in: a plugin inside its own working
   folder counts as the plugin's source and never updates itself.
 - **Releasing:** bump `version` in `plugin/.claude-plugin/plugin.json` and `WM_HOOKS_VERSION` in
   `plugin/hooks/hooks.json` to the same value (`plugin/workflow-ui/tests/test_reload_check.py` checks they match),

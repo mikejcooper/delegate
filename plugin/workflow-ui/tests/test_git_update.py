@@ -172,7 +172,7 @@ def main():
         fh.write(text.replace("description: ", "description: (Changed.) ", 1))
     git(dev, "commit", "-qam", "a skill's description")
     set_version(dev, "0.96.0")
-    git(dev, "tag", "workflow-manager--v0.96.0")
+    git(dev, "tag", "delegate--v0.96.0")   # the new tag name after an old-named one
     git(dev, "push", "-q", "--tags", "origin", "main")
     run("--now")
     r, out = prompt("0.95.0")

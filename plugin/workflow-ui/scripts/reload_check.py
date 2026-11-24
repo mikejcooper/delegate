@@ -4,7 +4,7 @@ type /reload-plugins.
 
 Two ways an update lands while a session is open:
   cached     installed from a marketplace: Claude Code puts each version in its own folder
-             (<plugins>/cache/<marketplace>/workflow-manager/<version>/) and records it in
+             (<plugins>/cache/<marketplace>/delegate/<version>/) and records it in
              <plugins>/installed_plugins.json. The session's hooks keep running from the old folder, so the
              release's new code and migrations don't run until /reload-plugins.
   in place   loaded from a git clone (a local folder marketplace, or --plugin-dir), kept current by git_update.py.
@@ -122,7 +122,7 @@ def check(project=paths.PROJECT, root=paths.ROOT, started=None):
     return {"needed": bool(changed), "running": run, "installed": disk, **({"changed": changed} if changed else {})}
 
 
-TAG = "workflow-manager--v"
+TAGS = ("delegate--v", "workflow-manager--v")   # release tags since the rename (0.15.0), and before it
 
 
 def _git(repo, *args):
@@ -154,8 +154,9 @@ def startup_changed(root, since):
     top = (_git(root, "rev-parse", "--show-toplevel") or "").strip()
     if not top:
         return []
-    ref = f"refs/tags/{TAG}{since}"
-    if _git(top, "rev-parse", "--verify", "--quiet", ref) is None:
+    ref = next((r for r in (f"refs/tags/{t}{since}" for t in TAGS)
+                if _git(top, "rev-parse", "--verify", "--quiet", r) is not None), None)
+    if ref is None:
         return []
     rel = os.path.relpath(os.path.realpath(root), os.path.realpath(top))
     pre = "" if rel == "." else rel + "/"
