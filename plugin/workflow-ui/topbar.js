@@ -18,6 +18,7 @@ var CSS=
 ':root[data-theme=dark] .tb,:root[data-theme=dark] .tb-act{--tb-bg:#262624;--tb-ink:#f1efe8;--tb-mut:#b4b2a9;--tb-line:#3d3d3a;--tb-soft:#2c2c29;--tb-seg:#1c1c1a;--tb-on:#3a3a37;--tb-blue:#7d9ef0;--tb-bluebg:#22304f;--tb-blueline:#3b5590;--tb-green:#3ccf7a;--tb-off:#6b6b66}'+
 '.tb a{text-decoration:none;color:inherit}'+
 '.tb-brand{display:inline-flex;align-items:center;gap:9px;font-size:14px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;flex:none}'+
+'.tb-ver{font-size:11px;font-weight:500;color:var(--tb-mut);letter-spacing:0;font-variant-numeric:tabular-nums}'+
 '.tb-div{width:1px;height:20px;background:var(--tb-line);flex:none}'+
 '.tb-logo{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:8px;background:var(--tb-seg);color:var(--tb-ink)}'+
 '.tb-seg{display:inline-flex;gap:2px;padding:3px;border-radius:9px;background:var(--tb-seg)}'+
@@ -69,7 +70,7 @@ var CSS=
 '@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .tb-rl{background:#3a2f14;color:#f5d98e;border-bottom-color:#6b5420}:root:not([data-theme=light]) .tb-rl button{background:#262624;color:#f5d98e;border-color:#8a6d2a}:root:not([data-theme=light]) .tb-rl code{background:rgba(245,217,142,.12)}}'+
 ':root[data-theme=dark] .tb-rl{background:#3a2f14;color:#f5d98e;border-bottom-color:#6b5420}:root[data-theme=dark] .tb-rl button{background:#262624;color:#f5d98e;border-color:#8a6d2a}:root[data-theme=dark] .tb-rl code{background:rgba(245,217,142,.12)}'+
 '@media (max-width:640px){.tb-rl{padding:8px 12px}}'+
-'@media (max-width:640px){.tb{padding:0 12px;gap:10px}.tb-name,.tb-div{display:none}.tb-seg a{padding:0 10px}}'+
+'@media (max-width:640px){.tb{padding:0 12px;gap:10px}.tb-name,.tb-ver,.tb-div{display:none}.tb-seg a{padding:0 10px}}'+
 '@media (max-width:480px){.tb-lbl{display:none}.tb-main{padding:0 10px}.tb-seg a{padding:0 8px;gap:4px}}';
 
 function svg(p,s){return'<svg width="'+(s||14)+'" height="'+(s||14)+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+p+"</svg>"}
@@ -99,12 +100,12 @@ var el,page,open=false,SIG="";
 function ago(t){var s=Math.max(0,Math.round(Date.now()/1000-t));return s<60?s+" s ago":s<3600?Math.round(s/60)+" min ago":Math.round(s/3600)+" h ago"}
 function render(){
   if(!el)return;var B=window.BOARD,L=liveReq(B),last=page==="inbox"?"run":"add", /* the face follows the page: Run triggers on the Inbox, Add a workflow on the Builder */fresh=!!B&&Date.now()/1000-B.built<15,pg=progress(L||{});
-  var sig=[!!L,pg,last,open,fresh,badBuild(),B?Math.floor((Date.now()/1000-B.built)/60):-1].join("|");if(sig===SIG)return;SIG=sig;
+  var sig=[B&&B.version,!!L,pg,last,open,fresh,badBuild(),B?Math.floor((Date.now()/1000-B.built)/60):-1].join("|");if(sig===SIG)return;SIG=sig;
   var a=ACTS[last];
   var main=L?'<button class="tb-main" type="button" data-tb="panel" title="Pulling in'+(pg?" · "+esc(pg.replace("/"," of "))+" triggers":"")+'. Open the Run workflows panel"><span class="tb-pulse" aria-hidden="true"></span>Running'+(pg?" "+esc(pg):"…")+"</button>"
     :'<button class="tb-main" type="button" data-tb="'+last+'" aria-label="'+esc(a.t)+'">'+svg(IC[a.i])+'<span class="tb-lbl">'+esc(a.t)+"</span></button>";
   var menu=open?'<div class="tb-menu" role="menu">'+["run","add"].map(function(k){var x=ACTS[k];return'<button type="button" role="menuitem" data-tb="'+k+'">'+svg(IC[x.i],15)+"<span><b>"+esc(x.t)+"</b><small>"+esc(x.d)+"</small></span>"+""+"</button>"}).join("")+"</div>":"";
-  el.innerHTML='<a class="tb-brand" href="workflows.html"><span class="tb-logo">'+svg(IC.logo,16)+'</span><span class="tb-name">Workflow manager</span></a><span class="tb-div" aria-hidden="true"></span>'+
+  el.innerHTML='<a class="tb-brand" href="workflows.html"><span class="tb-logo">'+svg(IC.logo,16)+'</span><span class="tb-name">Workflow manager</span>'+(B&&B.version?'<span class="tb-ver" title="Workflow manager version">v'+esc(B.version)+"</span>":"")+'</a><span class="tb-div" aria-hidden="true"></span>'+
     '<div class="tb-seg" role="navigation" aria-label="Board pages"><a href="workflows.html"'+(page==="inbox"?' aria-current="page"':"")+">"+svg(IC.inbox)+'Inbox</a><a href="workflow-viewer.html"'+(page==="library"?' aria-current="page"':"")+">"+svg(IC.lib)+"Builder</a></div>"+
     '<div class="tb-r"><span class="tb-dot'+(badBuild()?" bad":fresh?" on":"")+'" role="img" aria-label="'+(badBuild()?"Board not updating":fresh?"Live":"Not live")+'" title="'+(badBuild()?"The board couldn't update: see the red line":B?(fresh?"Live":"Not live")+" · updated "+ago(B.built):"Loading…")+'"></span>'+
     '<span class="tb-split'+(L?" run":"")+'">'+main+'<button class="tb-more" type="button" data-tb="menu" aria-haspopup="menu" aria-expanded="'+open+'" aria-label="More actions">'+svg(IC.chev,13)+"</button></span>"+menu+"</div>"}

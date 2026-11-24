@@ -252,6 +252,15 @@ def load_pages():
     return sorted(out, key=lambda x: -x["t"])
 
 
+def plugin_version():
+    """The plugin's version on disk, shown small beside its name in the top bar."""
+    try:
+        with open(os.path.join(paths.ROOT, ".claude-plugin", "plugin.json"), encoding="utf-8") as fh:
+            return json.load(fh).get("version") or ""
+    except (OSError, ValueError):
+        return ""
+
+
 def _build():
     now = time.time()
     open_id = open_run()
@@ -273,7 +282,7 @@ def _build():
         if r.get("kind") == "run" and r["id"] in via:
             r["via"] = via[r["id"]]
     runs.sort(key=lambda r: -(r["last"] or 0))
-    data = {"built": now, "entries": load_entries(), "runs": runs,
+    data = {"built": now, "version": plugin_version(), "entries": load_entries(), "runs": runs,
             "settings": load_settings(), "ledger": load_ledger(), "views_file": paths.rel(paths.VIEWS),
             "suggestions": load_suggestions(), "demo": load_demo(), "pages": load_pages()}
     tmp = OUT + ".tmp"
