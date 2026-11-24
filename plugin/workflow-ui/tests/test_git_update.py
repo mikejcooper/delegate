@@ -142,6 +142,7 @@ def main():
 
     git(dev, "tag", "workflow-manager--v0.95.0")
     git(dev, "push", "-q", "--tags")
+    os.makedirs(os.path.join(project, ".workflow-manager-data", "config"), exist_ok=True)
     with open(os.path.join(project, ".workflow-manager-data", "config", "settings.json"), "w") as fh:
         json.dump({"auto_update": False}, fh)
     before = run().get("checked")

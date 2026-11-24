@@ -217,6 +217,8 @@ def main():
               "## Definition" in ttext and "id: guardian" in ttext and "## Entry" not in ttext and "## Trigger\n" not in ttext, ttext)
         check("skill folder backed up before the rename", any(x.startswith("user-skills-") for x in backups()), backups())
         check("original backed up first", any(x.startswith("user-") for x in backups()), backups())
+        check("one backup folder for the whole yes, not one per file",
+              len([x for x in backups() if x.startswith("user-files-")]) == 1, backups())
         rc, out, err = run(plugin, project, "--check")
         check("nothing behind afterwards", "user_files_behind" not in out)
 
@@ -227,6 +229,25 @@ def main():
         rc, out, err = run(plugin, project)
         check("warns", "newer than the plugin" in out, out[:120])
         check("leaves everything alone", version() == "999.0.0" and (backups(), len(log_lines())) == before)
+
+        print("\n7. A brand-new folder (welcomed before its first check)")
+        new = os.path.join(tmp, "new-project")
+        write(os.path.join(new, ".workflow-manager-data", "system", "welcomed.json"), "{}")
+        write(os.path.join(new, ".workflow-manager-data", "system", "board", "board-data.js"), "window.BOARD={};")
+        os.makedirs(os.path.join(new, ".workflow-manager-data", "history", "runs"))
+        write(os.path.join(new, ".workflow-manager-data", "history", "versions-cache.json"), "{}")   # the welcome's board build
+        os.makedirs(os.path.join(new, ".claude"))
+        rc, out, err = run(plugin, new)
+        nsys = os.path.join(new, ".workflow-manager-data", "system")
+        check("stamped with the plugin's version straight away", (read_json(os.path.join(nsys, "version.json")) or {}).get("data_version") == LAST,
+              out.strip()[:120])
+        check("no migration ran: no backups, no log", not os.path.exists(os.path.join(nsys, "backups"))
+              and not os.path.exists(os.path.join(nsys, "migrations.log")), sorted(os.listdir(nsys)))
+        check("no old .dispatcher/ folder made", not os.path.exists(os.path.join(new, ".dispatcher")))
+        write(os.path.join(new, ".workflow-manager-data", "history", "runs", "x.jsonl"), "{}\n")
+        os.remove(os.path.join(nsys, "version.json"))
+        rc, out, err = run(plugin, new, "--check")
+        check("a folder with history but no stamp still counts as old (0.3.1)", '"data_version": "0.3.1"' in out, out[:160])
 
         failed = [r for r in RESULTS if not r[1]]
         print(f"\n{len(RESULTS) - len(failed)}/{len(RESULTS)} passed" + (f"; temp folder kept: {tmp}" if keep else ""))

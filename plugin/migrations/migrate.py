@@ -87,9 +87,40 @@ def data_version():
                 return json.load(fh)["data_version"]
         except (OSError, ValueError, KeyError):
             continue
-    has_data = any(os.path.isdir(r) and any(n not in ("board", "config") for n in os.listdir(r))
-                   for r in (paths.LEGACY, paths.LEGACY_08, paths.HOME) if r)
+    has_data = any(_has_data(r) for r in (paths.LEGACY, paths.LEGACY_08, paths.HOME) if r)
     return BASELINE if has_data else None
+
+
+# What a brand-new folder may already hold in system/ before its first check: the welcome (welcome.py, run at
+# SessionStart and by install.sh, before the prompt hook's first check), the offer note and the board's generated
+# files. A folder with only these is new, not one "made before migrations existed".
+FRESH_SYSTEM = {"welcomed.json", "offer.json", "board"}
+
+
+def _has_data(root):
+    """Whether root holds data from before version stamps. The old folders: anything but board/ and config/.
+    .workflow-manager-data/: run history (a request, a run or the done list, what the old steps work on), or
+    anything in system/ beyond FRESH_SYSTEM. Caches the board writes in history/ before the first check
+    (versions-cache.json) and config/ (the user's own) never count."""
+    if not os.path.isdir(root):
+        return False
+    names = os.listdir(root)
+    if os.path.realpath(root) != os.path.realpath(paths.HOME or ""):
+        return any(n not in ("board", "config") for n in names)
+    for n in names:
+        p = os.path.join(root, n)
+        if n == "config":
+            continue
+        if n == "system":
+            if any(x not in FRESH_SYSTEM for x in os.listdir(p)):
+                return True
+        elif n == "history":
+            if os.path.isfile(os.path.join(p, "done-list.jsonl")) or any(
+                    files for d in ("requests", "runs") for _, _, files in os.walk(os.path.join(p, d))):
+                return True
+        elif not n.startswith("."):
+            return True
+    return False
 
 
 def set_data_version(v):
@@ -452,16 +483,22 @@ def main():
         set_data_version(want)  # releases with no migration folder just move the stamp on
 
     # 2. the user's own files: listed, rewritten only on --apply-user
-    behind = []
+    behind, todo_user = [], []
     for path, home, obj, fver in user_files():
         todo = steps_between(fver, want)
         mods = [(s, load(s, "user")) for s in todo]
         mods = [(s, m) for s, m in mods if m]
         if not mods:
             continue
-        rel = paths.rel(path)
         if apply_user and not check:
-            where = backup_user([path], fver)
+            todo_user.append((path, home, obj, fver, mods))
+        else:
+            behind.append({"file": paths.rel(path), "is": fver, "steps": [s for s, _ in mods],
+                           **({"moves_to": paths.rel(home)} if path != home else {})})
+    if todo_user:   # one backup of every file this yes changes, then each file walked through its steps
+        where = backup_user([t[0] for t in todo_user], "files")
+        for path, home, obj, fver, mods in todo_user:
+            rel = paths.rel(path)
             for s, m in mods:
                 obj = m.upgrade(obj)
                 obj["data_version"] = s
@@ -475,9 +512,6 @@ def main():
             moved = f", moved to {paths.rel(home)}" if path != home else ""
             log(f"user file {rel}: {fver} -> {obj['data_version']}{moved} (backup {os.path.relpath(where, paths.SYSTEM)})")
             report.setdefault("user_updated", []).append(rel + (f" -> {paths.rel(home)}" if path != home else ""))
-        else:
-            behind.append({"file": rel, "is": fver, "steps": [s for s, _ in mods],
-                           **({"moves_to": paths.rel(home)} if path != home else {})})
     if behind:
         report["user_files_behind"] = behind
     todo = skills_to_rename()
