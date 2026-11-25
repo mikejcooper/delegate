@@ -48,9 +48,6 @@ fi
 PLUGIN="delegate@$MARKETPLACE"
 FOLDER=$(pwd)
 
-# The install message the user sends, as they'd type it (~ for the home folder)
-if [ -f "$here/install.sh" ]; then MSG="Run $(printf '%s' "$here/install.sh" | sed "s|^$HOME|~|")"
-else MSG="the same install message"; fi
 DOCS="https://code.claude.com/docs/en/desktop#start-a-session"
 
 # 0. What it needs, checked before anything is asked or installed, so a missing piece is named up front instead of
@@ -91,9 +88,10 @@ fi
 
 # --new-folder [--in=<folder>]: the user chose a folder of its own, made inside the folder they picked (their home
 # folder when none is given): "Delegate", or "… 2", "… 3" when that is taken and not empty. Nothing is installed
-# here. In the Claude app, Claude moves this same chat into the new folder (the app's change_directory tool; the
-# user approves that one folder) and installs there in the same turn, so there is no second chat to start. Without
-# that tool, or when the user declines the move, it falls back to how to start a chat in the folder by hand.
+# here: it tells Claude to install in the new folder from this chat, then move this same chat into it (the app's
+# change_directory tool; the user approves that one folder), so there is no second chat to start. When the chat
+# can't move (a worktree chat, a declined move), Claude starts a chat there that opens the dashboard; only without
+# either tool does it fall back to how to start a chat there by hand.
 if [ -n "$NEWFOLDER" ]; then
   WHERE=${WHERE:-$HOME}
   case "$WHERE" in "~") WHERE=$HOME ;; "~/"*) WHERE="$HOME/${WHERE#\~/}" ;; esac
@@ -112,23 +110,31 @@ if [ -n "$NEWFOLDER" ]; then
   else THERE="cd \"$NEW\" && curl -fsSL https://github.com/$GITHUB/raw/main/install.sh | sh -s -- --yes$GIVEN"; fi
   echo "Made the folder $NEW (empty). Nothing installed yet. Say nothing to the user until the end of these steps."
   echo
-  echo "1. If you have the tool mcp__ccd_directory__change_directory (load it with ToolSearch if it is listed as"
-  echo "   deferred), call it with path \"$NEW\". It moves this chat into the new folder; the user approves it."
-  echo "2. If that worked, run: $THERE"
-  echo "   and do what it says. The chat is in $NAME from the next message on, so the user stays in this chat."
-  echo "3. If you don't have that tool, or the move was declined or failed, install nothing: your whole reply to the"
-  echo "   user is the block below, word for word (it is markdown), with nothing before or after it:"
+  echo "1. Install there now, from this chat: $THERE"
+  echo "   If it fails, tell the user what it said and stop."
+  echo "2. Move this chat into it: if you have the tool mcp__ccd_directory__change_directory (load it with ToolSearch"
+  echo "   if it is listed as deferred), call it with path \"$NEW\"; the user approves it. If it worked, your reply is"
+  echo "   what step 1's install said to reply: the chat is in $NAME from the next message on. Done."
+  echo "3. If the chat can't move (no such tool, the move was declined or refused, or this chat is in a git worktree"
+  echo "   or holds other work that shouldn't leave its folder), start a chat there for the user instead: if you have"
+  echo "   mcp__ccd_session__start_session, call it with initiation \"user_asked\", context \"fresh\", cwd \"$NEW\","
+  echo "   use_worktree false, title \"🔀 Delegate Dashboard\", prompt \"delegate dashboard\" and background \"The user"
+  echo "   just installed Delegate in this folder from another chat; this chat opens its dashboard.\" Your whole reply"
+  echo "   is then one line: Delegate is installed in $NAME. Open [🔀 Delegate Dashboard](#<its local_ session id>)"
+  echo "   to see the dashboard; it's the chat to use from now on."
+  echo "4. Only if neither tool is there, your whole reply to the user is the block below, word for word (it is"
+  echo "   markdown), with nothing before or after it:"
   echo
   echo "## Your new folder is ready: **$NAME**"
   echo
-  echo "Start a chat in it, and install there:"
+  echo "Delegate is installed in it. Start a chat there to use it:"
   echo
   echo "1. Press **⌘N** (or click **+ New** at the top of the sidebar)."
   echo "2. Under the message box, click the **folder** button and choose **$NAME** (in $IN)."
   echo "3. In that new chat, send:"
   echo
   echo '```'
-  echo "$MSG"
+  echo "delegate dashboard"
   echo '```'
   echo
   echo "[How to pick a folder for a chat]($DOCS)"
