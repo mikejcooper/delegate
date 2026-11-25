@@ -10,6 +10,8 @@
 #   1. Without --yes it installs nothing: it says which folder it would install into, so Claude can ask the user
 #      first ("Install Delegate in <folder>?"). On their yes Claude runs it again with --yes. In a
 #      terminal it asks the question itself.
+#      A folder with other things in it gets the choice of a new folder instead: the script makes it, and in the
+#      Claude app Claude moves this same chat into it and installs there, so there is no second chat to start.
 #   2. It installs the plugin into that folder (project scope). From GitHub it first clones the repo, once per
 #      computer, to ~/.delegate/delegate (WM_CLONE to change it; ~/.workflow-manager/workflow-manager before 0.16.0); the plugin runs from that clone
 #      and keeps it up to date itself.
@@ -88,8 +90,10 @@ if [ -n "$MISSING" ]; then
 fi
 
 # --new-folder [--in=<folder>]: the user chose a folder of its own, made inside the folder they picked (their home
-# folder when none is given): "Delegate", or "… 2", "… 3" when that is taken and not empty. Then it says how
-# to start a chat in it. Nothing is installed here.
+# folder when none is given): "Delegate", or "… 2", "… 3" when that is taken and not empty. Nothing is installed
+# here. In the Claude app, Claude moves this same chat into the new folder (the app's change_directory tool; the
+# user approves that one folder) and installs there in the same turn, so there is no second chat to start. Without
+# that tool, or when the user declines the move, it falls back to how to start a chat in the folder by hand.
 if [ -n "$NEWFOLDER" ]; then
   WHERE=${WHERE:-$HOME}
   case "$WHERE" in "~") WHERE=$HOME ;; "~/"*) WHERE="$HOME/${WHERE#\~/}" ;; esac
@@ -104,8 +108,16 @@ if [ -n "$NEWFOLDER" ]; then
   mkdir -p "$NEW"
   NAME=$(basename "$NEW")
   IN=$(printf '%s' "$WHERE" | sed "s|^$HOME\$|your home folder|; s|^$HOME/|~/|")
-  echo "Made the folder $NEW (empty). Nothing installed. Your whole reply to the user is the block below, word for"
-  echo "word (it is markdown), with nothing before or after it:"
+  if [ -f "$here/install.sh" ]; then THERE="cd \"$NEW\" && sh \"$here/install.sh\" --yes$GIVEN"
+  else THERE="cd \"$NEW\" && curl -fsSL https://github.com/$GITHUB/raw/main/install.sh | sh -s -- --yes$GIVEN"; fi
+  echo "Made the folder $NEW (empty). Nothing installed yet. Say nothing to the user until the end of these steps."
+  echo
+  echo "1. If you have the tool mcp__ccd_directory__change_directory (load it with ToolSearch if it is listed as"
+  echo "   deferred), call it with path \"$NEW\". It moves this chat into the new folder; the user approves it."
+  echo "2. If that worked, run: $THERE"
+  echo "   and do what it says. The chat is in $NAME from the next message on, so the user stays in this chat."
+  echo "3. If you don't have that tool, or the move was declined or failed, install nothing: your whole reply to the"
+  echo "   user is the block below, word for word (it is markdown), with nothing before or after it:"
   echo
   echo "## Your new folder is ready: **$NAME**"
   echo
@@ -174,7 +186,7 @@ if [ -z "$YES" ]; then
     echo "Say nothing else; ask with the AskUserQuestion tool (cards the user clicks, never a question in your text)."
     echo "Card 1: question \"This folder already has other things in it ($SOME). Delegate works best in"
     echo "a folder of its own. Make a new one?\", header \"Folder\", options \"Make a new folder (Recommended)\""
-    echo "(\"Pick where, and it makes an empty Delegate folder there\") and \"Install here anyway\" (\"Puts it"
+    echo "(\"Pick where, and it makes an empty Delegate folder there and moves this chat into it\") and \"Install here anyway\" (\"Puts it"
     echo "in this folder, alongside what's already here\")."
     echo "On Install here anyway, run: $AGAIN."
     echo "On Make a new folder, card 2: question \"Where should the Delegate folder go?\", header \"Where\","
