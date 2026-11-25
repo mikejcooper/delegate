@@ -76,7 +76,7 @@ def main():
     subprocess.run(["git", "clone", "-q", remote, inst], check=True)
 
     scripts = os.path.join(inst, "plugin", "workflow-ui", "scripts")
-    live = os.path.join(project, ".workflow-manager-data", "system", "board", "live")
+    live = os.path.join(project, ".delegate-data", "system", "board", "live")
     env = dict(os.environ, CLAUDE_PROJECT_DIR=project)
 
     def run(*extra, hooks_version=None):
@@ -97,9 +97,9 @@ def main():
     st = run("--now")
     ok(st.get("status") == "updated" and disk_version(inst) == "0.92.0", "2 newer commit: pulled to 0.92.0")
     ok(st.get("previous") == "0.91.0" and st.get("current") == "0.92.0", "2 state says from and to")
-    with open(os.path.join(project, ".workflow-manager-data", "system", "version.json")) as fh:
+    with open(os.path.join(project, ".delegate-data", "system", "version.json")) as fh:
         ok(json.load(fh).get("data_version") == "0.92.0", "2 the new release's migrations ran (folder stamped 0.92.0)")
-    with open(os.path.join(project, ".workflow-manager-data", "system", "updates.log")) as fh:
+    with open(os.path.join(project, ".delegate-data", "system", "updates.log")) as fh:
         ok("updated 0.91.0 -> 0.92.0" in fh.read(), "2 logged")
 
     set_version(dev, "0.93.0")
@@ -143,15 +143,15 @@ def main():
 
     git(dev, "tag", "workflow-manager--v0.95.0")
     git(dev, "push", "-q", "--tags")
-    os.makedirs(os.path.join(project, ".workflow-manager-data", "config"), exist_ok=True)
-    with open(os.path.join(project, ".workflow-manager-data", "config", "settings.json"), "w") as fh:
+    os.makedirs(os.path.join(project, ".delegate-data", "config"), exist_ok=True)
+    with open(os.path.join(project, ".delegate-data", "config", "settings.json"), "w") as fh:
         json.dump({"auto_update": False}, fh)
     before = run().get("checked")
     st = run("--now")
     ok(st.get("checked") == before and disk_version(inst) == "0.94.0", "8 auto_update off: never checks")
 
     # 9 the reload banner for a clone: only when a release changes what a chat reads at its start
-    os.remove(os.path.join(project, ".workflow-manager-data", "config", "settings.json"))
+    os.remove(os.path.join(project, ".delegate-data", "config", "settings.json"))
     run("--now")
 
     def prompt(hooks_version):

@@ -2,7 +2,7 @@
 """The board's definitions as one picture, kept in two layers.
 
   org    the plugin's workflows.json: the engine (dispatcher, architect modes, sections) and the plugin's own skills
-  user   .workflow-manager-data/config/board/<skill>.json: everything of one of this folder's own skills, in the
+  user   .delegate-data/config/board/<skill>.json: everything of one of this folder's own skills, in the
          same shape as workflows.json (workflows, entries, skills, categories, summaries, examples, results)
 
 load_all() joins them into one workflows.json-shaped dict, so a script can read and change it as one file;

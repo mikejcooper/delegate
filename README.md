@@ -28,7 +28,7 @@ From GitHub, the one message is
 
 On a Mac the dashboard stays on by itself: a small login item (one per folder, in `~/Library/LaunchAgents/`,
 named `local.workflow-board.…`) keeps its server running through sleep and app restarts. To turn that off for a
-folder, add `"board_always_on": false` to its `.workflow-manager-data/config/settings.json`.
+folder, add `"board_always_on": false` to its `.delegate-data/config/settings.json`.
 
 ## How it works
 
@@ -84,7 +84,7 @@ chat, and the dashboard's buttons copy them for you. The older phrasings ("run w
 
 ## Your data
 
-Everything it keeps goes in your folder's `.workflow-manager-data/`:
+Everything it keeps goes in your folder's `.delegate-data/`:
 
 - `config/`: your settings and how your workflows show on the dashboard. The part to edit or commit.
 - `history/`: requests, runs, screenshots, versions, and what workflows made (`pages/`) or worked with (`work/`).
@@ -92,8 +92,8 @@ Everything it keeps goes in your folder's `.workflow-manager-data/`:
 - `system/`: generated files.
 - `debug/`: debugging copies brought in from someone's issue zip, with their runs. Private; don't commit.
 
-Suggested `.gitignore`: `.workflow-manager-data/history/`, `.workflow-manager-data/system/` and
-`.workflow-manager-data/debug/`.
+Suggested `.gitignore`: `.delegate-data/history/`, `.delegate-data/system/` and
+`.delegate-data/debug/`.
 
 ## Sharing
 
@@ -120,13 +120,14 @@ and send the fixed version back. A share never carries a sign-in, key or token, 
 ## Updates
 
 - **Installed with the install script from GitHub** (the usual way): the script clones this repo once per
-  computer, to `~/.workflow-manager/workflow-manager` (set `WM_CLONE` to choose another folder), and Claude Code
+  computer, to `~/.delegate/delegate` (set `WM_CLONE` to choose another folder; installs before 0.16.0 used
+  `~/.workflow-manager/workflow-manager` and keep updating from there), and Claude Code
   runs the plugin from that clone. The plugin keeps it current itself: on a message and at the end of each turn, at most every 5 minutes, it
   checks this repo over HTTPS and fast-forwards to the newest release tag (`delegate--v<version>`, made by
   `claude plugin tag`; `workflow-manager--v<version>` before the rename), or the branch tip when there are no tags. The new release, its migrations included, runs
   from the next message, in every folder that uses the clone. It waits while a run or test is open, and skips
   (saying why on the dashboard) when the clone has changes or commits of its own. Turn it off with
-  `"auto_update": false` in `.workflow-manager-data/config/settings.json`.
+  `"auto_update": false` in `.delegate-data/config/settings.json`.
 - **A reload is rarely needed.** Claude Code reads a few things only when a chat starts: the hook list, the skills'
   names and descriptions, and the commands. Only a release that changes one of those shows a banner asking an open
   chat to type `/reload-plugins` (or start a new chat).

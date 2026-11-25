@@ -60,13 +60,13 @@ def snapshot(home):
 def board_runs(proj):
     subprocess.run([sys.executable, "-I", os.path.join(SCRIPTS, "build_board.py")], cwd=proj, capture_output=True,
                    env=dict(os.environ, CLAUDE_PROJECT_DIR=proj))
-    t = open(os.path.join(proj, ".workflow-manager-data", "system", "board", "board-data.js"), encoding="utf-8").read()
+    t = open(os.path.join(proj, ".delegate-data", "system", "board", "board-data.js"), encoding="utf-8").read()
     return {r["id"] for r in json.loads(t[len("window.BOARD="):].rstrip().rstrip(";"))["runs"]}
 
 
 def main():
     proj = tempfile.mkdtemp(prefix="wm-runs-")
-    home = os.path.join(proj, ".workflow-manager-data")
+    home = os.path.join(proj, ".delegate-data")
     h = os.path.join(home, "history")
     write(os.path.join(proj, ".claude", "skills", SK, "SKILL.md"), "---\nname: " + SK + "\ndescription: x\n---\n# x\n")
     write(os.path.join(home, "config", "board", SK + ".json"), json.dumps({

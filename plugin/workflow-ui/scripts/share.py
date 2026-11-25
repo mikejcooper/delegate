@@ -86,7 +86,7 @@ def now_iso():
 
 def need_plugin():
     if not paths.PLUGIN:
-        fail("sharing needs the plugin installed in a folder (its data lives in .workflow-manager-data)")
+        fail("sharing needs the plugin installed in a folder (its data lives in .delegate-data)")
 
 
 # ---------------------------------------------------------------- snapshots: {relpath: bytes}

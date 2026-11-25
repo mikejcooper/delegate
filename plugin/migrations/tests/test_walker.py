@@ -118,7 +118,7 @@ def main():
     try:
         plugin, project, watcher = build(tmp)
         root = os.path.join(project, ".dispatcher")                  # the old folder
-        home = os.path.join(project, ".workflow-manager-data")       # the new one (0.9.0)
+        home = os.path.join(project, ".delegate-data")       # the new one (0.9.0)
         data = os.path.join(home, "system")                          # where steps from 0.8.0 on write
         vfile = os.path.join(data, "version.json")
         logf = os.path.join(data, "migrations.log")
@@ -179,7 +179,7 @@ def main():
             os.remove(offer_path)   # step 2 already made the offer; start this check fresh
         rc, out, err = run(plugin, project, "--hook")
         check("offer shown for the user's out-of-date file", "workflow-sample/board.json" in out, out[:120])
-        check("the offer says the file moves to .workflow-manager-data/config/board/", ".workflow-manager-data/config/board/" in out, out[-300:])
+        check("the offer says the file moves to .delegate-data/config/board/", ".delegate-data/config/board/" in out, out[-300:])
         check("the offer names every step's notes", all(v in out for v in [x for x in REAL if os.path.exists(os.path.join(MIGRATIONS, x, "user.py"))] + [LAST]))
         check("the offer says which skills get renamed", "workflow-guardian-news -> workflow-news-guardian-article" in out, out[-300:])
         check("the offer says which skills get the current format", "brought to the current format" in out, out[-300:])
@@ -191,7 +191,7 @@ def main():
         print("\n5. A \"yes\"")
         rc, out, err = run(plugin, project, "--apply-user")
         b = read_json(home_board) or {}
-        check("file now lives in .workflow-manager-data/config/board/, gone from the skill folder",
+        check("file now lives in .delegate-data/config/board/, gone from the skill folder",
               os.path.exists(home_board) and not os.path.exists(legacy_board))
         check("walked through every step (0.4.0 format, last tag)", b.get("format") == 2 and b.get("tag") == "last", b)
         check(f"stamped {LAST}", b.get("data_version") == LAST, b.get("data_version"))
@@ -232,19 +232,19 @@ def main():
 
         print("\n7. A brand-new folder (welcomed before its first check)")
         new = os.path.join(tmp, "new-project")
-        write(os.path.join(new, ".workflow-manager-data", "system", "welcomed.json"), "{}")
-        write(os.path.join(new, ".workflow-manager-data", "system", "board", "board-data.js"), "window.BOARD={};")
-        os.makedirs(os.path.join(new, ".workflow-manager-data", "history", "runs"))
-        write(os.path.join(new, ".workflow-manager-data", "history", "versions-cache.json"), "{}")   # the welcome's board build
+        write(os.path.join(new, ".delegate-data", "system", "welcomed.json"), "{}")
+        write(os.path.join(new, ".delegate-data", "system", "board", "board-data.js"), "window.BOARD={};")
+        os.makedirs(os.path.join(new, ".delegate-data", "history", "runs"))
+        write(os.path.join(new, ".delegate-data", "history", "versions-cache.json"), "{}")   # the welcome's board build
         os.makedirs(os.path.join(new, ".claude"))
         rc, out, err = run(plugin, new)
-        nsys = os.path.join(new, ".workflow-manager-data", "system")
+        nsys = os.path.join(new, ".delegate-data", "system")
         check("stamped with the plugin's version straight away", (read_json(os.path.join(nsys, "version.json")) or {}).get("data_version") == LAST,
               out.strip()[:120])
         check("no migration ran: no backups, no log", not os.path.exists(os.path.join(nsys, "backups"))
               and not os.path.exists(os.path.join(nsys, "migrations.log")), sorted(os.listdir(nsys)))
         check("no old .dispatcher/ folder made", not os.path.exists(os.path.join(new, ".dispatcher")))
-        write(os.path.join(new, ".workflow-manager-data", "history", "runs", "x.jsonl"), "{}\n")
+        write(os.path.join(new, ".delegate-data", "history", "runs", "x.jsonl"), "{}\n")
         os.remove(os.path.join(nsys, "version.json"))
         rc, out, err = run(plugin, new, "--check")
         check("a folder with history but no stamp still counts as old (0.3.1)", '"data_version": "0.3.1"' in out, out[:160])

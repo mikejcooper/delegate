@@ -472,7 +472,7 @@ def calm_check(defs):
 
 
 def merge_user(defs, errs):
-    """Add the user's own board definitions, .workflow-manager-data/config/board/<skill>.json (entries, categories, workflows). A skill never replaces what is
+    """Add the user's own board definitions, .delegate-data/config/board/<skill>.json (entries, categories, workflows). A skill never replaces what is
     already there: a clashing key or workflow id is reported and skipped."""
     for path in entries.orphans():
         errs.append(f"{paths.rel(path)}: no skill of that name any more (renamed or deleted?): rename or remove this file")

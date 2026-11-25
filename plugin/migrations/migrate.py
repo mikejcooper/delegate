@@ -10,11 +10,12 @@
       skill_text.json     exact text -> replacement, applied to the user's own SKILL.md files with the renames
       skills.py           convert(name, text) -> text: bigger changes to the user's own SKILL.md files (e.g. a
                           table becoming a Definition block), on their yes; must be safe to run twice
-      user.py             the user's own board definitions (.workflow-manager-data/config/board/<skill>.json): upgrade(obj) -> obj,
+      user.py             the user's own board definitions (.delegate-data/config/board/<skill>.json): upgrade(obj) -> obj,
                           rewritten only with --apply-user (the user said yes)
       tests/              sample old file -> expected new file
 
-The folder's version lives in .workflow-manager-data/system/version.json ({"data_version": "x.y.z"}); in
+The folder's version lives in .delegate-data/system/version.json ({"data_version": "x.y.z"}; the folder was
+.workflow-manager-data/ from 0.9.0 to 0.15.x, and paths.py renames it before anything reads it); in
 0.8.x it was .workflow-manager/system/version.json, before that .dispatcher/data/version.json, and before
 0.5.0 .dispatcher/version.json; all are still read.
 A .dispatcher/ with no version.json at all was made before migrations existed and counts as BASELINE. The walker runs
@@ -55,7 +56,8 @@ OFFER_EVERY = 24 * 3600
 def layout(at):
     """Where the machine data sat at version `at`, so each step sees the folder as it was when it was
     written: before 0.5.0 directly in .dispatcher/; 0.5.0 - 0.7.x in .dispatcher/data/; 0.8.x in
-    .workflow-manager-data/; from 0.9.0 in .workflow-manager-data/ (both with config/, history/, system/).
+    .workflow-manager/; from 0.9.0 in .workflow-manager-data/, renamed .delegate-data/ in 0.16.0 by paths.py before
+    any step runs (both with config/, history/, system/).
     Every step also gets the new folder's paths, and "legacy_08" for the 0.8 folder."""
     new = {"dispatcher": paths.LEGACY, "legacy": paths.LEGACY, "legacy_08": paths.LEGACY_08, "home": paths.HOME, "config": paths.CONFIG,
            "history": paths.HISTORY, "system": paths.SYSTEM, "settings": paths.SETTINGS,
@@ -99,7 +101,7 @@ FRESH_SYSTEM = {"welcomed.json", "offer.json", "board"}
 
 def _has_data(root):
     """Whether root holds data from before version stamps. The old folders: anything but board/ and config/.
-    .workflow-manager-data/: run history (a request, a run or the done list, what the old steps work on), or
+    .delegate-data/: run history (a request, a run or the done list, what the old steps work on), or
     anything in system/ beyond FRESH_SYSTEM. Caches the board writes in history/ before the first check
     (versions-cache.json) and config/ (the user's own) never count."""
     if not os.path.isdir(root):
@@ -170,7 +172,7 @@ def fresh(base):
 
 
 def backup(step_from):
-    """Copy the old folders (.dispatcher/, .workflow-manager-data/) and the new one (whichever exist), except backups and
+    """Copy the old folders (.dispatcher/, .workflow-manager/) and the new one (whichever exist), except backups and
     generated files, into system/backups/<from version>-<time>/ under their own names."""
     stamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     dest = fresh(os.path.join(BACKUPS, f"{step_from}-{stamp}"))
@@ -351,7 +353,7 @@ def rename_user_skills(todo):
 
 def user_files():
     """The user's own board definitions (user layer only): (path now, path it belongs at, obj, version).
-    Home is .workflow-manager-data/config/board/<skill>.json; older ones sit in .workflow-manager-data/config/board/
+    Home is .delegate-data/config/board/<skill>.json; older ones sit in .delegate-data/config/board/
     (0.8), .dispatcher/board/ (0.5 - 0.7) or as board.json in the skill folder (before 0.5)."""
     out = []
     if not paths.BOARD_DEFS:
@@ -408,13 +410,13 @@ def offer_note(report):
         return ""
     with open(OFFER, "w", encoding="utf-8") as fh:
         json.dump({"for": report["plugin_version"], "t": time.time()}, fh)
-    moving = any(b.get("moves_to") and not b["file"].startswith(".workflow-manager-data/") for b in behind)  # moves folder, not just renamed
+    moving = any(b.get("moves_to") and not b["file"].startswith(".delegate-data/") for b in behind)  # moves folder, not just renamed
     parts = []
     if behind:
         oldest = min((b["is"] for b in behind), key=ver)
         parts.append(f"{len(behind)} of the user's own board files ({', '.join(b['file'] for b in behind)}) were made with "
                      f"Delegate {oldest} and can be updated"
-                     + (" (this also moves them into .workflow-manager-data/config/board/<skill>.json)" if moving else ""))
+                     + (" (this also moves them into .delegate-data/config/board/<skill>.json)" if moving else ""))
     if renames:
         parts.append(f"{len(renames)} of their skills can be renamed to the naming pattern ({'; '.join(renames)})")
     if updates:
@@ -503,7 +505,7 @@ def main():
                 obj = m.upgrade(obj)
                 obj["data_version"] = s
             os.makedirs(os.path.dirname(home), exist_ok=True)
-            with open(home, "w", encoding="utf-8") as fh:   # always written to its home, .workflow-manager-data/config/board/
+            with open(home, "w", encoding="utf-8") as fh:   # always written to its home, .delegate-data/config/board/
                 json.dump(obj, fh, indent=2)
                 fh.write("\n")
             if os.path.realpath(path) != os.path.realpath(home):

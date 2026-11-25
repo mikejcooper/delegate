@@ -6,7 +6,7 @@ Every item gets the same workflow ID every time it is seen:
     workflow ID = wf- + first 8 hex of sha256(key) e.g. wf-7c1e04ab
 
 Data lives where paths.py says (created on first use): .claude/workflow-ui/dispatcher-data/ in-project, or the
-project's .workflow-manager-data/ when installed as a plugin (history/done-list.jsonl, config/settings.json):
+project's .delegate-data/ when installed as a plugin (history/done-list.jsonl, config/settings.json):
     ledger.jsonl   one line per attempt event (started, then its final status), plus "pulled" (pulled in, not
                    run yet), "skipped" (the user said not to run it), and the Inbox page's manual lines
                    ("marked_done", "marked_needs", "deleted"); none of these are attempts

@@ -3,9 +3,9 @@
 
 It is separate from the project's own git (its own --git-dir, never the project's .git) and tracks only:
   in-project   .claude/skills/  and  .claude/workflow-ui/workflows.json
-  plugin       .claude/skills/ (the user's own skills)  and  .workflow-manager-data/config/board/
+  plugin       .claude/skills/ (the user's own skills)  and  .delegate-data/config/board/
 It lives in .claude/workflow-ui/dispatcher-data/skill-history/ in-project, or
-.workflow-manager-data/history/skill-history/ where the plugin is installed.
+.delegate-data/history/skill-history/ where the plugin is installed.
 
 A version is one finished change: the architect saves one at the end of a change the user asked for (or when
 the user says "save a version"), after an impact review of the change against earlier runs. Edits in between are
@@ -88,8 +88,8 @@ def init():
     os.makedirs(GIT_DIR, exist_ok=True)
     subprocess.run(["git", "init", "-q", "--bare", GIT_DIR], check=True, capture_output=True)
     git("config", "core.bare", "false")
-    git("config", "user.name", "workflow-manager")
-    git("config", "user.email", "skill-history@workflow-manager.local")
+    git("config", "user.name", "delegate")
+    git("config", "user.email", "skill-history@delegate.local")
     git("config", "commit.gpgsign", "false")
     with open(os.path.join(GIT_DIR, "info", "exclude"), "a", encoding="utf-8") as fh:
         fh.write("__pycache__/\n*.pyc\n.DS_Store\nnode_modules/\n")

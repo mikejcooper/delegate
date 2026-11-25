@@ -110,7 +110,7 @@ reported, never followed. Nothing in it is run.
 ## Picking where both changed the same thing
 Each conflict on the draft's page has three buttons; each copies a line:
 - "keep my side of c<N> in workflow <name>": `share.py merge <zip> --take cN=mine` (the zip from the workflow's
-  `shared` record, `.workflow-manager-data/config/shared/<skill>.json`'s `zip_path`; ask for it again if it has
+  `shared` record, `.delegate-data/config/shared/<skill>.json`'s `zip_path`; ask for it again if it has
   moved).
 - "take the update's side of c<N> in workflow <name>": the same with `cN=theirs`. Pass every earlier pick again
   with it (the record lists each conflict's `taking`), so one pick never undoes another.
@@ -121,7 +121,7 @@ When nothing is left to pick, say it is ready to validate and publish (core-arch
 
 ## Debugging copies
 A debugging copy is someone else's workflow as they had it, with the runs they shared. It lives in
-`.workflow-manager-data/debug/<slug>/` (`current/` its skills and board, `runs/`, `recordings/`), never in
+`.delegate-data/debug/<slug>/` (`current/` its skills and board, `runs/`, `recordings/`), never in
 `.claude/skills/`, so it never routes, runs or schedules. Its runs show only on its page, never in the Inbox.
 - **Replay a run** ("replay a run of debug <slug>"): pick the run (ask which when there are several), read its
   trace in `runs/` and the recordings it made, and go through the copy's steps in `current/skills/` on that data,

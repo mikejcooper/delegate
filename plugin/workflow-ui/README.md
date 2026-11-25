@@ -452,7 +452,7 @@ own page and is not repeated.
 ### Imports
 
 The architect's Import mode draws a skill or project from elsewhere before it becomes a skill. Each draft is
-`drafts/<name>.json` here (`.workflow-manager-data/config/drafts/` with the plugin; `paths.py drafts`): one
+`drafts/<name>.json` here (`.delegate-data/config/drafts/` with the plugin; `paths.py drafts`): one
 workflow in the `workflows.json` shape (`short`, `name`, `desc`, `steps`, `simulated`), with no `id`, `category`
 or `entries` (the build sets them: id `draft-<name>`, under **Drafts** › Imports), plus:
 
@@ -502,7 +502,7 @@ Tests run the real skills on fake data, with every outside call refused (core-ar
 
 Every skill and its board definition has a hidden history, separate from the project's own git:
 `scripts/skill_history.py`, kept in `dispatcher-data/skill-history/` in-project or
-`.workflow-manager-data/history/skill-history/` where the plugin is installed.
+`.delegate-data/history/skill-history/` where the plugin is installed.
 
 - **History starts by itself.** The prompt hook runs `skill_history.py start` before every request: the first time, it saves the skills as they are as "History started" (each one's v1), so a folder that had skills before it had a history (a new install, or an update from an older plugin) gets a version before Claude can edit anything. After that it does nothing. Should it fail (no git), a draft still shows: History · draft, "Not published yet".
 - **Draft, then publish.** Every edit is a **draft**, whoever makes it: the architect's Change mode edits, does
@@ -587,7 +587,7 @@ skill lands in the right place with nothing to add here:
   everything.
 - `sections`: still read by the build, no longer by the sidebar.
 - `categories`: `{key: {name, tone, section}}`. A top-level category is the area, one of the words in
-  the category lists (the plugin's `core-architect/categories.md` and the folder's own `.workflow-manager-data/config/categories.md`). A sub-folder sets `parent` (another
+  the category lists (the plugin's `core-architect/categories.md` and the folder's own `.delegate-data/config/categories.md`). A sub-folder sets `parent` (another
   category's key) instead of `section`, and takes its section from the parent. A sub-folder is only for a
   skill with several **modes** (e.g. a shared skill with a read and a draft mode), never for a `workflow-` skill:
   a workflow's branches are paths on its one row (the architect's rule 24; the build fails otherwise).
@@ -768,8 +768,8 @@ are hidden, so they need no `res`.
 ## The user's own board definitions (user layer)
 
 Where the plugin is installed in someone's folder, their own skills can't change `workflows.json` (it belongs to the
-plugin). Their board definitions live in that folder's `.workflow-manager-data/config/board/`, one file per skill, named
-after it (`.workflow-manager-data/config/board/workflow-news-guardian-article.json`), with the same shapes as here: `entries` (name, icon, desc),
+plugin). Their board definitions live in that folder's `.delegate-data/config/board/`, one file per skill, named
+after it (`.delegate-data/config/board/workflow-news-guardian-article.json`), with the same shapes as here: `entries` (name, icon, desc),
 `categories`, and `workflows` (each with `category`, `short`, steps…). The skill folders hold only skills. The build
 adds them to `workflows.json`'s and never replaces anything: a key or workflow id that already exists is an ERROR,
 and so is a file whose skill no longer exists. A step's `why.file` may name a skill in either layer. (Before 0.8.0 they were in `.dispatcher/board/`, before 0.5.0 `board.json` files inside the skill folders; old ones are

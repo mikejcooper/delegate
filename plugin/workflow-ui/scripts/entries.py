@@ -312,7 +312,7 @@ def trigger_pattern():
 def board_files():
     """[(layer, skill name, path)] of the user's own board definitions for the Workflow Viewer.
 
-    Home: .workflow-manager-data/config/board/<skill name>.json. Older installs kept them in
+    Home: .delegate-data/config/board/<skill name>.json. Older installs kept them in
     .workflow-manager/config/board/ (0.8), .dispatcher/board/ (0.5-0.7) or as board.json inside the skill
     folder (before 0.5); those are still read (the newest place wins) until the user agrees to move them.
     A definition whose skill no longer exists is listed by orphans()."""

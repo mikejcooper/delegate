@@ -4,7 +4,7 @@ The `<category>` part of every skill name (`<kind>-<category>-<description>`, ru
 workflows and shared processes, so everything about one area sorts and shows together.
 
 Two lists, read together like the skills: **this file**, the few the plugin ships with, and **the folder's own**,
-`.workflow-manager-data/config/categories.md` (`paths.py` lists both under `categories`, the folder's first). A
+`.delegate-data/config/categories.md` (`paths.py` lists both under `categories`, the folder's first). A
 folder's own list holds the areas its own workflows belong to; it never ships with the plugin. A word in both lists
 means the same area: the folder's line wins.
 

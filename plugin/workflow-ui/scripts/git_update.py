@@ -187,7 +187,7 @@ def due(now):
 def lock_path(repo):
     """The update lock lives in the clone, not in a project folder: one clone can serve every folder on the
     computer (install.sh clones once), and only one of them may pull at a time."""
-    return os.path.join(repo, ".git", "workflow-manager-update.lock")
+    return os.path.join(repo, ".git", "delegate-update.lock")
 
 
 def lock(path):

@@ -97,13 +97,13 @@ def read(path):
 
 def project(root, name, with_skill=True):
     proj = os.path.join(root, name)
-    os.makedirs(os.path.join(proj, ".workflow-manager-data", "config", "board"))
+    os.makedirs(os.path.join(proj, ".delegate-data", "config", "board"))
     os.makedirs(os.path.join(proj, ".claude", "skills"))
     if with_skill:
         write(os.path.join(proj, ".claude", "skills", SK, "SKILL.md"), SKILL_MD)
         write(os.path.join(proj, ".claude", "skills", CONN, "SKILL.md"),
               "---\nname: connection-testmail\ndescription: Test mail.\n---\n\n# Test mail\nmethods: browser\n")
-        write(os.path.join(proj, ".workflow-manager-data", "config", "board", SK + ".json"), json.dumps(board(STEPS), indent=1))
+        write(os.path.join(proj, ".delegate-data", "config", "board", SK + ".json"), json.dumps(board(STEPS), indent=1))
     run(proj, HIST, "start", "--quiet")
     return proj
 
@@ -118,7 +118,7 @@ def skill_md(proj):
 
 
 def board_json(proj):
-    return json.loads(read(os.path.join(proj, ".workflow-manager-data", "config", "board", SK + ".json")))
+    return json.loads(read(os.path.join(proj, ".delegate-data", "config", "board", SK + ".json")))
 
 
 def edit(proj, old, new):
@@ -150,7 +150,7 @@ def main():
     m = json.loads(zipfile.ZipFile(z1).read("manifest.json"))
     ok(m["kind"] == "full" and m["version"] == "v1" and "made_by" not in m and "user" not in json.dumps(m).lower(),
        "1 the manifest says what it is, never who made it")
-    ok(os.path.isfile(os.path.join(sender, ".workflow-manager-data", "history", "shares", "log.jsonl")),
+    ok(os.path.isfile(os.path.join(sender, ".delegate-data", "history", "shares", "log.jsonl")),
        "1 the share is logged for the Share tab")
 
     # 2 a key in a skill is refused
@@ -167,7 +167,7 @@ def main():
     ok(CONN in r.get("kept_yours", []) and "chrome" in read(os.path.join(receiver, ".claude", "skills", CONN, "SKILL.md")),
        "3 the receiver's own connection stays theirs")
     ok(skill_md(receiver) == SKILL_MD, "3 the skill arrives as it was shared")
-    rec = json.loads(read(os.path.join(receiver, ".workflow-manager-data", "config", "shared", SK + ".json")))
+    rec = json.loads(read(os.path.join(receiver, ".delegate-data", "config", "shared", SK + ".json")))
     ok(rec.get("plan") == "new" and rec.get("their_version") == "v1", "3 it is recorded as imported, their v1")
     st = run(receiver, HIST, "status")
     ok(SK in json.dumps(st), "3 it is a draft until published")
@@ -198,7 +198,7 @@ def main():
     b = board_json(sender)
     b["workflows"][0]["steps"].insert(1, {"key": "group", "sk": SK, "title": "Group them by client", "type": "act",
                                           "what": "Group them by client"})
-    write(os.path.join(sender, ".workflow-manager-data", "config", "board", SK + ".json"), json.dumps(b, indent=1))
+    write(os.path.join(sender, ".delegate-data", "config", "board", SK + ".json"), json.dumps(b, indent=1))
     publish(sender, "Label and group")
     z3 = run(sender, SHARE, "make", SK, "--kind", "update", "--out", out).get("made")
     imp = run(sender, SHARE, "impact", SK)
@@ -236,7 +236,7 @@ def main():
     r = run(receiver, SHARE, "merge", z4, "--take", "c1=theirs")
     t = skill_md(receiver)
     ok("accounts payable" in t and "firm" not in t and "more than 7 days" in t, "6 --take c1=theirs: theirs, the rest kept")
-    rec = json.loads(read(os.path.join(receiver, ".workflow-manager-data", "config", "shared", SK + ".json")))
+    rec = json.loads(read(os.path.join(receiver, ".delegate-data", "config", "shared", SK + ".json")))
     ok(rec["conflicts"][0]["taking"] == "theirs", "6 the record shows the pick for the page")
     r = run(receiver, SHARE, "merge", z4, "--take", "c1=mine")
     ok("firm reminder" in skill_md(receiver), "6 picking again starts from your copy, not the last pick")
@@ -248,7 +248,7 @@ def main():
     publish(receiver, "Fresh from v4")
 
     # 8 an issue with a run, debugged at the receiver
-    runs = os.path.join(sender, ".workflow-manager-data", "history", "runs")
+    runs = os.path.join(sender, ".delegate-data", "history", "runs")
     os.makedirs(runs, exist_ok=True)
     hdr = {"header": True, "run": "run-0001-chase", "kind": "batch", "skill": SK, "flow": "test-invoice-chaser",
            "label": "3 invoices", "started": "2026-11-20T09:12:00Z"}
@@ -277,18 +277,18 @@ def main():
     r = run(receiver, SHARE, "debug", z5)
     slug = r.get("debug")
     ok(bool(slug) and r.get("page") == "debug-" + slug, "8 debug: a debugging copy with its own page")
-    droot = os.path.join(receiver, ".workflow-manager-data", "debug", slug or "x")
+    droot = os.path.join(receiver, ".delegate-data", "debug", slug or "x")
     h = json.loads(read(os.path.join(droot, "runs", "run-0001-chase.jsonl")).splitlines()[0])
     ok(h.get("debug") is True and h.get("flow") == "debug-" + slug, "8 its runs are marked debug and point at the copy")
     ok(not os.path.isdir(os.path.join(receiver, ".claude", "skills", SK + "-debug")) and
        "firm" not in read(os.path.join(droot, "current", "skills", SK, "SKILL.md")),
        "8 the copy is the sender's, apart from the receiver's own skills")
-    wf = read(os.path.join(receiver, ".workflow-manager-data", "system", "board", "workflows-data.js"))
+    wf = read(os.path.join(receiver, ".delegate-data", "system", "board", "workflows-data.js"))
     W = json.loads(wf[len("window.WFDEF="):].rstrip().rstrip(";"))
     dw = [w for w in W["workflows"] if w.get("debug")]
     ok(len(dw) == 1 and dw[0]["id"] == "debug-" + slug and dw[0]["debug"]["note"] == "Goes to accounts",
        "8 the board has the copy, under its own id, with their note")
-    bd = read(os.path.join(receiver, ".workflow-manager-data", "system", "board", "board-data.js"))
+    bd = read(os.path.join(receiver, ".delegate-data", "system", "board", "board-data.js"))
     B = json.loads(bd[len("window.BOARD="):].rstrip().rstrip(";"))
     ok(any(x.get("debug") and x["id"] == "run-0001-chase" for x in B["runs"]), "8 its runs are on the board, marked debug")
     mine = [w for w in W["workflows"] if w["id"] == "test-invoice-chaser"]

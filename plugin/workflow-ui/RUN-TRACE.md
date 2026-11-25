@@ -5,7 +5,7 @@ paths: the **requests folder** (the request trace), the **runs folder** (one tra
 `.claude/` this is the same folder), the **screenshots folder**, the **rebuild command** and the **board URL**. Use those
 wherever these rules name them (in a project's own `.claude/` they are `.claude/workflow-ui/traces/`,
 `.claude/workflow-ui/shots/`, `python3 -I .claude/workflow-ui/scripts/build_board.py` and port 8765; installed as a plugin
-they are under the project's `.workflow-manager-data/history/` with its own port, and in the plugin's source repo the
+they are under the project's `.delegate-data/history/` with its own port, and in the plugin's source repo the
 same, on port 8765).
 
 Only dispatcher runs get a trace, shown on the trace board: requests that invoke `core-dispatcher`, such as "run dispatcher", "check my emails" or "rerun workflow wf-…". The skills it hands work to log into that same run. Any other request, including using another skill directly or working on the board or the skills, gets no trace and no board.

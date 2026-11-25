@@ -66,7 +66,7 @@ def deny(folder):
     reason = (f"Blocked: {folder} is the org dispatcher plugin (or its source), which is read-only from this folder. "
               f"Put new or changed skills in this folder's own {paths.rel(paths.USER_SKILLS)}/ instead "
               f"(a workflow is a workflow-<category>-<description> skill there, with its trigger inside it; a skill's "
-              f"board definition is .workflow-manager-data/config/board/<skill name>.json). Org changes are made in the plugin's source repo, not from an install.")
+              f"board definition is .delegate-data/config/board/<skill name>.json). Org changes are made in the plugin's source repo, not from an install.")
     print(json.dumps({"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "deny",
                                              "permissionDecisionReason": reason}}))
 

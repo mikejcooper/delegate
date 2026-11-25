@@ -2,7 +2,7 @@
 """A workflow's past runs: count them, take them off the board (Inbox and Past runs), or put them back.
 
 Deleting a workflow (core-architect, "Remove a skill") asks whether its past runs go too. "remove" moves them into
-.workflow-manager-data/history/deleted/<time>-<skill>/, out of every folder the board reads, so they leave the Inbox
+.delegate-data/history/deleted/<time>-<skill>/, out of every folder the board reads, so they leave the Inbox
 at once; "restore" puts them back. Nothing is erased: the deleted folder can be emptied by hand later.
 
 What belongs to a workflow's runs:
@@ -240,7 +240,7 @@ def _rebuild():
 
 def main():
     if not paths.PLUGIN:
-        out({"error": "past runs live in .workflow-manager-data, which needs the plugin installed in a folder"}, 1)
+        out({"error": "past runs live in .delegate-data, which needs the plugin installed in a folder"}, 1)
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     s = p.add_subparsers(dest="cmd", required=True)
     for name, fn in (("count", cmd_count), ("remove", cmd_remove)):

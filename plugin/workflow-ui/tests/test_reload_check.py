@@ -106,7 +106,7 @@ def main():
                            text=True, env=env)
         return p.stdout.strip()
 
-    live = os.path.join(project, ".workflow-manager-data", "system", "board", "live", "reload.json")
+    live = os.path.join(project, ".delegate-data", "system", "board", "live", "reload.json")
     first = hook("s1")
     ok("0.14.0" in first and "/reload-plugins" in first, "6 first message: Claude told to ask for /reload-plugins")
     with open(live) as fh:

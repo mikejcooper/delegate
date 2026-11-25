@@ -6,9 +6,9 @@ Two setups:
                Code and data share .claude/workflow-ui/, port 8765, as before.
   source       the plugin's source repo: the plugin sits in a folder of the project (skills-test/plugin/) and the
                project uses it like any install (its own skills in .claude/skills/, its data in
-               .workflow-manager-data/), except that the plugin's own files may be changed here. Port 8765.
+               .delegate-data/), except that the plugin's own files may be changed here. Port 8765.
   plugin       installed as the delegate plugin (workflow-manager before 0.15.0) (code in the plugin cache or a marketplace folder,
-               replaced on every update). The project's own .workflow-manager-data/ folder holds:
+               replaced on every update). The project's own .delegate-data/ folder holds:
                  config/    YOURS: settings.json (your switches) and board/<skill>.json (how your skills
                             show on the board). The only part to edit, review or commit.
                  history/   WHAT HAPPENED: requests/ (one file per time you asked), runs/ (one per item),
@@ -16,11 +16,13 @@ Two setups:
                             look at) and work/<workflow>/ (its scratch files). Keep it; private; don't commit.
                  system/    PLUMBING: version.json, migrations.log, backups/, offer.json, and board/
                             (generated page data, helper pids, the live "now doing" notes).
-               It was .workflow-manager/ in 0.8.x and .dispatcher/ before (board/ + data/); migrations move it.
+               It was .workflow-manager-data/ from 0.9.0 to 0.15.x: the first script to run after the update renames
+               it, and leaves .workflow-manager-data as a link to it so anything still using the old path works.
+               It was .workflow-manager/ in 0.8.x and .dispatcher/ before (board/ + data/); migrations move those.
                Each project gets its own board port, so two projects never share a board.
 
 The project is $CLAUDE_PROJECT_DIR when the hooks set it, otherwise the nearest folder at or
-above the current one that has .workflow-manager-data/ (or an older name) or .claude/ (never the home folder).
+above the current one that has .delegate-data/ (or an older name) or .claude/ (never the home folder).
 
     python3 -I paths.py           print every path as JSON
     python3 -I paths.py port|url  print just that value
@@ -44,7 +46,7 @@ def _project():
     here = os.path.realpath(os.getcwd())
     d = here
     while d != os.path.dirname(d) and d != home:
-        if any(os.path.isdir(os.path.join(d, x)) for x in (".workflow-manager-data", ".workflow-manager", ".dispatcher", ".claude")):
+        if any(os.path.isdir(os.path.join(d, x)) for x in (".delegate-data", ".workflow-manager-data", ".workflow-manager", ".dispatcher", ".claude")):
             return d
         d = os.path.dirname(d)
     return here
@@ -63,8 +65,30 @@ SOURCE = PLUGIN and os.path.realpath(ROOT).startswith(os.path.realpath(PROJECT) 
 USER_SKILLS = os.path.join(PROJECT, ".claude", "skills")   # user layer: this folder's own skills (= SKILLS in-project)
 LEGACY = os.path.join(PROJECT, ".dispatcher") if PLUGIN else None            # the folder before 0.8.0
 LEGACY_08 = os.path.join(PROJECT, ".workflow-manager") if PLUGIN else None    # the folder in 0.8.x
+LEGACY_015 = os.path.join(PROJECT, ".workflow-manager-data") if PLUGIN else None   # the folder from 0.9.0 to 0.15.x
+
+
+def _rename_data_folder(old, new):
+    """0.16.0: .workflow-manager-data/ became .delegate-data/. Done here, by the first script that runs after the
+    update, so every script (and the migrations' version file) sees the new folder from then on. One rename on the
+    same disk, so nothing is copied and nothing is half-moved; the old name is left as a link to the new folder for
+    anything still holding the old path (a board started before the update, a user's skill that names it). Two
+    scripts starting at once: the second finds it done."""
+    if os.path.isdir(new) or not os.path.isdir(old) or os.path.islink(old):
+        return
+    try:
+        os.rename(old, new)
+    except OSError:
+        return
+    try:
+        os.symlink(os.path.basename(new), old)
+    except OSError:
+        pass
+
+
 if PLUGIN:
-    HOME = os.path.join(PROJECT, ".workflow-manager-data")
+    HOME = os.path.join(PROJECT, ".delegate-data")
+    _rename_data_folder(LEGACY_015, HOME)
     CONFIG, HISTORY, SYSTEM = (os.path.join(HOME, x) for x in ("config", "history", "system"))
     SETTINGS = os.path.join(CONFIG, "settings.json")
     BOARD_DEFS = os.path.join(CONFIG, "board")

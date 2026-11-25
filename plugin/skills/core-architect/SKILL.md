@@ -92,7 +92,7 @@ Work out the layer first, every mode: run `python3 -I <this folder>/../../workfl
 | `mode` | Layer | New or changed skills go in | Board definitions go in | Never change |
 |---|---|---|---|---|
 | `in-project` (the setup before 0.12.0: plugin and skills in one `.claude/` folder) | org | `org_skills` | `workflow-ui/workflows.json` | — |
-| `plugin` (a folder with the plugin installed) | user | `user_skills` (this folder's `.claude/skills/`) | `.workflow-manager-data/config/board/<skill name>.json` (`board_defs`), one per skill; never inside a skill folder | anything in `org_skills`, the plugin's files or its source repo |
+| `plugin` (a folder with the plugin installed) | user | `user_skills` (this folder's `.claude/skills/`) | `.delegate-data/config/board/<skill name>.json` (`board_defs`), one per skill; never inside a skill folder | anything in `org_skills`, the plugin's files or its source repo |
 | `source` (the plugin's source repo: the plugin is a folder of the project) | user for the folder's own skills; org only for the engine (`core-` skills) and the plugin's demo | the user's own work: `user_skills`, as in `plugin`; an engine or demo change: `org_skills` | the user's own: `board_defs`, as in `plugin`; the engine's and the demo's: the plugin's `workflow-ui/workflows.json` | nothing, but a workflow, connection, shared process or category of the user's never goes in the plugin: it would ship to everyone |
 
 In the user layer, also run `migrations/migrate.py --check` (in the plugin, next to `workflow-ui/`). When it lists the user's own files as behind, say so in the plan and offer to update them first (`--apply-user`, which backs them up), so new work builds on the current format.
@@ -333,7 +333,7 @@ the moved tests, the iteration and the build. Then steps 6 and 7. `open` refuses
    from rule 10 and the category lists (`paths.py` `categories`). Rewrite `In plain words` and `How it works` to
    match. Update the README's skill table and picture.
 4. Update the board: when the changed skill's name appears in the layer's board definitions (the plugin's
-   `workflow-ui/workflows.json` in the org layer, or `.workflow-manager-data/config/board/` in the user layer), or
+   `workflow-ui/workflows.json` in the org layer, or `.delegate-data/config/board/` in the user layer), or
    it is a new `workflow-` skill, make them match the skill, its trigger's entry too. That is each affected step,
    option, Why? quote and `tip`; stages past 7 steps (rule 23); `summaries` (rule 31); a follow-up's `starts`
    (rule 25); a decision for a new optional field that changes the route (rule 26); test cases on a path added,

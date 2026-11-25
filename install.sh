@@ -11,7 +11,7 @@
 #      first ("Install Delegate in <folder>?"). On their yes Claude runs it again with --yes. In a
 #      terminal it asks the question itself.
 #   2. It installs the plugin into that folder (project scope). From GitHub it first clones the repo, once per
-#      computer, to ~/.workflow-manager/workflow-manager (WM_CLONE to change it); the plugin runs from that clone
+#      computer, to ~/.delegate/delegate (WM_CLONE to change it; ~/.workflow-manager/workflow-manager before 0.16.0); the plugin runs from that clone
 #      and keeps it up to date itself.
 #   3. It says to send "delegate dashboard", in the same chat. The board's welcome then has two steps: in the Claude
 #      app, "delegate pin" (Claude names and pins this chat); then run the first workflow.
@@ -125,7 +125,7 @@ fi
 
 # 1. The folder, confirmed before anything is installed. It works best in a folder of its own: it keeps its
 #    settings, runs and history there, and a folder with other work in it mixes the two.
-if [ -f "$FOLDER/.workflow-manager-data/system/version.json" ] || grep -qsE "(delegate|workflow-manager)@" "$FOLDER/.claude/settings.json"; then
+if [ -f "$FOLDER/.delegate-data/system/version.json" ] || [ -f "$FOLDER/.workflow-manager-data/system/version.json" ] || grep -qsE "(delegate|workflow-manager)@" "$FOLDER/.claude/settings.json"; then
   INSTALLED=1
 else
   INSTALLED=""
@@ -201,7 +201,11 @@ echo "Installing Delegate into $FOLDER"
 # new release), and a pulled release runs from the next message. Without git, Claude Code's own copy instead.
 if [ ! -d "$SOURCE" ] && command -v git >/dev/null 2>&1; then
   case "$SOURCE" in http://*|https://*) URL=$SOURCE ;; *) URL="https://github.com/$SOURCE.git" ;; esac
-  CLONE=${WM_CLONE:-$HOME/.workflow-manager/workflow-manager}
+  CLONE=${WM_CLONE:-$HOME/.delegate/delegate}
+  # a computer installed before 0.16.0 keeps its clone where it is: one clone per computer, never two
+  if [ -z "${WM_CLONE:-}" ] && [ ! -d "$CLONE/.git" ] && [ -d "$HOME/.workflow-manager/workflow-manager/.git" ]; then
+    CLONE=$HOME/.workflow-manager/workflow-manager
+  fi
   if [ -d "$CLONE/.git" ]; then
     HAVE=$(git -C "$CLONE" remote get-url origin 2>/dev/null || true)
     if [ "${HAVE%.git}" != "${URL%.git}" ]; then
