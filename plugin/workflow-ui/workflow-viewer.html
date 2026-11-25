@@ -395,18 +395,24 @@ main.isdraft,main.isrun,main.isview{padding-left:16px;margin-left:-16px}
 .stbar.dbg{--sc:#a15c07;--sct:#fdf3e1;--scb:#ecc98a;--scd:#6b3a00;--scs:#7d5a2c;--scf:#ffffff}
 .ktag.k-imported{background:var(--k-ib,#e8eefc);color:var(--k-i,#2b55c6)}.ktag.k-debug{background:#fdf0e1;color:#9a4b00}
 .hist.shsec{overflow:visible;container-type:inline-size}
-.shtiles{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;padding:18px}
-@container (min-width:620px){.shtiles{grid-template-columns:repeat(3,minmax(0,1fr))}.shtile{padding:22px 12px}}
-@container (min-width:620px) and (max-width:860px){.shtiles{gap:10px;padding:14px}.shpic{gap:5px}.shpic .dot{width:34px;height:34px;border-radius:11px}.shpic .dot svg{width:18px;height:18px}.shpic .arr{font-size:14px}.shtile h4{font-size:15px}.shtile p{font-size:12.5px}.shtile .pbtn{font-size:13px;padding-left:10px;padding-right:10px}}
-.shtile{display:flex;flex-direction:column;align-items:center;gap:12px;padding:24px 20px;border:1px solid var(--bd);border-radius:14px;background:var(--card);text-align:center}
+.shtiles{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;padding:18px}
+@container (min-width:620px){.shtiles{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.shtile{display:flex;flex-direction:column;gap:14px;padding:20px;border:1px solid var(--bd);border-radius:12px;background:var(--card)}
 .shtile.hot{border-color:var(--fg);box-shadow:inset 0 0 0 1px var(--fg)}
-.shtile h4{margin:0;font-size:17px}.shtile p{margin:0;color:var(--mut);font-size:13.5px;max-width:320px}
-.shtile .when{font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--mut)}
-.shtile .st{font-size:12px;color:var(--mut)}.shtile .pbtn{justify-content:center;min-width:min(200px,100%);max-width:100%;white-space:normal}
-.shpic{display:flex;align-items:center;gap:10px;color:var(--mut)}
-.shpic .dot{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:14px;background:var(--soft);color:var(--fg)}
-.shpic .zip{background:var(--k-ib,#e8eefc);color:var(--k-i,#2b55c6)}.shpic .arr{font-size:18px}
-.shnew{padding:0 8px;border-radius:999px;font-size:11px;font-weight:700;background:var(--okb);color:var(--okt);text-transform:none;letter-spacing:0}
+.shtile .hd{display:flex;flex-direction:column;gap:4px}
+.shtile h4{margin:0;font-size:16px}.shtile p{margin:0;color:var(--mut);font-size:13px;line-height:18px;min-height:36px}
+.shtile .st{font-size:12px;line-height:16px;min-height:32px;color:var(--mut)}.shtile .st .lnk{font-size:12px}
+.shtile .pbtn{justify-content:center;width:100%;max-width:100%;height:40px;border-radius:8px;white-space:normal}
+.shtile>.pbtn,.shtile>.shpopw{margin-top:auto}.shtile .shpopw{display:flex}
+.shtile .pbtn:disabled{color:var(--mut);cursor:not-allowed}
+.shpic{display:flex;align-items:flex-start;gap:4px;padding-bottom:14px;border-bottom:1px solid var(--bd)}
+.shpic .nd{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:6px}
+.shpic .dot{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:9px;background:var(--soft);color:var(--fg)}
+.shpic .dot svg{width:16px;height:16px}
+.shpic .zip{background:var(--k-ib,#e8eefc);color:var(--k-i,#2b55c6)}
+.shpic .lb{font-size:11px;line-height:14px;min-height:28px;color:var(--mut);text-align:center}
+.shpic .arr{flex:none;height:32px;display:flex;align-items:center;color:var(--mut)}
+.shnew{padding:0 8px;border-radius:999px;font-size:11px;font-weight:700;background:var(--okb);color:var(--okt)}
 .shpopw{position:relative;display:inline-flex}
 .shpop{position:absolute;top:calc(100% + 8px);right:0;z-index:30;width:360px;max-width:calc(100vw - 32px);padding:14px 16px;border:1px solid var(--bd);border-radius:12px;background:var(--card);box-shadow:0 12px 32px rgba(0,0,0,.16);text-align:left;display:flex;flex-direction:column;gap:6px}
 .shpop b.ph{font-size:14px}.shpop ul{list-style:none;margin:4px 0 0;padding:0;max-height:260px;overflow:auto}.shpop li{border-top:1px solid var(--bd)}.shpop li:first-child{border-top:0}
@@ -1631,34 +1637,41 @@ function summaryOf(x){var s=String(x.summary||"").trim();if(s)return s;var d=Str
 /* ---------- sharing (core-sharer, share.py): the Share tab, a zip's note on its draft, and debugging copies ---------- */
 function shWhen(t){var d=t?new Date(t):null;return d&&!isNaN(d)?d.toLocaleDateString(undefined,{day:"numeric",month:"short"})+" "+d.toLocaleTimeString(undefined,{hour:"2-digit",minute:"2-digit"}):""}
 function shDate(t){var d=t?new Date(t):null;return d&&!isNaN(d)?d.toLocaleDateString(undefined,{day:"numeric",month:"short"}):""}
-var SHI={me:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>',
-  zip:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M11 3v2M11 7v2M11 11v2"/></svg>',
-  them:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17.5" cy="9" r="2.5"/><path d="M16 14.5a5 5 0 0 1 6 5.5"/></svg>',
-  up:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg>',
-  bug:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>',
-  runs:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M9 13h6M9 17h4"/></svg>',
-  fix:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.4 2.4-2.6-.4-.4-2.6z"/></svg>',
+var SHI={me:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.8-3.6 3.6-5.5 7-5.5s6.2 1.9 7 5.5"/></svg>',
+  box:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>',
+  newp:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="8" r="3.5"/><path d="M3 20c.8-3.6 3.6-5.5 7-5.5 1.4 0 2.7.3 3.8.9"/><path d="M19 14v6M16 17h6"/></svg>',
+  boxup:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5"/><path d="M12 13v8"/><path d="M18 21v-6M15.5 17.5L18 15l2.5 2.5"/></svg>',
+  merge:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="2.5"/><circle cx="6" cy="6" r="2.5"/><path d="M6 21V8.5"/><path d="M6 9a9 9 0 0 0 9.5 9"/></svg>',
+  theirs:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="8" r="3.5"/><path d="M3 20c.8-3.6 3.6-5.5 7-5.5 1.2 0 2.3.2 3.3.6"/><path d="M15 21l.8-2.8 4.4-4.4a1.3 1.3 0 0 1 1.9 1.9l-4.4 4.4z"/></svg>',
+  youx:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="8" r="3.5"/><path d="M3 20c.8-3.6 3.6-5.5 7-5.5 1.2 0 2.3.2 3.3.6"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M18.5 15.8v1.9"/><path d="M18.5 19.3h.01"/></svg>',
+  runs:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6.5A1.5 1.5 0 0 0 5 4.5v15A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V8z"/><path d="M14 3v5h5"/><path d="M9 12.5h6M9 16.5h4"/></svg>',
+  creator:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="8" r="3.5"/><path d="M3 20c.8-3.6 3.6-5.5 7-5.5 1.2 0 2.3.2 3.3.6"/><path d="M18.5 13.5l1.2 2.4 2.6.4-1.9 1.8.5 2.6-2.4-1.3-2.4 1.3.5-2.6-1.9-1.8 2.6-.4z"/></svg>',
   dl:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>'};
-function shPic(a,b,c){return'<div class="shpic" aria-hidden="true"><span class="dot">'+SHI[a]+'</span><span class="arr">→</span><span class="dot zip">'+SHI[b]+'</span><span class="arr">→</span><span class="dot">'+SHI[c]+"</span></div>"}
+var SHA={r:'<svg width="18" height="10" viewBox="0 0 18 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 5h15M12 1l4 4-4 4"/></svg>',
+  l:'<svg width="18" height="10" viewBox="0 0 18 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 5H2M6 1L2 5l4 4"/></svg>',
+  b:'<svg width="18" height="12" viewBox="0 0 18 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3.5h15M12.5 .5l3.5 3"/><path d="M17 8.5H2M5.5 11.5L2 8.5"/></svg>'};
+/* the little flow at the top of each Share tile: three icons with a word under each; the middle one is what travels */
+function shPic(a,b,c,arr){var nd=function(x,mid){return'<span class="nd"><span class="dot'+(mid?" zip":"")+'">'+SHI[x[0]]+'</span><span class="lb">'+x[1]+"</span></span>"};
+  arr=arr||"rr";return'<div class="shpic" aria-hidden="true">'+nd(a)+'<span class="arr">'+SHA[arr[0]]+"</span>"+nd(b,1)+'<span class="arr">'+SHA[arr[1]]+"</span>"+nd(c)+"</div>"}
 function shCopy(label,cmd,ck,dark){var done=UI.copied===ck;return'<button class="pbtn'+(dark?" dark":"")+'" type="button" data-copy="'+esc(cmd)+'" data-ck="'+esc(ck)+'" title="Copies “'+esc(cmd)+'”">'+(done?"✓ Copied: paste it in the chat":esc(label))+"</button>"}
 function shareHtml(v){var S=v.share||{},n=cmdName(v),ver=S.version||"",last=S.last,runs=S.runs||[],ch=S.changes||[];
   if(UI.shImp===v.id&&ch.length)return shareImpact(v);
   UI.shareSel=UI.shareSel||{};var sel=UI.shareSel[v.id];
   if(!sel){sel=UI.shareSel[v.id]={};runs.slice(0,8).forEach(function(r){if(r.status==="failed"||(r.attention&&r.attention!=="none"))sel[r.run]=true})} /* the runs that look wrong start ticked */
   var picked=runs.filter(function(r){return sel[r.run]}).map(function(r){return r.run}),newer=!!S.is_new,since=S.update_since||"";
-  var t1='<div class="shtile'+(last||newer?"":" hot")+'"><span class="when">First time</span>'+shPic("me","zip","them")+"<h4>Share it</h4><p>The whole workflow, ready for someone new to use.</p>"+shCopy("Share it","share workflow "+n,"sh:full",!last&&!newer)+
+  var t1='<div class="shtile'+(last||newer?"":" hot")+'">'+shPic(["me","You"],["box","Workflow"],["newp","Someone new"])+'<div class="hd"><h4>Share it</h4><p>The whole workflow, for someone new.</p></div>'+shCopy("Share it","share workflow "+n,"sh:full",!last&&!newer)+
     '<span class="st">'+(last?"Last shared "+esc(last.version||"")+" on "+esc(shDate(last.t)):ver?"Shares "+esc(ver)+", the published version":"Not published yet: shares the draft")+"</span></div>";
-  var t2='<div class="shtile'+(newer?" hot":"")+'"><span class="when">An update'+(newer?' <span class="shnew">'+esc(ver)+" is new</span>":"")+"</span>"+shPic("me","up","them")+"<h4>Share the update</h4><p>For people who already have it. They keep their own changes.</p>"+
-    shCopy("Share the update"+(ver?" ("+ver+")":""),"share the update of workflow "+n,"sh:update",newer)+
-    (ch.length?'<button class="lnk" type="button" data-shimp="'+esc(v.id)+'">How will this affect people who have it?</button>':"")+
-    '<span class="st">'+(since?(ch.length?ch.length+" step"+(ch.length===1?"":"s")+" changed since "+esc(since):"No step changes since "+esc(since)):"Nothing to compare with yet")+"</span></div>";
+  var t2='<div class="shtile'+(newer?" hot":"")+'">'+shPic(["boxup","Your changes"],["merge","Merged"],["theirs","Their changes"],"rl")+'<div class="hd"><h4>Share your changes</h4><p>For people who have it. They keep their own changes.</p></div>'+
+    shCopy("Share Changes"+(ver?" ("+ver+")":""),"share the update of workflow "+n,"sh:update",newer)+
+    '<span class="st">'+(newer?'<span class="shnew">'+esc(ver)+" is new</span> ":"")+(since?(ch.length?ch.length+" step"+(ch.length===1?"":"s")+" changed":"No step changes since "+esc(since)):"Nothing to compare with yet")+
+    (ch.length?' · <button class="lnk" type="button" data-shimp="'+esc(v.id)+'">how it affects them</button>':"")+"</span></div>";
   var open=UI.menu==="sharepop";
   var pop=open?'<div class="shpop" role="dialog" aria-label="Pick the runs to send"><b class="ph">Which runs went wrong?</b>'+
       (runs.length?"<ul>"+runs.map(function(r){return'<li><label><input type="checkbox" data-sharerun="'+esc(r.run)+'"'+(sel[r.run]?" checked":"")+'><span class="rn">'+esc(r.label)+(r.summary?'<small title="'+esc(r.summary)+'">'+esc(String(r.summary).replace(/\*\*/g,""))+"</small>":"")+'</span><span class="rw">'+esc(shWhen(r.started))+"</span></label></li>"}).join("")+"</ul>":'<p style="margin:0;color:var(--mut);font-size:13px">No runs yet: run it once first.</p>')+
       '<div class="row"><span style="color:var(--mut);font-size:12px">'+picked.length+" of "+runs.length+" ticked</span>"+(picked.length?shCopy("Share "+picked.length+" run"+(picked.length>1?"s":""),"share an issue with workflow "+n+": "+picked.join(" "),"sh:issue",true):"")+"</div></div>":"";
-  var t3='<div class="shtile"><span class="when">An issue</span>'+shPic("bug","runs","fix")+"<h4>Share an issue</h4><p>Something not working? Send the runs that show it, and get a fix back.</p>"+
-    '<span class="xm shpopw"><button class="pbtn" type="button" data-menu="sharepop" aria-expanded="'+open+'" aria-haspopup="dialog">Share an issue ▾</button>'+pop+"</span>"+
-    '<span class="st">'+(runs.length?"Claude ticks the runs that look wrong":"No runs to send yet")+"</span></div>";
+  var t3='<div class="shtile">'+shPic(["youx","You"],["runs","Runs"],["creator","Creator"],"rb")+'<div class="hd"><h4>Share an issue</h4><p>Send runs to its creator for a fix.</p></div>'+
+    (runs.length?'<span class="xm shpopw"><button class="pbtn" type="button" data-menu="sharepop" aria-expanded="'+open+'" aria-haspopup="dialog">Share an issue ▾</button>'+pop+"</span>":'<button class="pbtn" type="button" disabled>No runs to send yet</button>')+
+    '<span class="st">'+(runs.length?"Claude ticks the runs that look wrong":"")+"</span></div>";
   return'<section class="hist shsec" aria-label="Share"><h3>Share</h3><div class="shtiles">'+t1+t2+t3+"</div>"+
     '<div class="shgot">'+SHI.dl+'<span><b>Got a zip?</b> Upload it into your chat with Claude.</span><span class="s">Never includes your sign-ins or keys</span></div></section>'}
 /* "How will this affect people who have it?": the update's steps, for someone who never changed their copy and for
@@ -1673,7 +1686,7 @@ function shareImpact(v){var S=v.share||{},n=cmdName(v),ver=S.version||"",since=S
     '<div class="shcols"><div class="shcol"><h4>They update, and never changed it</h4><p>It just becomes '+esc(ver)+'. No questions.</p><ul class="shflow">'+a+"</ul></div>"+
     '<div class="shcol"><h4>They update, but changed it themselves</h4><p>Your changes come in and theirs stay. Claude asks only where you both changed the same thing.</p><ul class="shflow">'+b+"</ul></div></div>"+
     (conns.length?'<div class="shneed"><span><b>They\'ll need '+esc(conns.join(" and "))+" connected:</b> Claude helps them set "+(conns.length>1?"them":"it")+" up when they import it</span></div>":"")+
-    '<div class="shacts">'+shCopy("Share the update"+(ver?" ("+ver+")":""),"share the update of workflow "+n,"sh:update",true)+'<button class="lnk" type="button" data-shimp="">Back to Share</button></div></section>'}
+    '<div class="shacts">'+shCopy("Share Changes"+(ver?" ("+ver+")":""),"share the update of workflow "+n,"sh:update",true)+'<button class="lnk" type="button" data-shimp="">Back to Share</button></div></section>'}
 /* a draft brought in from a zip: where it came from, and anything to pick where both sides changed the same thing */
 function sharedNote(v){var S=v.shared;if(!S||!v.edited)return"";var n=cmdName(v),cs=(S.conflicts||[]);
   var head=S.plan==="new"?"Imported from "+esc(S.from)+" ("+esc(S.their_version||"")+"). Check it, then publish it to start using it.":
