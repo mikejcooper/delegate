@@ -418,6 +418,7 @@ main.isdraft,main.isrun,main.isview{padding-left:16px;margin-left:-16px}
 .shpop b.ph{font-size:14px}.shpop ul{list-style:none;margin:4px 0 0;padding:0;max-height:260px;overflow:auto}.shpop li{border-top:1px solid var(--bd)}.shpop li:first-child{border-top:0}
 .shpop label{display:flex;gap:10px;align-items:center;padding:7px 0;font-size:13px;cursor:pointer}.shpop input{width:16px;height:16px;accent-color:var(--fg)}.shpop .rn{flex:1;min-width:0}.shpop .rn small{display:block;color:var(--mut);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.shpop label{align-items:flex-start}.shpop input{margin-top:2px}.shpop .rw{color:var(--mut);font-size:12px;white-space:nowrap}
 .shpop .row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px}.shpop .pbtn{min-width:0}
+.shhow{margin:14px 18px 2px;color:var(--mut);font-size:13.5px;line-height:1.45}.shhow b{color:var(--ink,inherit);font-weight:600}
 .shgot{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 18px 18px;padding:12px 16px;border-radius:10px;background:var(--soft);font-size:13.5px}.shgot .s{margin-left:auto;color:var(--mut);font-size:12px}
 .shcols{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;padding:14px 18px}
 @container (min-width:640px){.shcols{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -937,9 +938,13 @@ function realExamples(view){
     B.runs.filter(function(r){return(r.kind==="run"&&!r.batch||r.kind==="batch")&&(r.state==="done"||live(r)||r.state==="stalled"&&r.kind==="batch")&&classify(r)===view&&!testRow(r)})
       .sort(function(a,b){return ts(b.started)-ts(a.started)}).forEach(function(r){out.push(realEx(r,def.steps,false))});
     /* a check of this workflow's trigger that ran no item (nothing kept, or all already handled) is a run too: its
-       own row, opened as the request on this page */
-    B.runs.filter(function(r){if(!RunPath.checkOnly(r)||r.try||/^\s*test\b/i.test(String(r.request||"")))return false;var w=wfOfEntry(reqEntry(r)||((r.matches||[]).map(function(m){return m.entry}).filter(Boolean)[0]));return w&&w.id===view})
-      .forEach(function(r){var x=realEx(r,def.steps,true);x.req=true;x.res={};x.taken={};out.push(x)});
+       own row, opened as the request on this page. So is a try whose items left no run of their own here (nothing
+       kept, or an item run that wasn't recorded): the try shows in Past runs as well as in the Inbox */
+    B.runs.filter(function(r){if(r.kind!=="trigger")return false;
+        var w=wfOfEntry(reqEntry(r)||((r.matches||[]).map(function(m){return m.entry}).filter(Boolean)[0]));if(!w||w.id!==view)return false;
+        if(r.try)return(r.state==="done"||live(r))&&!B.runs.some(function(x){return x.group===r.group&&x.kind!=="trigger"&&classify(x)===view});
+        return RunPath.checkOnly(r)&&!/^\s*test\b/i.test(String(r.request||""))})
+      .forEach(function(r){var x=realEx(r,def.steps,true);x.req=true;x.tryReq=!!r.try&&!RunPath.checkOnly(r);x.res={};x.taken={};out.push(x)});
     out.sort(function(a,b){return(b.t||0)-(a.t||0)});
   }
   return out;
@@ -1246,8 +1251,8 @@ function helperActions(v){var n=cmdName(v),e0=(v.entries||[]).filter(function(k)
     A("keep","Keep a run as a test","Saves what a real run read as the test of the path it took. Put its ID in.",D+"keep wf-…: test"),
     A("ex","Write examples","Writes the usual journeys and what each path ends with, from its steps.",D+"add examples workflow "+n)]});
   if(!isNew)g.push({name:"Share it",items:[A("sh","Share it","A zip in your Downloads, for someone new to import.",D+"share workflow "+n),
-    A("shu","Share the update","For people who already have it. They keep their own changes.",D+"share workflow "+n+": update"),
-    A("shi","Share an issue","The runs that went wrong and what they read, so someone can debug them. Put their IDs in.",D+"share workflow "+n+": issue wf-…")]});
+    A("shu","Share the update","A zip in your Downloads, for people who already have it. They keep their own changes.",D+"share workflow "+n+": update"),
+    A("shi","Share an issue","A zip in your Downloads with the runs that went wrong and what they read, so someone can debug them. Put their IDs in.",D+"share workflow "+n+": issue wf-…")]});
   if(conns.length)g.push({name:"Connections",items:conns.map(function(c){var cn=connOf(c)||{};return A("cn:"+c,"Check "+(cn.system||c),"Reads one harmless thing to see it still works. Changes nothing.",D+"check connection "+c)}).concat([
     A("cnfix","Fix a connection","Walks you through setting it up again. Change the name if it’s another one.",D+"fix connection "+conns[0])])});
   g.push({name:"Manage",items:[A("ren","Rename it","Changes its name everywhere, keeping its runs and versions. Type the new name after the colon.",D+"rename workflow "+n+": "),
@@ -1653,7 +1658,7 @@ var SHA={r:'<svg width="18" height="10" viewBox="0 0 18 10" fill="none" stroke="
 /* the little flow at the top of each Share tile: three icons with a word under each; the middle one is what travels */
 function shPic(a,b,c,arr){var nd=function(x,mid){return'<span class="nd"><span class="dot'+(mid?" zip":"")+'">'+SHI[x[0]]+'</span><span class="lb">'+x[1]+"</span></span>"};
   arr=arr||"rr";return'<div class="shpic" aria-hidden="true">'+nd(a)+'<span class="arr">'+SHA[arr[0]]+"</span>"+nd(b,1)+'<span class="arr">'+SHA[arr[1]]+"</span>"+nd(c)+"</div>"}
-function shCopy(label,cmd,ck,dark){var done=UI.copied===ck;return'<button class="pbtn'+(dark?" dark":"")+'" type="button" data-copy="'+esc(cmd)+'" data-ck="'+esc(ck)+'" title="Copies “'+esc(cmd)+'”">'+(done?"✓ Copied: paste it in the chat":esc(label))+"</button>"}
+function shCopy(label,cmd,ck,dark){var done=UI.copied===ck;return'<button class="pbtn'+(dark?" dark":"")+'" type="button" data-copy="'+esc(cmd)+'" data-ck="'+esc(ck)+'" title="Copies “'+esc(cmd)+'”">'+(done?"✓ Copied: paste it in the chat for the zip":esc(label))+"</button>"}
 function shareHtml(v){var S=v.share||{},n=cmdName(v),ver=S.version||"",last=S.last,runs=S.runs||[],ch=S.changes||[];
   if(UI.shImp===v.id&&ch.length)return shareImpact(v);
   UI.shareSel=UI.shareSel||{};var sel=UI.shareSel[v.id];
@@ -1672,7 +1677,7 @@ function shareHtml(v){var S=v.share||{},n=cmdName(v),ver=S.version||"",last=S.la
   var t3='<div class="shtile">'+shPic(["youx","You"],["runs","Runs"],["creator","Creator"],"rb")+'<div class="hd"><h4>Share an issue</h4><p>Send runs to its creator for a fix.</p></div>'+
     (runs.length?'<span class="xm shpopw"><button class="pbtn" type="button" data-menu="sharepop" aria-expanded="'+open+'" aria-haspopup="dialog">Share an issue ▾</button>'+pop+"</span>":'<button class="pbtn" type="button" disabled>No runs to send yet</button>')+
     '<span class="st">'+(runs.length?"Claude ticks the runs that look wrong":"")+"</span></div>";
-  return'<section class="hist shsec" aria-label="Share"><h3>Share</h3><div class="shtiles">'+t1+t2+t3+"</div>"+
+  return'<section class="hist shsec" aria-label="Share"><h3>Share</h3><p class="shhow">Each button copies a command. Paste it in the chat and Claude saves a <b>.zip</b> to your Downloads folder, for you to send on yourself.</p><div class="shtiles">'+t1+t2+t3+"</div>"+
     '<div class="shgot">'+SHI.dl+'<span><b>Got a zip?</b> Upload it into your chat with Claude.</span><span class="s">Never includes your sign-ins or keys</span></div></section>'}
 /* "How will this affect people who have it?": the update's steps, for someone who never changed their copy and for
    someone who did (the Share tab's own page) */
@@ -2404,7 +2409,7 @@ function runsHtml(runs,paths,ex,all){
   var list=UI.allRuns||all?runs:runs.slice(0,10),hs=(viewDef(UI.view)||{}).history||[],cur=hs.length?hs[hs.length-1].v:null;
   if(!dp){ /* a workflow's runs (RUN-TRACE.md, Run names): the run's name and what came of it, its status, how long ago.
        Its kind (test, sample, answered, a draft) is a small tag; when every run here has the same name, the outcome leads */
-    var nameOf=function(r){if(r.req){var n=RunPath.seenSteps(B.runs.filter(function(x){return x.id===r.run})[0]).length;return{name:n?"Nothing new · "+n+" already handled":"Nothing new",tags:[]}}var rb=B.runs.filter(function(x){return x.id===r.run})[0];return rb?RunPath.runNameOf(rb):RunPath.runName(r.label||"Run")};
+    var nameOf=function(r){if(r.tryReq){var tb=B.runs.filter(function(x){return x.id===r.run})[0];return{name:tb&&tb.try_real?"Tried it for real":"Tried it as a test",tags:[]}}if(r.req){var n=RunPath.seenSteps(B.runs.filter(function(x){return x.id===r.run})[0]).length;return{name:n?"Nothing new · "+n+" already handled":"Nothing new",tags:[]}}var rb=B.runs.filter(function(x){return x.id===r.run})[0];return rb?RunPath.runNameOf(rb):RunPath.runName(r.label||"Run")};
     /* one row per item, the same as the Inbox: an item's reruns (wf-…-a1, -a2, …) sit inside its row, newest on top,
        and open under it; a trigger check that ran nothing ("Nothing new") is a row of its own */
     var G=[],byK={};runs.forEach(function(r){var k=RUNID.test(r.run||"")?r.run.replace(/-a\d+$/,""):"x:"+r.run;
@@ -2414,7 +2419,7 @@ function runsHtml(runs,paths,ex,all){
     /* selecting, on the Past runs tab: the Inbox's checkboxes and bar (Copy, Delete), on the same items it lists */
     var reqOf=function(g){var r=g.runs[0];return r.req?r.run:""},selKey=function(g){return g.wf||reqOf(g)};
     var pick=!!all,selable=gl.filter(selKey),rs=UI.rsel||(UI.rsel={}),op=UI.rgrp||(UI.rgrp={});
-    var line=function(r,nm,sub,g,gi){var i=runs.indexOf(r),on=!!ex&&r.run===ex.run,st=runStatus(r),vv=r.version||"";if(r.req&&st[0]==="Done")st=["Nothing new","e-info"];
+    var line=function(r,nm,sub,g,gi){var i=runs.indexOf(r),on=!!ex&&r.run===ex.run,st=runStatus(r),vv=r.version||"";if(r.req&&!r.tryReq&&st[0]==="Done")st=["Nothing new","e-info"];
       var tags=sub?[]:(r.test&&nm.tags.indexOf("Test")<0?["Test"]:[]).concat(nm.tags).concat(/draft/.test(vv)?["Draft"]:[]);
       var tg=tags.map(function(t){return'<span class="rtag">'+esc(t)+"</span>"}).join("")+(!sub&&g.runs.length>1?'<button class="rcnt" type="button" data-rgrp="'+esc(g.key)+'" aria-expanded="'+!!op[g.key]+'" title="'+(op[g.key]?"Hide":"Show")+' its earlier runs">'+g.runs.length+" runs "+(op[g.key]?"▴":"▾")+"</button>":"");
       var out=RunPath.richText(r.verdict||"No outcome recorded"),sk=selKey(g),cbx=!pick?"":sub||!sk?"<span></span>":'<input type="checkbox" class="scb" data-rsel="'+esc(sk)+'"'+(rs[sk]?" checked":"")+' aria-label="Select '+esc(nm.name)+(r.req?" ("+RunPath.relTime(r.t)+")":"")+'">';
